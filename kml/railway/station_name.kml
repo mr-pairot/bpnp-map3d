@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>Station</name>
+    <Style id="#stop">
+      <IconStyle>
+        <color>ffd18802</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+      </IconStyle>
+    </Style>
+    <Style id="#station">
+      <IconStyle>
+        <color>ff5b18c2</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+      </IconStyle>
+    </Style>
+    <Placemark>
+      <name>ชุมทางบ้านหนองแวงไร่</name>
+      <description><![CDATA[กม.1+375<br>Name_TH ชุมทางบ้านหนองแวงไร่<br>Name_EN NONG WAENG RAI JUNCTION]]></description>
+      <styleUrl>#station</styleUrl>
+      <Point>
+        <coordinates>
+          102.738131,16.102141,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>สถานีภูเหล็ก</name>
+      <description><![CDATA[กม.10+185<br> Name_TH สถานีภูเหล็ก <br> Name_EN PHU LEK SMALL STATION]]></description>
+      <styleUrl>#station</styleUrl>
+      <Point>
+        <coordinates>
+          102.812291,16.078016,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>ป้ายหยุดรถไฟนาโพธิ์</name>
+      <description><![CDATA[กม.21+075<br> Name_TH ป้ายหยุดรถไฟนาโพธิ์ <br> Name_EN NA PHO TRAIN STOP STATION]]></description>
+      <styleUrl>#stop</styleUrl>
+      <Point>
+        <coordinates>
+          102.908148,16.063926,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>สถานีกุดรัง</name>
+      <description><![CDATA[กม.30+550<br> Name_TH สถานีกุดรัง <br> Name_EN KUT RANG SMALL STATION]]></description>
+      <styleUrl>#station</styleUrl>
+      <Point>
+        <coordinates>
+          102.995908,16.062214,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>สถานีบรบือ</name>
+      <description><![CDATA[กม.45+300<br> Name_TH สถานีบรบือ <br> Name_EN BORABUE MEDIUM STATION]]></description>
+      <styleUrl>#station</styleUrl>
+      <Point>
+        <coordinates>
+          103.137828,16.063767,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>ป้ายหยุดรถไฟหนองโน</name>
+      <description><![CDATA[กม.59+475<br> Name_TH ป้ายหยุดรถไฟหนองโน <br> Name_EN NONG NO TRAIN STOP STATION]]></description>
+      <styleUrl>#stop</styleUrl>
+      <Point>
+        <coordinates>
+          103.250357,16.119302,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>สถานีมหาสารคาม</name>
+      <description><![CDATA[กม.69+225 <br> Name_TH สถานีมหาสารคาม <br> Name_EN MAHA SARAKHAM LARGE STATION]]></description>
+      <styleUrl>#station</styleUrl>
+      <Point>
+        <coordinates>
+          103.326287,16.158916,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>ป้ายหยุดรถไฟเขวา</name>
+      <description><![CDATA[กม.78+650<br> Name_TH ป้ายหยุดรถไฟเขวา <br> Name_EN KHWAO TRAIN STOP STATION]]></description>
+      <styleUrl>#stop</styleUrl>
+      <Point>
+        <coordinates>
+          103.407489,16.131978,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>ป้ายหยุดรถไฟศรีสมเด็จ</name>
+      <description><![CDATA[กม.85+600<br> Name_TH ป้ายหยุดรถไฟศรีสมเด็จ <br> Name_EN SI SOMDET TRAIN STOP STATION]]></description>
+      <styleUrl>#stop</styleUrl>
+      <Point>
+        <coordinates>
+          103.471908,16.125727,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>ป้ายหยุดรถไฟสีแก้ว</name>
+      <description><![CDATA[กม.93+800 <br> Name_TH ป้ายหยุดรถไฟสีแก้ว <br> Name_EN SI KAEO TRAIN STOP STATION]]></description>
+      <styleUrl>#stop</styleUrl>
+      <Point>
+        <coordinates>
+          103.543907,16.106098,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>สถานีร้อยเอ็ด</name>
+      <description><![CDATA[กม.104+850<br> Name_TH สถานีร้อยเอ็ด <br> Name_EN ROIET MAJOR STATION]]></description>
+      <styleUrl>#station</styleUrl>
+      <Point>
+        <coordinates>
+          103.6441,16.105787,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>สถานีเชียงขวัญ</name>
+      <description><![CDATA[กม.117+725 <br> Name_TH สถานีเชียงขวัญ <br> Name_EN CHIANG KHWAN MINOR STATION]]></description>
+      <styleUrl>#station</styleUrl>
+      <Point>
+        <coordinates>
+          103.741046,16.166264,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>สถานีโพธิ์ชัย</name>
+      <description><![CDATA[กม.128+975<br> Name_TH สถานีโพธิ์ชัย <br> Name_EN PHO CHAI MINOR STATION]]></description>
+      <styleUrl>#station</styleUrl>
+      <Point>
+        <coordinates>
+          103.814008,16.229366,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>สถานีอำเภอโพนทอง</name>
+      <description><![CDATA[กม.150+480<br> Name_TH สถานีอำเภอโพนทอง <br> Name_EN AMPHOE PHON THONG MEDIUM STATION]]></description>
+      <styleUrl>#station</styleUrl>
+      <Point>
+        <coordinates>
+          103.97825,16.313787,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>ป้ายหยุดรถไฟเมยวดี</name>
+      <description><![CDATA[กม.159+775 <br> Name_TH ป้ายหยุดรถไฟเมยวดี <br> Name_EN MOEI WAD TRAIN STOP STATION]]></description>
+      <styleUrl>#stop</styleUrl>
+      <Point>
+        <coordinates>
+          104.064799,16.307285,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>สถานีหนองพอก</name>
+      <description><![CDATA[กม.175+425<br> Name_TH สถานีหนองพอก <br> Name_EN NONG PHOK MINOR STATION]]></description>
+      <styleUrl>#station</styleUrl>
+      <Point>
+        <coordinates>
+          104.208329,16.326385,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>ป้ายหยุดรถไฟโคกสว่าง</name>
+      <description><![CDATA[กม.183+400<br> Name_TH ป้ายหยุดรถไฟโคกสว่าง <br> Name_EN KHOK SAWANG TRAIN STOP STATION]]></description>
+      <styleUrl>#stop</styleUrl>
+      <Point>
+        <coordinates>
+          104.278816,16.310443,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>ป้ายหยุดรถไฟห้องแซง</name>
+      <description><![CDATA[กม.195+600<br> Name_TH ป้ายหยุดรถไฟห้องแซง <br> Name_EN HONG SAENG TRAIN STOP STATION]]></description>
+      <styleUrl>#stop</styleUrl>
+      <Point>
+        <coordinates>
+          104.388962,16.283191,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>สถานีเลิงนกทา</name>
+      <description><![CDATA[กม.209+620<br> Name_TH สถานีเลิงนกทา <br> Name_EN LOENG NOK THA MEDIUM STATION]]></description>
+      <styleUrl>#station</styleUrl>
+      <Point>
+        <coordinates>
+          104.508584,16.282835,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>สถานีนิคมคำสร้อย</name>
+      <description><![CDATA[กม.223+100<br> Name_TH สถานีนิคมคำสร้อย <br> Name_EN NIKHOM KHAM SOI MINOR STATION]]></description>
+      <styleUrl>#station</styleUrl>
+      <Point>
+        <coordinates>
+          104.544617,16.385787,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>ป้ายหยุดรถไฟบ้านป่งแดง</name>
+      <description><![CDATA[กม.228+250 <br> Name_TH ป้ายหยุดรถไฟบ้านป่งแดง <br> Name_EN BAN PONG DAENG TRAIN STOP STATION]]></description>
+      <styleUrl>#stop</styleUrl>
+      <Point>
+        <coordinates>
+          104.578507,16.419474,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>สถานีมุกดาหาร</name>
+      <description><![CDATA[กม.247+075<br> Name_TH สถานีมุกดาหาร <br> Name_EN MUKDAHAN MAJOR STATION]]></description>
+      <styleUrl>#station</styleUrl>
+      <Point>
+        <coordinates>
+          104.676699,16.550954,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>ป้ายหยุดรถไฟบ้านดานคำ</name>
+      <description><![CDATA[กม.250+300<br> Name_TH ป้ายหยุดรถไฟบ้านดานคำ <br> Name_EN BAAN DAAN KHAM TRAIN STOP STATION]]></description>
+      <styleUrl>#stop</styleUrl>
+      <Point>
+        <coordinates>
+          104.688303,16.575614,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>สถานีสะพานมิตรภาพ 2</name>
+      <description><![CDATA[กม.255+175<br> Name_TH สถานีสะพานมิตรภาพ 2 <br> Name_EN SAPHAN MITTRAPHAP 2 MINOR STATION]]></description>
+      <styleUrl>#station</styleUrl>
+      <Point>
+        <coordinates>
+          104.71338,16.614897,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>สถานีหว้านใหญ่</name>
+      <description><![CDATA[กม.267+920<br> Name_TH สถานีหว้านใหญ่ <br> Name_EN WAN YAI MINOR STATION]]></description>
+      <styleUrl>#station</styleUrl>
+      <Point>
+        <coordinates>
+          104.727677,16.726589,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>สถานีธาตุพนม</name>
+      <description><![CDATA[กม.291+945 <br> Name_TH สถานีธาตุพนม <br> Name_EN THAT PHANOM MEDIUM STATION]]></description>
+      <styleUrl>#station</styleUrl>
+      <Point>
+        <coordinates>
+          104.700719,16.93897,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>สถานีเรณูนคร</name>
+      <description><![CDATA[กม.304+145<br> Name_TH สถานีเรณูนคร <br> Name_EN RENU NAKHON MINOR STATION]]></description>
+      <styleUrl>#station</styleUrl>
+      <Point>
+        <coordinates>
+          104.695189,17.044934,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>ป้ายหยุดรถไฟนาถ่อน</name>
+      <description><![CDATA[กม.315+560<br> Name_TH ป้ายหยุดรถไฟนาถ่อน <br> Name_EN NA THON TRAIN STOP STATION]]></description>
+      <styleUrl>#stop</styleUrl>
+      <Point>
+        <coordinates>
+          104.735346,17.139538,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>ป้ายหยุดรถไฟบ้านกลาง</name>
+      <description><![CDATA[กม.320+070<br> Name_TH ป้ายหยุดรถไฟบ้านกลาง <br> Name_EN BAN KLANG TRAIN STOP STATION]]></description>
+      <styleUrl>#stop</styleUrl>
+      <Point>
+        <coordinates>
+          104.741986,17.178962,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>สถานีนครพนม</name>
+      <description><![CDATA[กม.343+675<br> Name_TH สถานีนครพนม <br> Name_EN NAKHON PHANOM LARGE STATION]]></description>
+      <styleUrl>#station</styleUrl>
+      <Point>
+        <coordinates>
+          104.718476,17.378881,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>สถานีสะพานมิตรภาพ 3</name>
+      <description><![CDATA[กม.354+385<br> Name_TH สถานีสะพานมิตรภาพ 3 <br> Name_EN SAPHAN MITTRAPHAP 3 MINOR STATION]]></description>
+      <styleUrl>#station</styleUrl>
+      <Point>
+        <coordinates>
+          104.711894,17.47182,0
+        </coordinates>
+      </Point>
+    </Placemark>
+  </Document>
+</kml>
