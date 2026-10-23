@@ -4,8 +4,9 @@
  *
  * เฟสถัดไปเพิ่มโมดูลโดย:
  *   1) เพิ่มไฟล์ใน app_manifest.js (หรือโหลดเมื่อใช้งาน)
- *   2) ลงทะเบียนเลเยอร์ผ่าน BPNP.map.registry.register()
- *   3) เพิ่มบรรทัดเรียก init ในฟังก์ชัน start() ด้านล่าง
+ *   2) เลเยอร์: ในไฟล์เรียก BPNP.layers.utils.register({ register(map) { ... } })
+ *      → app.js เรียกให้อัตโนมัติ ไม่ต้องแก้ไฟล์นี้
+ *   3) เครื่องมือ/ส่วนอื่น: เพิ่มบรรทัดเรียก init ในฟังก์ชัน start() ด้านล่าง
  * ───────────────────────────────────────────────────────────────────────── */
 (function () {
   'use strict';
@@ -18,6 +19,7 @@
 
       BPNP.map.controls.init(map);
       BPNP.layers.rasterOverlays.register();
+      BPNP.layers.utils.registerAll(map);      // เลเยอร์ข้อมูลทุกโมดูล (เฟส 2+)
       BPNP.ui.layerPanel.init();
       BPNP.tools.myLocation.init(map);
       BPNP.tools.clickPoint.init(map);
