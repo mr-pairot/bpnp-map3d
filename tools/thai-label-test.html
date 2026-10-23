@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>ทดสอบป้ายภาษาไทยใน MapLibre</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@5.24.0/dist/maplibre-gl.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    html, body { margin: 0; height: 100%; font-family: 'Sarabun', sans-serif; }
+    #map { position: absolute; inset: 0; }
+    .panel {
+      position: absolute; top: 10px; left: 10px; z-index: 2; max-width: 330px;
+      background: rgba(255,255,255,0.95); border-radius: 8px; padding: 10px 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.25); font-size: 13px; line-height: 1.5;
+    }
+    .panel h3 { margin: 0 0 6px; font-size: 15px; }
+    .legend span { display: inline-block; width: 12px; height: 12px; border-radius: 2px; margin-right: 4px; vertical-align: middle; }
+    .html-label {
+      font-family: 'Sarabun', sans-serif; font-size: 14px; font-weight: 700; color: #0b4a8b;
+      white-space: nowrap; text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
+      transform: translateY(14px);
+    }
+    label { display: block; margin-top: 4px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <div class="panel">
+    <h3>ทดสอบป้ายภาษาไทย (เฟส 0)</h3>
+    <div class="legend"><span style="background:#c0392b"></span>แดง = symbol layer (MapLibre วาดเอง)</div>
+    <div class="legend"><span style="background:#0b4a8b"></span>น้ำเงิน = HTML marker (เบราว์เซอร์วาด)</div>
+    <label><input type="checkbox" id="tgSymbol" checked> แสดงป้าย symbol</label>
+    <label><input type="checkbox" id="tgHtml" checked> แสดงป้าย HTML</label>
+    <p style="margin:8px 0 0;color:#555;">ดูว่าสระบน/ล่าง วรรณยุกต์ และ ำ ของป้ายสีแดง วางถูกตำแหน่งเหมือนป้ายสีน้ำเงินหรือไม่ ลองซูมเข้า-ออกด้วย<br>
+    ฟอนต์ symbol: <b id="fontName">-</b></p>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@5.24.0/dist/maplibre-gl.js"></script>
+  <script>
+    // ข้อความที่มีสระซ้อน วรรณยุกต์ และตัวเลข กม. แบบที่ใช้จริงในแอป
+    const SAMPLES = [
+      'สถานีบ้านไผ่', 'สถานีมหาสารคาม', 'ตอม่อ P12 สะพานข้ามลำน้ำชี', 'กม. 245+500',
+      'แปลงเวนคืน ท.3234', 'ญี่ปุ่น ปั้น ฟื้น กี่ ป๊ะ น้ำ', 'ช่องลอด Underpass สูง 5.00 ม.',
+      'ร้อยเอ็ด–หนองพอก', 'ฎีกา ฐาน ญาติ ฤๅษี'
+    ];
+    const CENTER = [103.25, 16.18];
+
+    const points = {
+      type: 'FeatureCollection',
+      features: SAMPLES.map((t, i) => ({
+        type: 'Feature',
+        properties: { label: t },
+        geometry: { type: 'Point', coordinates: [CENTER[0] + (i % 3) * 0.12 - 0.12, CENTER[1] + Math.floor(i / 3) * 0.06 - 0.06] }
+      }))
+    };
+
+    fetch('https://tiles.openfreemap.org/styles/liberty').then(r => r.json()).then(style => {
+      const sample = style.layers.find(l => l.type === 'symbol' && l.layout && l.layout['text-font']);
+      const font = sample ? sample.layout['text-font'] : ['Noto Sans Regular'];
+      document.getElementById('fontName').textContent = font.join(', ');
+
+      const map = new maplibregl.Map({ container: 'map', style, center: CENTER, zoom: 10 });
+      map.on('load', () => {
+        map.addSource('thai', { type: 'geojson', data: points });
+        map.addLayer({ id: 'thai-dot', type: 'circle', source: 'thai', paint: { 'circle-radius': 4, 'circle-color': '#333' } });
+        map.addLayer({
+          id: 'thai-symbol', type: 'symbol', source: 'thai',
+          layout: { 'text-field': ['get', 'label'], 'text-font': font, 'text-size': 15, 'text-offset': [0, -1.4], 'text-allow-overlap': true },
+          paint: { 'text-color': '#c0392b', 'text-halo-color': '#fff', 'text-halo-width': 1.5 }
+        });
+
+        const markers = points.features.map(f => {
+          const el = document.createElement('div');
+          el.className = 'html-label';
+          el.textContent = f.properties.label;
+          return new maplibregl.Marker({ element: el }).setLngLat(f.geometry.coordinates).addTo(map);
+        });
+
+        document.getElementById('tgSymbol').onchange = e =>
+          map.setLayoutProperty('thai-symbol', 'visibility', e.target.checked ? 'visible' : 'none');
+        document.getElementById('tgHtml').onchange = e =>
+          markers.forEach(m => { m.getElement().style.display = e.target.checked ? '' : 'none'; });
+      });
+    }).catch(err => {
+      document.querySelector('.panel').insertAdjacentHTML('beforeend', '<p style="color:red">โหลด style ไม่สำเร็จ: ' + err.message + '</p>');
+    });
+  </script>
+</body>
+</html>
