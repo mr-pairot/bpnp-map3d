@@ -1,0 +1,392 @@
+/* css/layers/structure_popup.css — การ์ด popup ของสถานี/โครงสร้าง (ใช้ร่วมเฟส 2–4) */
+/* หมายเหตุ: ไฟล์เดิมมีชุดคำสั่งไม่มี selector ตรงนี้ (ทำให้เบราว์เซอร์ข้ามกฎ .bp-header ด้านล่าง)
+ * ตัดออกแล้ว — .bp-header จึงมีผลจริงเป็นครั้งแรก ตรวจหน้าตา popup สะพาน/ช่องลอดอีกครั้งในเฟส 3–4 */
+
+.bp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.bp-title {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.8); 
+}
+
+.bp-updated {
+    font-size: 9px;
+    color: rgba(255, 255, 255, 0.6); 
+    display: flex;
+    align-items: center;
+}
+
+.bp-updated::before {
+    content: '◷';
+    opacity: 0.8;
+    font-size: 13px;
+    margin-right: 3px;
+}
+
+.bp-summary-box {
+    background: rgba(0, 0, 0, 0.4); 
+    border-radius: 6px;
+    padding: 8px;
+    border-left: 2px solid #5B7AF5; 
+    margin-bottom: 10px;
+}
+
+.bp-progress-wrapper {
+    display: flex;
+    gap: 10px;
+    align-items: stretch;
+}
+
+.bp-bar-container {
+    flex: 1;
+    display: grid;
+    grid-template-columns: auto 1fr 35px;
+    align-items: center;
+    gap: 5px 8px;
+}
+
+.bp-diff-box {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+    padding: 4px 6px;
+    min-width: 48px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+@keyframes bp-flash-warning {
+    0% {
+        box-shadow: 0 0 8px rgba(248, 113, 113, 0.7), inset 0 0 4px rgba(248, 113, 113, 0.3);
+        border-color: rgba(248, 113, 113, 0.8);
+        background-color: rgba(248, 113, 113, 0.15);
+    }
+    50% {
+        box-shadow: 0 0 12px rgba(251, 191, 36, 0.8), inset 0 0 6px rgba(251, 191, 36, 0.4);
+        border-color: rgba(251, 191, 36, 0.9);
+        background-color: rgba(251, 191, 36, 0.15);
+    }
+    100% {
+        box-shadow: 0 0 8px rgba(248, 113, 113, 0.7), inset 0 0 4px rgba(248, 113, 113, 0.3);
+        border-color: rgba(248, 113, 113, 0.8);
+        background-color: rgba(248, 113, 113, 0.15);
+    }
+}
+
+.bp-diff-box.bp-diff-box-warning {
+    animation: bp-flash-warning 1.5s ease-in-out infinite;
+}
+
+.bp-diff-label {
+    font-size: 10px;
+    font-weight: 700;
+    height: 12px;
+    line-height: 12px;
+    margin-bottom: 2px;
+}
+.bp-diff-label:empty {
+    display: none;
+}
+
+.bp-diff-val {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.bp-bar-label {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.7);
+    white-space: nowrap;
+}
+
+.bp-bar-bg {
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.bp-bar-plan-fill, .bp-bar-act-fill {
+    height: 100%;
+    border-radius: 4px;
+    width: 0%;
+    animation: bp-fill-bar 0.9s cubic-bezier(.4, 0, .2, 1) forwards;
+}
+
+.bp-bar-plan-fill {
+    background: linear-gradient(90deg, #f5895b, #ea580c); 
+}
+
+.bp-bar-act-fill {
+    background: linear-gradient(90deg, #5BC8F5, #5B7AF5); 
+    position: relative;
+    overflow: hidden;
+}
+
+.bp-bar-act-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -60%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+    opacity: 0;
+    animation: bp-shine 1.2s ease-out 0.4s forwards;
+}
+
+@keyframes bp-fill-bar {
+    from { width: 0%; }
+    to { width: var(--target-width, 0%); }
+}
+
+@keyframes bp-shine {
+    0% { left: -60%; opacity: 0; }
+    50% { opacity: 1; }
+    100% { left: 120%; opacity: 0; }
+}
+
+.bp-bar-val {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    justify-self: end;
+    width: 35px;
+}
+
+.bp-val-plan { color: #fdba74; }
+.bp-val-act { color: #5BC8F5; } 
+
+.color-ahead { color: #4ade80; } 
+.color-behind { color: #f87171; } 
+.color-zero { color: #ffffff; } 
+
+.bp-summary-footer {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    font-size: 9px;
+    margin-top: 8px;
+    padding-top: 6px;
+    border-top: 1px dashed rgba(255, 255, 255, 0.15);
+}
+
+.bp-end-date {
+    color: rgba(255, 255, 255, 0.85);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0 6px;
+}
+
+.bp-divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+    margin-bottom: 7px;
+}
+
+.bp-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.bp-row {
+    display: grid;
+    grid-template-columns: 7px 1fr auto;
+    align-items: center;
+    gap: 7px;
+}
+
+.bp-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.bp-dot-0 { background: rgba(255, 255, 255, 0.2); }
+.bp-dot-1 { background: #fcd34d; box-shadow: 0 0 5px rgba(252, 211, 77, 0.7); animation: bp-pulse 1.8s ease-in-out infinite; } 
+.bp-dot-2 { background: #4ade80; }
+
+@keyframes bp-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+}
+
+.bp-fname {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.85);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.bp-badge {
+    font-size: 9px;
+    font-weight: 600;
+    padding: 1.5px 5px;
+    border-radius: 3px;
+    min-width: 44px;
+    text-align: center;
+}
+.bp-badge-0 { background: transparent; color: rgba(255, 255, 255, 0.4); border: 1px solid rgba(255, 255, 255, 0.2); }
+.bp-badge-1 { background: rgba(245, 158, 11, 0.2); color: #fcd34d; border: 1px solid rgba(245, 158, 11, 0.4); }
+.bp-badge-2 { background: rgba(34, 197, 94, 0.15); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.3); }
+
+.bp-nodata {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.6); 
+    font-style: italic;
+    text-align: center;
+    padding: 5px 0;
+}
+
+.bp-action-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 10px;
+}
+
+.bp-yt-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    background-color: #ffffff;
+    color: #374151;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    padding: 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
+.bp-yt-btn:hover {
+    background-color: #f3f4f6;
+    color: #1f2937;
+    border-color: #ef4444;
+}
+
+.bp-yt-icon {
+    width: 14px;
+    height: 14px;
+    fill: #ef4444;
+}
+
+.bp-yt-btn:hover .bp-yt-icon {
+    fill: #dc2626;
+}
+
+.structure-popup-card {
+    background: #fff;
+    border-radius: 0.75em;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18), 0 1px 4px rgba(0, 0, 0, 0.08);
+    width: 200px !important;  
+    max-width: 90vw;          
+    box-sizing: border-box;
+    font-size: var(--sta-font-size, 14px);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    font-family: 'Sarabun', sans-serif;
+}
+.structure-popup-header {
+    padding: 0.55em 1em;
+    display: flex;
+    align-items: center;
+    gap: 0.4em;
+    font-weight: 700;
+    color: #fff;
+    font-size: 1.1em;
+    letter-spacing: 0.02em;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.structure-popup-card.underpass-theme .structure-popup-header {
+    background: linear-gradient(135deg, #6A1B7A 0%, #8E24AA 100%);
+}
+.structure-popup-card.underpass-theme .structure-popup-label {
+    color: #6A1B7A;
+}
+
+.structure-popup-card.boxculvert-theme .structure-popup-header {
+    background: linear-gradient(135deg, #E0A800 0%, #FBC02D 100%);
+    color: #3a2c00;
+}
+.structure-popup-card.boxculvert-theme .structure-popup-label {
+    color: #C68E00;
+}
+
+.structure-popup-body {
+    padding: 0.5em 0;
+    color: #333;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.structure-popup-row {
+    display: flex;
+    align-items: flex-start; 
+    justify-content: space-between;
+    gap: 1em;
+    padding: 0.35em 1em;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.structure-popup-label {
+    font-weight: 600;
+    font-size: 0.92em;
+    white-space: nowrap;    
+    flex-shrink: 0;        
+    min-width: 60px;     
+}
+
+.structure-popup-value {
+    color: #1a1a2e;
+    font-weight: 500;
+    font-size: 0.95em;
+    text-align: right;
+    white-space: normal;
+    word-break: break-word; 
+    overflow-wrap: anywhere;
+    flex: 1;              
+}
+
+.structure-popup-divider {
+    height: 1px;
+    margin: 0 1em;
+    background: linear-gradient(to right, transparent, rgba(0, 0, 0, 0.12), transparent);
+}
+
+.structure-popup-actions {
+    padding: 0.5em 0.1em 0.1em;
+}
+
+/* โทนสี: สถานี / ป้ายหยุดรถ = น้ำตาล */
+.structure-popup-card.station-theme .structure-popup-header {
+    background: linear-gradient(135deg, #795548 0%, #8B4513 100%);
+    color: #fff;
+}
+.structure-popup-card.station-theme .structure-popup-label {
+    color: #8B4513;
+}
