@@ -18,6 +18,9 @@
 
   let panel;
 
+  // ปุ่ม "Pier" ของ Footing VBxx → เลเยอร์ป้าย pierNameVBxx
+  const pierLayerOf = id => id.replace('layoutFooting', 'pierName');
+
   // ── settings ──
   function loadSettings() {
     const s = BPNP.storage.getJSON(SETTINGS_KEY);
@@ -34,6 +37,7 @@
         isActive: BPNP.map.registry.isVisible(c.id),
         opacity:  Math.round(BPNP.map.registry.getOpacity(c.id) * 100)
       };
+      if (c.hasPierToggle) overlays[c.id].showPierToggle = BPNP.map.registry.isVisible(pierLayerOf(c.id));
     });
     const order = Array.from(document.querySelectorAll(`#${LISTS.general} .layer-item[data-layer-id]`)).map(el => el.dataset.layerId);
     BPNP.storage.setJSON(SETTINGS_KEY, {
@@ -91,16 +95,34 @@
 
       let html = `<input type="checkbox" id="ov_${c.id}" value="${c.id}" ${supported ? '' : 'disabled'}>` +
                  `<label for="ov_${c.id}">${esc(c.name)}${supported ? '' : ` <span class="layer-phase-tag">เฟส ${c.phase}</span>`}</label>`;
-      if (supported && c.hasOpacityControl) {
-        html += `<div style="display:flex;align-items:center;gap:6px;"><div class="opacity-slider-container" style="width:55px;">` +
-                `<input type="range" min="0" max="100" value="100" class="opacity-slider" data-layer-id="${c.id}"></div></div>`;
+      if (supported && (c.hasOpacityControl || c.hasPierToggle)) {
+        html += `<div style="display:flex;align-items:center;gap:6px;">`;
+        if (c.hasPierToggle) {
+          html += `<label class="hs-toggle-label" title="เปิด/ปิด Pier No."><input type="checkbox" class="hs-toggle-cb pier-toggle-cb" data-layer-id="${c.id}"><span class="hs-toggle-btn">Pier</span></label>`;
+        }
+        if (c.hasOpacityControl) {
+          html += `<div class="opacity-slider-container" style="width:55px;">` +
+                  `<input type="range" min="0" max="100" value="100" class="opacity-slider" data-layer-id="${c.id}"></div>`;
+        }
+        html += `</div>`;
       }
       item.innerHTML = html;
       box.appendChild(item);
 
       if (!supported) return;
-      const cb = item.querySelector('input[type="checkbox"]');
+      const cb = item.querySelector('input[type="checkbox"]:not(.hs-toggle-cb)');
       cb.addEventListener('change', () => toggleOverlay(c, cb.checked));
+
+      const pierCb = item.querySelector('.pier-toggle-cb');
+      if (pierCb) {
+        pierCb.addEventListener('change', async () => {
+          const pid = pierLayerOf(c.id);
+          if (pierCb.checked) BPNP.core.toast.show('กำลังโหลด Pier No....', true);
+          await BPNP.map.registry.setVisible(pid, pierCb.checked);
+          BPNP.core.toast.hide();
+          saveSettings();
+        });
+      }
 
       const slider = item.querySelector('.opacity-slider');
       if (slider) {
@@ -139,7 +161,7 @@
     Object.values(LISTS).forEach(listId => {
       const list = document.getElementById(listId);
       if (!list) return;
-      const count = list.querySelectorAll('input[type="checkbox"]:checked').length;
+      const count = list.querySelectorAll('input[type="checkbox"]:not(.hs-toggle-cb):checked').length;
       const title = list.closest('.layer-section')?.querySelector('.layer-header span:first-child');
       if (!title) return;
       let badge = title.querySelector('.layer-count-badge');
@@ -224,6 +246,11 @@
       if (slider) { slider.value = opacity; syncSliderTrack(slider); }
       BPNP.map.registry.setOpacity(c.id, opacity / 100);
       if (active) queue.push(c);
+      if (c.hasPierToggle && s && s.showPierToggle) {
+        const pierCb = document.querySelector(`.pier-toggle-cb[data-layer-id="${c.id}"]`);
+        if (pierCb) pierCb.checked = true;
+        BPNP.map.registry.setVisible(pierLayerOf(c.id), true);
+      }
     });
     queue.forEach((c, i) => setTimeout(() => {
       const cb = document.getElementById('ov_' + c.id);
