@@ -3,9 +3,8 @@
  * รายการ JS/CSS ที่โหลดหลังล็อกอิน (รันตามลำดับในรายการ)
  * ไม่ต้องใส่ ?v=... — loader.js ต่อท้าย APP_VERSION ให้อัตโนมัติ
  *
- * โมดูลของเฟสถัดไปที่โหลดเมื่อใช้งาน (ไม่อยู่ในรายการนี้):
- *   js/layers/<กลุ่ม>/*.js   → โหลดเมื่อเปิดเลเยอร์ครั้งแรก (ระบุใน layers_config.js → module)
- *   js/tools/<เครื่องมือ>/*.js → โหลดเมื่อกดปุ่มเครื่องมือ
+ * โมดูลเลเยอร์โหลดพร้อมแอป (โค้ดเล็ก) แต่ "ข้อมูล" โหลดเมื่อเปิดเลเยอร์ครั้งแรกเท่านั้น
+ * เครื่องมือขนาดใหญ่ในเฟส 5 (js/tools/<เครื่องมือ>/) จะโหลดเมื่อกดปุ่มครั้งแรก
  * ───────────────────────────────────────────────────────────────────────── */
 BPNP.boot.APP_SCRIPTS = [
   // ── core ──
@@ -22,7 +21,13 @@ BPNP.boot.APP_SCRIPTS = [
 
   // ── layers ──
   'js/layers/layers_config.js',
+  'js/layers/layer_utils.js',
   'js/layers/raster_overlays.js',
+  'js/layers/video_links.js',
+  'js/layers/alignment.js',
+  'js/layers/railway.js',
+  'js/layers/road.js',
+  'js/layers/structure/footing.js',
 
   // ── ui / tools ──
   'js/ui/layer_panel.js',
@@ -43,5 +48,7 @@ BPNP.boot.APP_CSS = [
   'css/ui/about_popup.css',
   'css/ui/check_update.css',
   'css/tools/my_location.css',
-  'css/tools/click_point.css'
+  'css/tools/click_point.css',
+  'css/layers/structure_popup.css',
+  'css/layers/layers.css'
 ];
