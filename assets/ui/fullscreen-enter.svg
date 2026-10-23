@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="8 8 83 83" width="100%" height="100%">
+  <g stroke-linecap="round" stroke-linejoin="round" fill="none">
+    
+    <!-- กรอบสี่เหลี่ยมด้านนอก --> 
+    <path stroke="#9e9e9e" stroke-width="7" 
+          d="M 34 12 L 26 12 A 14 14 0 0 0 12 26 L 12 40 
+             M 48 12 L 58 12 
+             M 72 12 L 74 12 A 14 14 0 0 1 88 26 L 88 36 
+             M 88 50 L 88 60 
+             M 88 74 A 14 14 0 0 1 74 88 L 64 88" />
+             
+    <!-- กรอบซ้ายล่าง  -->
+    <path stroke="#5d9de5" stroke-width="7" 
+          d="M 40 40 L 26 40 A 14 14 0 0 0 12 54 L 12 74 A 14 14 0 0 0 26 88 L 48 88 A 14 14 0 0 0 62 74 L 62 58" />
+          
+    <!-- ลูกศร -->
+    <path stroke="#021cb3" stroke-width="8" 
+          d="M 53 27 L 73 27 L 73 47 
+             M 73 27 L 27 73 
+             M 47 73 L 27 73 L 27 53" />
+             
+  </g>
+</svg>
