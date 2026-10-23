@@ -40,6 +40,7 @@
   ];
 
   let vectorLayerIds = [];
+  let labelFont = ['Noto Sans Regular'];   // ฟอนต์ที่ glyph server มีแน่นอน (ใช้กับป้ายของเลเยอร์ข้อมูล)
   let vectorAvailable = false;
   let activeId = null;
 
@@ -151,6 +152,8 @@
     });
 
     if (vectorAvailable) {
+      const sample = vec.layers.find(l => l.type === 'symbol' && l.layout && Array.isArray(l.layout['text-font']));
+      if (sample) labelFont = sample.layout['text-font'].slice(0, 1);
       Object.assign(style.sources, vec.sources);
       const vLayers = applyThaiLabels(JSON.parse(JSON.stringify(vec.layers)));
       vectorLayerIds = vLayers.map(l => l.id);
@@ -186,6 +189,7 @@
       return RASTERS.map(b => ({ id: b.id, name: b.name, type: b.vector ? 'vector' : 'raster', available: b.vector ? vectorAvailable : true }));
     },
     get active() { return activeId; },
+    get labelFont() { return labelFont; },
     get attribution() { const b = byId(activeId); return b ? b.attribution : ''; },
     // เลเยอร์ของแผนที่ฐานทั้งหมด (registry วางเลเยอร์ข้อมูลไว้เหนือชุดนี้)
     get topLayerId() {

@@ -11,6 +11,7 @@
  *     def.slot         ชื่อ slot (ค่าเริ่มต้น 'general')
  *     def.build()      → { sources: {id: spec}, layers: [spec] } (sync หรือ async — เรียกครั้งแรกที่เปิด)
  *     def.attribution  ข้อความแสดงที่มุมแผนที่ขณะเปิดเลเยอร์
+ *     def.afterBuild(map, layerIds)  เรียกครั้งเดียวหลังเพิ่มเลเยอร์ (ผูก click / hover ที่นี่)
  *     def.onShow / def.onHide  callback เพิ่มเติม (เช่น แสดง legend)
  *   setVisible(id, bool)  → Promise
  *   setOpacity(id, 0..1)
@@ -92,6 +93,8 @@
         });
       });
       e.built = true;
+      // ผูก click / hover หลังเลเยอร์มีอยู่จริงแล้วเท่านั้น
+      if (e.def.afterBuild) e.def.afterBuild(map, e.layerIds.slice());
     })();
     try { await e.building; } finally { e.building = null; }
   }
