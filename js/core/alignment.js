@@ -41,14 +41,34 @@
     return rows;
   }
 
+  function parseGeoJSON(fc) {
+    const rows = (fc.features || []).map(f => {
+      const p = f.properties || {};
+      const c = f.geometry && f.geometry.coordinates;
+      const sta = parseFloat(p['STA.']);
+      return (c && !isNaN(sta)) ? { station: sta, lat: c[1], lng: c[0] } : null;
+    }).filter(Boolean);
+    rows.sort((a, b) => a.station - b.station);
+    return rows;
+  }
+
   function load() {
     if (state.loaded) return Promise.resolve(state.points);
     if (state.promise) return state.promise;
 
-    state.promise = fetch(BPNP.config.data.alignment)
-      .then(res => { if (!res.ok) throw new Error('HTTP ' + res.status); return res.text(); })
-      .then(text => {
-        state.points = parseKml(text);
+    const D = BPNP.config.data;
+    state.promise = fetch(D.alignment)
+      .then(res => { if (!res.ok) throw new Error('HTTP ' + res.status); return res.json(); })
+      .then(parseGeoJSON)
+      .catch(err => {
+        if (!D.alignmentKml) throw err;
+        console.warn('[Alignment] ไม่พบ GeoJSON (ยังไม่ได้รัน build?) ใช้ KML แทน');
+        return fetch(D.alignmentKml)
+          .then(res => { if (!res.ok) throw new Error('HTTP ' + res.status); return res.text(); })
+          .then(parseKml);
+      })
+      .then(points => {
+        state.points = points;
         state.loaded = true;
         // ชื่อเดิม (โมดูลที่ย้ายมาในเฟสถัดไปใช้)
         window.alignment = state.points;
