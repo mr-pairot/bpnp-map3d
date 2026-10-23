@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <title>BPNP Map 3D : แผนที่สารสนเทศ โครงการรถไฟทางคู่ สายบ้านไผ่-หนองพอก</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#0d2b45">
+
+  <link rel="icon" type="image/png" href="assets/icons/favicon-96x96.png" sizes="96x96" />
+  <link rel="icon" type="image/svg+xml" href="assets/icons/map-icon.svg" />
+  <link rel="shortcut icon" href="assets/icons/favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/apple-touch-icon.png" />
+  <link rel="manifest" href="manifest.webmanifest" />
+
+  <meta name="apple-mobile-web-app-title" content="BPNP Map 3D" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <script>
+    // เลข build สร้างอัตโนมัติโดย tools/build.js ตอน Netlify deploy (ไม่ต้องแก้เอง)
+    // ใน GitHub ให้คงเป็น '__APP_BUILD__' / เปิดโดยไม่ผ่าน build จะใช้ค่า dev ที่เปลี่ยนทุกครั้ง (ไม่ติดแคช)
+    window.APP_VERSION = '__APP_BUILD__';
+    if (window.APP_VERSION.indexOf('__') === 0) window.APP_VERSION = 'dev-' + Date.now();
+  </script>
+
+  <!-- ไลบรารีภายนอก: ตรึงเลขเวอร์ชันแน่นอนทุกตัว (ห้ามใช้ @latest / @5.x) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@5.24.0/dist/maplibre-gl.css" crossorigin="anonymous" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" crossorigin="anonymous" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/base/splash.css" />
+
+  <style>
+
+    html {
+      background-color: #0d2b45 !important;
+      width: 100%; height: 100dvh; overflow: hidden;
+      font-size: 12px;
+    }
+
+    body {
+      margin: 0;
+      width: 100%;
+      font-family: 'Sarabun', sans-serif;
+      margin-top: env(safe-area-inset-top);
+      margin-bottom: env(safe-area-inset-bottom);
+      height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+      position: relative;
+      padding: 0;
+      overflow: hidden;
+      overscroll-behavior: none;
+      touch-action: none;
+      -webkit-text-size-adjust: 100%;
+      background-color: #f0f0f0;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Sarabun', sans-serif;
+    }
+
+
+    button, input, a,
+    .standard-map-btn, .layer-panel {
+      touch-action: manipulation;
+      cursor: pointer;
+    }
+
+    #globeViz {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      z-index: 1;
+      background-color: #0c1017;
+      display: none;
+    }
+
+    #maintenance-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 10;
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      background: linear-gradient(
+        -45deg,
+        rgba(30,30,30,0.7),
+        rgba(60,60,60,0.6),
+        rgba(20,20,20,0.7)
+      );
+      background-size: 400% 400%;
+      animation: gradientBG 20s ease infinite;
+    }
+
+    @keyframes gradientBG {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .maintenance-card {
+      background: rgba(255, 255, 255, 0.85);
+      padding: 40px 30px;
+      border-radius: 24px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      max-width: 450px;
+      width: 85%;
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      position: relative;
+      overflow: hidden;
+    }
+    .maintenance-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 50%;
+      height: 100%;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.6), 
+        transparent
+      );
+      transform: skewX(-45deg);
+      animation: sweepShadow 5s infinite;
+      pointer-events: none;
+    }
+    @keyframes sweepShadow {
+      0% { 
+        left: -100%; 
+      }
+      20% { 
+        left: 200%;
+      }
+      100% { 
+        left: 200%;
+      }
+    }
+
+    .maintenance-icon-wrapper {
+      font-size: 54px;
+      color: #4a5568;
+      margin-bottom: 20px;
+      animation: spinGear 10s linear infinite;
+      display: inline-block;
+    }
+
+    @keyframes spinGear {
+      100% { transform: rotate(360deg); }
+    }
+
+    .maintenance-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: #1a202c;
+      margin-bottom: 20px;
+      letter-spacing: 0.5px;
+    }
+
+    .maintenance-subtitle {
+      font-size: 15px;
+      color: #4a5568;
+      line-height: 1.2;
+      margin-bottom: 20px;
+    }
+    .maintenance-subtitle-bottom {
+      font-size: 11px;
+      color: #64748b;
+      margin-bottom: 20px;
+    }
+
+    html.is-maintenance-mode #splash-screen      { display: none  !important; }
+    html.is-maintenance-mode #maintenance-overlay { display: flex  !important; }
+    html.is-maintenance-mode #globeViz           { display: block !important; }
+
+  </style>
+
+  <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@5.24.0/dist/maplibre-gl.js" crossorigin="anonymous" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@turf/turf@7.4.0/turf.min.js" crossorigin="anonymous" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.26.25/dist/sweetalert2.all.min.js" crossorigin="anonymous" defer></script>
+
+  <script>
+    // โหลดสคริปต์เริ่มต้นตามลำดับ (async = false) พร้อม ?v=APP_VERSION
+    ['js/config.js', 'js/core/namespace.js', 'js/boot/loader.js', 'js/boot/maintenance.js',
+     'js/boot/check_update.js', 'js/boot/auth.js'].forEach(function (src) {
+      var s = document.createElement('script');
+      s.src = src + '?v=' + encodeURIComponent(window.APP_VERSION);
+      s.async = false;
+      document.head.appendChild(s);
+    });
+  </script>
+</head>
+
+<body>
+
+  <div id="globeViz"></div>
+
+  <div id="maintenance-overlay">
+    <div class="maintenance-card">
+      <div class="maintenance-icon-wrapper">
+        <i class="fas fa-cog"></i>
+      </div>
+      <h1 class="maintenance-title">ระบบกำลังปรับปรุงข้อมูล</h1>
+      <p class="maintenance-subtitle">ขออภัยในความไม่สะดวก<br><br>กรุณากลับมาตรวจสอบใหม่อีกครั้ง </p>
+      <p class="maintenance-subtitle-bottom">ถ้าเปิดหน้านี้ไว้ ระบบจะรีเซ็ตอัตโนมัติหลังอัปเดตเสร็จ </p>
+    </div>
+  </div>
+
+  <div id="splash-screen" class="splash-screen bg-aurora">
+    <div class="splash-content">
+      <h1 class="splash-title">BPNP MAP 3D</h1>
+      <p class="splash-subtitle">โครงการรถไฟทางคู่ สายบ้านไผ่-หนองพอก</p>
+
+      <div class="splash-icon-wrapper">
+        <div class="loader-ring"></div>
+        <div class="loader-ring"></div>
+        <div class="icon-circle">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"
+               class="svg-train-icon" fill="white" width="40" height="40">
+            <path d="M128 160C128 107 171 64 224 64L416 64C469 64 512 107 512 160L512
+              416C512 456.1 487.4 490.5 452.5 504.8L506.4 568.5C515 578.6 513.7 593.8
+              503.6 602.3C493.5 610.8 478.3 609.6 469.8 599.5L395.8 512L244.5 512L170.5
+              599.5C161.9 609.6 146.8 610.9 136.7 602.3C126.6 593.7 125.3 578.6 133.9
+              568.5L187.8 504.8C152.6 490.5 128 456.1 128 416L128 160zM192 192L192 288C192
+              305.7 206.3 320 224 320L416 320C433.7 320 448 305.7 448 288L448 192C448 174.3
+              433.7 160 416 160L224 160C206.3 160 192 174.3 192 192zM320 448C337.7 448 352
+              433.7 352 416C352 398.3 337.7 384 320 384C302.3 384 288 398.3 288 416C288
+              433.7 302.3 448 320 448z"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="loading-text" id="loadingText">กำลังเตรียมระบบ...</div>
+      <div class="version-tag" id="splashVersion">BPNP Map 3D</div>
+    </div>
+  </div>
+
+
+  <script>
+    // ป้องกันการซูมทั้งหน้าด้วยนิ้ว / แตะสองครั้ง (แผนที่จัดการซูมเอง)
+    document.addEventListener('gesturestart', function (e) { e.preventDefault(); });
+    var lastTouchEnd = 0;
+    document.addEventListener('touchend', function (event) {
+      var now = Date.now();
+      if (now - lastTouchEnd <= 300 && !event.target.closest('button, a, input, .standard-map-btn')) event.preventDefault();
+      lastTouchEnd = now;
+    }, false);
+  </script>
+
+  <div id="bp-toast-notification" class="bp-toast-hidden">
+    <div id="bp-toast-spinner" class="bp-toast-spinner"></div>
+    <span id="bp-toast-message">กำลังทำงาน...</span>
+  </div>
+  
+</body>
+</html>
