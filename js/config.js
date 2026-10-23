@@ -9,8 +9,8 @@ window.BPNP_CONFIG = {
   siteUrl:       'https://bpnp-map3d.netlify.app',
 
   // ── ใส่ค่าหลังสร้าง LIFF และ Deploy GAS (ดู backend/gas/README.md) ──
-  liffId:        '2007032148-wk1xMGrD',
-  gasUrl:        'https://script.google.com/macros/s/AKfycbwVBKtdNidFt6niAteBBAw5Gyf5wCAbH4UWn5ZU-mJxZABu3blqotM44ERiLawqSRBm/exec',
+  liffId:        'XXXXXXXXXX-XXXXXXXX',
+  gasUrl:        'https://script.google.com/macros/s/XXXXXXXX/exec',
 
   storagePrefix: 'bpnp3d_',          // prefix ของ localStorage / cookie ทุกคีย์
 
@@ -25,7 +25,7 @@ window.BPNP_CONFIG = {
   },
 
   // เฟสสูงสุดที่รองรับแล้ว: เลเยอร์ที่ phase มากกว่านี้จะแสดง "ยังไม่รองรับ" ในรายการชั้นข้อมูล
-  supportedPhase: 1,
+  supportedPhase: 2,
 
   map: {
     center:         [103.64, 16.1],   // [lng, lat]
@@ -33,7 +33,7 @@ window.BPNP_CONFIG = {
     minZoom:        4,
     maxZoom:        21,
     defaultBasemap: 'osm',
-    allowRotate:    true,            // เปิดในเฟส 3D
+    allowRotate:    false,            // เปิดในเฟส 3D
     vectorStyleUrl: 'https://tiles.openfreemap.org/styles/liberty',
     fallbackGlyphs: 'https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf'
   },
@@ -46,7 +46,8 @@ window.BPNP_CONFIG = {
   },
 
   data: {
-    alignment: 'data/kml/alignment/alignment_20m.kml'
+    alignment:    'data/geojson/alignment/alignment_20m.geojson',
+    alignmentKml: 'data/kml/alignment/alignment_20m.kml'     // สำรอง: เปิดบนเครื่องโดยไม่ได้รัน build
   },
 
   ui: {
