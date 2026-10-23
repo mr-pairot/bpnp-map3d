@@ -1,0 +1,3677 @@
+{
+  "lastUpdated": "2026-07-09",
+  "data": [
+    {
+      "sta": 1041,
+      "offset": 0,
+      "name": "OCC PHI 192/196",
+      "type": "SW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 2012,
+      "offset": 8,
+      "name": "OCC PHI 6-4/8-4",
+      "type": "DW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 3012,
+      "offset": 8,
+      "name": "OCC PHI 6-2/8-2",
+      "type": "SW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 3553,
+      "offset": 8,
+      "name": "PLK 414.62",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 4553,
+      "offset": 8,
+      "name": "PLK 415.62",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 5553,
+      "offset": 8,
+      "name": "PLK 416.62",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 6553,
+      "offset": 8,
+      "name": "PLK 417.62",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 7533,
+      "offset": 8,
+      "name": "PLK 1-1/3-1",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 8023,
+      "offset": 8,
+      "name": "PLK R1-3/R3-3",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 8533,
+      "offset": 8,
+      "name": "PLK 1-3/3-3",
+      "type": "DW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 9528,
+      "offset": 8,
+      "name": "PLK 16/18",
+      "type": "DW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 9906,
+      "offset": 8,
+      "name": "PLK 32/38",
+      "type": "DW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 10390,
+      "offset": 8,
+      "name": "PLK 31/37",
+      "type": "DW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 10627,
+      "offset": 8,
+      "name": "PLK 15/17",
+      "type": "SW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 10890,
+      "offset": 8,
+      "name": "PLK 314/316",
+      "type": "SW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 11834,
+      "offset": 8,
+      "name": "PLK 2-4/4-4",
+      "type": "DW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 12834,
+      "offset": 8,
+      "name": "PLK 2-2/4-2",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 13746,
+      "offset": 8,
+      "name": "PLK 424.82",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 14746,
+      "offset": 8,
+      "name": "PLK 425.82",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 15746,
+      "offset": 8,
+      "name": "PLK 426.82",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 16566,
+      "offset": 8,
+      "name": "PLK 427.64",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 18300,
+      "offset": 8,
+      "name": "KRG 429.37",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 19294,
+      "offset": 8,
+      "name": "KRG  430.37",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 20285,
+      "offset": 8,
+      "name": "KRG 4313-1/4313-3",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 20837,
+      "offset": 8,
+      "name": "KRG 4318-2/4318-4",
+      "type": "DW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 21380,
+      "offset": 8,
+      "name": "KRG 4323-1/4323-3",
+      "type": "DW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 21920,
+      "offset": 8,
+      "name": "KRG 4328-2/4328-4",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 22861,
+      "offset": 8,
+      "name": "KRG 433.87",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 23862,
+      "offset": 8,
+      "name": "KRG 434.87",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 24922,
+      "offset": 8,
+      "name": "KRG 435.96 R-LOC",
+      "type": "SW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 25983,
+      "offset": 8,
+      "name": "KRG 437.05",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 27069,
+      "offset": 8,
+      "name": "KRG 438.13",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 28106,
+      "offset": 8,
+      "name": "KRG 1-1/3-1",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 29106,
+      "offset": 8,
+      "name": "KRG 1-3/3-3",
+      "type": "DW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 30124,
+      "offset": 8,
+      "name": "KRG 16/32",
+      "type": "SW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 30979,
+      "offset": 8,
+      "name": "KRG 15/31",
+      "type": "SW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 31979,
+      "offset": 8,
+      "name": "KRG 2-4/4-4",
+      "type": "DW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 32979,
+      "offset": 8,
+      "name": "KRG 2-2/4-2",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 33684,
+      "offset": 8,
+      "name": "KRG 444.75",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 34413,
+      "offset": 8,
+      "name": "KRG 445.48",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 35413,
+      "offset": 8,
+      "name": "KRG 446.48",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 36393,
+      "offset": 8,
+      "name": "KRG 4474-1/4474-3 )",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 37393,
+      "offset": 8,
+      "name": "KRG 4484-1/4484-3",
+      "type": "DW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 37913,
+      "offset": 8,
+      "name": "KRG 448.98",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 38433,
+      "offset": 8,
+      "name": "BRB 4494-2/4494-4",
+      "type": "DW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 2,
+        "column": 2,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 39465,
+      "offset": 8,
+      "name": "BRB 4504-2/4504-4",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 2,
+        "column": 2,
+        "beam": 2,
+        "floor_wall": 2,
+        "loc_base": 2,
+        "gard_rail": 2,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 40425,
+      "offset": 8,
+      "name": "BRB 451.48",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 2,
+        "column": 2,
+        "beam": 2,
+        "floor_wall": 1,
+        "loc_base": 0,
+        "gard_rail": 2,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 41425,
+      "offset": 8,
+      "name": "BRB 452.48",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 2,
+        "column": 2,
+        "beam": 2,
+        "floor_wall": 2,
+        "loc_base": 2,
+        "gard_rail": 2,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 42150,
+      "offset": 8,
+      "name": "BRB 453.21",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 42726,
+      "offset": 8,
+      "name": "BRB 1-1/3-1",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 2,
+        "column": 2,
+        "beam": 2,
+        "floor_wall": 2,
+        "loc_base": 2,
+        "gard_rail": 2,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 43746,
+      "offset": 8,
+      "name": "BRB 1-3/3-3",
+      "type": "DW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 2,
+        "column": 2,
+        "beam": 2,
+        "floor_wall": 2,
+        "loc_base": 1,
+        "gard_rail": 2,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 44665,
+      "offset": 8,
+      "name": "BRB 101/103",
+      "type": "SW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 2,
+        "column": 2,
+        "beam": 2,
+        "floor_wall": 2,
+        "loc_base": 1,
+        "gard_rail": 2,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 44944,
+      "offset": 14,
+      "name": "BRB 16/32",
+      "type": "SW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 2,
+        "column": 2,
+        "beam": 2,
+        "floor_wall": 2,
+        "loc_base": 1,
+        "gard_rail": 2,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 45647,
+      "offset": 14,
+      "name": "BRB 15/31",
+      "type": "SW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 45845,
+      "offset": 8,
+      "name": "BRB 102/104",
+      "type": "SW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 46812,
+      "offset": 5.5,
+      "name": "BRB 2-4/4-4",
+      "type": "DW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 47820,
+      "offset": 8,
+      "name": "BRB 2-2/4-2",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 2,
+        "column": 2,
+        "beam": 2,
+        "floor_wall": 2,
+        "loc_base": 2,
+        "gard_rail": 2,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 48800,
+      "offset": 8,
+      "name": "BRB 459.86",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 2,
+        "column": 2,
+        "beam": 2,
+        "floor_wall": 2,
+        "loc_base": 2,
+        "gard_rail": 2,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 49800,
+      "offset": 8,
+      "name": "BRB 460.86",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 50800,
+      "offset": 8,
+      "name": "BRB 461.86",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 2,
+        "column": 2,
+        "beam": 2,
+        "floor_wall": 2,
+        "loc_base": 2,
+        "gard_rail": 2,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 51800,
+      "offset": 8,
+      "name": "BRB 462.86",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 2,
+        "column": 2,
+        "beam": 2,
+        "floor_wall": 2,
+        "loc_base": 2,
+        "gard_rail": 2,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 52800,
+      "offset": 8,
+      "name": "BRB 463.86",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 2,
+        "column": 2,
+        "beam": 2,
+        "floor_wall": 1,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 53725,
+      "offset": 8,
+      "name": "MSK 464.80",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 54725,
+      "offset": 8,
+      "name": "MSK 465.80",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 55725,
+      "offset": 8,
+      "name": "MSK 466.80",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 56725,
+      "offset": 8,
+      "name": "MSK 467.80",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 57725,
+      "offset": 8,
+      "name": "MSK 468.80",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 58705,
+      "offset": 8,
+      "name": "MSK 4698-1/4698-3",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 59245,
+      "offset": 8,
+      "name": "MSK 4703-2/4703-4",
+      "type": "DW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 59705,
+      "offset": 8,
+      "name": "MSK 4708-1/4708-3",
+      "type": "DW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 60245,
+      "offset": 8,
+      "name": "MSK 4713-2/4713-4",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 61225,
+      "offset": 8,
+      "name": "MSK 472.30",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 62225,
+      "offset": 8,
+      "name": "MSK 473.30",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 63225,
+      "offset": 8,
+      "name": "MSK 474.30",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 64225,
+      "offset": 8,
+      "name": "MSK 475.30 R-LOC",
+      "type": "SW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 65219,
+      "offset": 5.5,
+      "name": "MSK 476.30 on Viaduct P30",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 65969,
+      "offset": 5.5,
+      "name": "MSK 477.30 on Viaduct P60",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 66714,
+      "offset": 5.5,
+      "name": "MSK 1-1/3-1 on Viaduct P90",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 67699,
+      "offset": 5.5,
+      "name": "MSK 1-3/3-3 on Viaduct P128",
+      "type": "DW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 68629,
+      "offset": 5.5,
+      "name": "MSK 101 on Viaduct P164",
+      "type": "SW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 68867,
+      "offset": 13.25,
+      "name": "MSK 16/32",
+      "type": "DW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 69585,
+      "offset": 12.75,
+      "name": "MSK 15/31",
+      "type": "DW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 69833,
+      "offset": 8,
+      "name": "MSK 102",
+      "type": "SW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 70777,
+      "offset": 8,
+      "name": "MSK 2-4/4-4",
+      "type": "DW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 71791,
+      "offset": 8,
+      "name": "MSK 2-2/4-2",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 72802,
+      "offset": 8,
+      "name": "MSK 483.89",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 73890,
+      "offset": 8,
+      "name": "MSK 484.97",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 74890,
+      "offset": 8,
+      "name": "MSK 485.97 R-LOC",
+      "type": "SW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 75900,
+      "offset": 8,
+      "name": "MSK 486.97",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 76900,
+      "offset": 8,
+      "name": "MSK 487.97",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 77880,
+      "offset": 8,
+      "name": "MSK 4889-1/4889-3",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 78420,
+      "offset": 8,
+      "name": "MSK 4894-2/4894-4",
+      "type": "DW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 78880,
+      "offset": 8,
+      "name": "MSK 4899-1/4899-3",
+      "type": "DW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 79420,
+      "offset": 8,
+      "name": "MSK 4904-2/4904-4",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 80400,
+      "offset": 8,
+      "name": "MSK 491.47 R-LOC",
+      "type": "SW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 81400,
+      "offset": 8,
+      "name": "MSK 492.47",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 82400,
+      "offset": 8,
+      "name": "MSK 493..47",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 83400,
+      "offset": 8,
+      "name": "MSK 494.47",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 84088,
+      "offset": 8,
+      "name": "MSK 495.16",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 84731,
+      "offset": 8,
+      "name": "MSK 4958-1/4958-3 (495+832)",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 85271,
+      "offset": 8,
+      "name": "MSK 4963-2/4963-4 (496+372)",
+      "type": "DW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 85731,
+      "offset": 8,
+      "name": "MSK 4968-1/4968-3 (496+832)",
+      "type": "DW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 86290,
+      "offset": 8,
+      "name": "MSK 4973-2/4973-4 (497+372)",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 87206,
+      "offset": 8,
+      "name": "ROE 498.28",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 88206,
+      "offset": 8,
+      "name": "ROE 499.28",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 89142,
+      "offset": 8,
+      "name": "ROE 500.21",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 90142,
+      "offset": 8,
+      "name": "ROE 501.21",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 91142,
+      "offset": 8,
+      "name": "ROE 502.21",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 92142,
+      "offset": 8,
+      "name": "ROE 503.21",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 93122,
+      "offset": 8,
+      "name": "ROE 5042-1/5042-3",
+      "type": "SW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 93662,
+      "offset": 8,
+      "name": "ROE 5047-2/5047-4",
+      "type": "DW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 94122,
+      "offset": 8,
+      "name": "ROE 5052-1/5052-3",
+      "type": "DW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 94662,
+      "offset": 8,
+      "name": "ROE 5057-2/5057-4",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 95756,
+      "offset": 8,
+      "name": "ROE 506.83",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 96869,
+      "offset": 8,
+      "name": "ROE 507.94",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 97869,
+      "offset": 8,
+      "name": "ROE 508.94",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 98869,
+      "offset": 8,
+      "name": "ROE 509.94",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 99869,
+      "offset": 8,
+      "name": "ROE 510.94 R-LOC",
+      "type": "SW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 100869,
+      "offset": 8,
+      "name": "ROE 511.94",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 101849,
+      "offset": 8,
+      "name": "ROE 1-1/3-1",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 102849,
+      "offset": 8,
+      "name": "ROE 1-3/3-3",
+      "type": "DW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 103769,
+      "offset": 0,
+      "name": "ROE 101",
+      "type": "SW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 103934,
+      "offset": 0,
+      "name": "ROE 103/105",
+      "type": "SW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 104180,
+      "offset": 0,
+      "name": "ROE 313",
+      "type": "SW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 104423,
+      "offset": 0,
+      "name": "ROE 32/40",
+      "type": "SW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 104495,
+      "offset": 0,
+      "name": "ROE 16/20",
+      "type": "SW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 105085,
+      "offset": 0,
+      "name": "ROE 31/39",
+      "type": "SW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 105295,
+      "offset": 0,
+      "name": "ROE 15/19",
+      "type": "SW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 105477,
+      "offset": 0,
+      "name": "ROE 102",
+      "type": "SW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 106397,
+      "offset": 8,
+      "name": "ROE 2-4/4-4",
+      "type": "DW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 107397,
+      "offset": 8,
+      "name": "ROE 2-2/4-2",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 108116,
+      "offset": 8,
+      "name": "ROE 519.19",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 108855,
+      "offset": 8,
+      "name": "ROE 519.93",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 109835,
+      "offset": 8,
+      "name": "ROE 1110-1/1110-3",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 110835,
+      "offset": 8,
+      "name": "ROE 1120-1/1120-3",
+      "type": "DW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 111625,
+      "offset": 8,
+      "name": "ROE 522.43",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 112875,
+      "offset": 8,
+      "name": "CKW 5229-2/5229-4",
+      "type": "DW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 113628,
+      "offset": 8,
+      "name": "CKW 5239-2/5239-4",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 114401,
+      "offset": 8,
+      "name": "CKW 524.70",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 115381,
+      "offset": 8,
+      "name": "CKW 525.70",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 116381,
+      "offset": 8,
+      "name": "CKW 1-3/3-3",
+      "type": "DW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 117253,
+      "offset": 8,
+      "name": "CKW 528.32",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 117473,
+      "offset": 8,
+      "name": "CKW 16/18",
+      "type": "SW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 117933,
+      "offset": 8,
+      "name": "CKW 15/17",
+      "type": "SW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 118153,
+      "offset": 8,
+      "name": "CKW 529.22",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 119015,
+      "offset": 5.5,
+      "name": "CKW 2-4/4-4 on Viaduct P22",
+      "type": "DW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 120035,
+      "offset": 5.5,
+      "name": "CKW 2-2/4-2 on Viaduct P62",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 120910,
+      "offset": 5.5,
+      "name": "CKW 531.99 on Viaduct P95",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 121810,
+      "offset": 5.5,
+      "name": "CKW 5329-1/5329-3 on Viaduct P130",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 122810,
+      "offset": 5.5,
+      "name": "CKW 5339-1/5339-3 on Viaduct P170",
+      "type": "DW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 123335,
+      "offset": 5.5,
+      "name": "CKW 534.40 on Viaduct P190",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 123853,
+      "offset": 8,
+      "name": "PCI 5349-2/5349-4",
+      "type": "DW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 2,
+        "column": 2,
+        "beam": 2,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 124858,
+      "offset": 8,
+      "name": "PCI 5359-2/5359-4",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 125655,
+      "offset": 8,
+      "name": "PCI 536.73",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 2,
+        "column": 2,
+        "beam": 2,
+        "floor_wall": 2,
+        "loc_base": 2,
+        "gard_rail": 2,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 126625,
+      "offset": 8,
+      "name": "PCI 1-1/3-1",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 2,
+        "column": 2,
+        "beam": 2,
+        "floor_wall": 2,
+        "loc_base": 2,
+        "gard_rail": 2,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 127625,
+      "offset": 8,
+      "name": "PCI 1-3/3-3",
+      "type": "DW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 2,
+        "column": 2,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 128557,
+      "offset": 8,
+      "name": "PCI 101",
+      "type": "SW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 2,
+        "column": 2,
+        "beam": 2,
+        "floor_wall": 2,
+        "loc_base": 2,
+        "gard_rail": 2,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 128738,
+      "offset": 14,
+      "name": "PCI 16/20",
+      "type": "SW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 129447,
+      "offset": 15,
+      "name": "PCI 15/19",
+      "type": "SW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 129816,
+      "offset": 8,
+      "name": "PCI 102",
+      "type": "SW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 130745,
+      "offset": 8,
+      "name": "PCI 2-4/4-4",
+      "type": "DW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 131826,
+      "offset": 8,
+      "name": "PCI 2-2/4-2",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 132797,
+      "offset": 8,
+      "name": "PCI 543.87",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 133797,
+      "offset": 8,
+      "name": "PCI 544.87",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 2,
+        "column": 2,
+        "beam": 2,
+        "floor_wall": 2,
+        "loc_base": 2,
+        "gard_rail": 2,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 134797,
+      "offset": 8,
+      "name": "PCI 545.87 R-LOC",
+      "type": "SW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 135797,
+      "offset": 8,
+      "name": "PCI 546.87",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 2,
+        "column": 2,
+        "beam": 2,
+        "floor_wall": 2,
+        "loc_base": 2,
+        "gard_rail": 2,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 136797,
+      "offset": 8,
+      "name": "PCI 547.87",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 137777,
+      "offset": 8,
+      "name": "PCI 5488-1/5488-3",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 138777,
+      "offset": 8,
+      "name": "PCI 5498-1/5498-3",
+      "type": "DW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 139297,
+      "offset": 8,
+      "name": "PCI 550.37",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 2,
+        "column": 2,
+        "beam": 2,
+        "floor_wall": 2,
+        "loc_base": 2,
+        "gard_rail": 2,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 140268,
+      "offset": 8,
+      "name": "APT 551.34",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 140793,
+      "offset": 8,
+      "name": "APT 5518-2/5518-4",
+      "type": "DW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 141793,
+      "offset": 8,
+      "name": "APT 5528-2/5528-4",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 142790,
+      "offset": 8,
+      "name": "APT 553.84",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 2,
+        "column": 2,
+        "beam": 2,
+        "floor_wall": 1,
+        "loc_base": 0,
+        "gard_rail": 2,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 143770,
+      "offset": 8,
+      "name": "APT 554.84",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 2,
+        "column": 2,
+        "beam": 2,
+        "floor_wall": 1,
+        "loc_base": 0,
+        "gard_rail": 2,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 144763,
+      "offset": 8,
+      "name": "APT 555.84 R-LOC",
+      "type": "SW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 2,
+        "column": 2,
+        "beam": 2,
+        "floor_wall": 1,
+        "loc_base": 0,
+        "gard_rail": 2,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 145767,
+      "offset": 8,
+      "name": "APT 556.84",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 146743,
+      "offset": 8,
+      "name": "APT 557.87",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 147790,
+      "offset": 8,
+      "name": "APT 1-1/3-1",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 2,
+        "column": 2,
+        "beam": 2,
+        "floor_wall": 1,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 148790,
+      "offset": 8,
+      "name": "APT 1-3/3-3",
+      "type": "DW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 149767,
+      "offset": 8,
+      "name": "APT 101/111",
+      "type": "SW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 2,
+        "column": 2,
+        "beam": 2,
+        "floor_wall": 1,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 150145,
+      "offset": 17.5,
+      "name": "APT 16/36",
+      "type": "DW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 150853,
+      "offset": 14.3,
+      "name": "APT 15/19",
+      "type": "SW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 150888,
+      "offset": 8,
+      "name": "APT 31/35",
+      "type": "DW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 151182,
+      "offset": 8,
+      "name": "APT 102/104",
+      "type": "SW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 2,
+        "column": 2,
+        "beam": 2,
+        "floor_wall": 1,
+        "loc_base": 0,
+        "gard_rail": 2,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 152168,
+      "offset": 8,
+      "name": "APT 2-4/4-4",
+      "type": "DW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 2,
+        "column": 2,
+        "beam": 2,
+        "floor_wall": 1,
+        "loc_base": 0,
+        "gard_rail": 2,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 153277,
+      "offset": 8,
+      "name": "APT 2-2/4-2",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 154255,
+      "offset": 8,
+      "name": "APT 565.32",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 155319,
+      "offset": 8,
+      "name": "APT 566.37",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 156304,
+      "offset": 8,
+      "name": "APT 567.37 R-LOC",
+      "type": "SW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 1,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 157302,
+      "offset": 8,
+      "name": "APT 568.37",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 158169,
+      "offset": 8,
+      "name": "APT 569.23",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 159003,
+      "offset": 8,
+      "name": "APT 5701-1/5701-3 (Auto) Moei Wadi Train Stop",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 159544,
+      "offset": 8,
+      "name": "APT 5706-2/5706-4 (Auto) Moei Wadi Train Stop",
+      "type": "DW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 160005,
+      "offset": 8,
+      "name": "APT 5711-1/5711-3 (Auto) Moei Wadi Train Stop",
+      "type": "DW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 2,
+        "column": 2,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 160545,
+      "offset": 8,
+      "name": "APT 5716-2/5716-4 (Auto) Moei Wadi Train Stop",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 2,
+        "column": 2,
+        "beam": 2,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 161525,
+      "offset": 8,
+      "name": "APT 572.60",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 162538,
+      "offset": 8,
+      "name": "APT 573.60",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 163531,
+      "offset": 8,
+      "name": "APT 574.60",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 164519,
+      "offset": 8,
+      "name": "APT 575.60",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 165522,
+      "offset": 8,
+      "name": "APT 576.60",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 166508,
+      "offset": 8,
+      "name": "APT 577.60",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 1,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 166993,
+      "offset": 8,
+      "name": "NOP 578.06",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 167992,
+      "offset": 8,
+      "name": "NOP 579.06",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 168990,
+      "offset": 8,
+      "name": "NOP 580.06",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 169978,
+      "offset": 8,
+      "name": "NOP 581.06",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 171011,
+      "offset": 8,
+      "name": "NOP 582.08",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 172011,
+      "offset": 8,
+      "name": "NOP 583.08",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 172986,
+      "offset": 8,
+      "name": "NOP 1-1/3-1",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 173986,
+      "offset": 8,
+      "name": "NOP 1-3/3-3",
+      "type": "DW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 174913,
+      "offset": 8,
+      "name": "NOP 101",
+      "type": "SW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 175170,
+      "offset": 8,
+      "name": "NOP 16/32",
+      "type": "SW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 175888,
+      "offset": 8,
+      "name": "NOP 15/31",
+      "type": "SW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 176208,
+      "offset": 8,
+      "name": "NOP 102/104",
+      "type": "SW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 2,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 177189,
+      "offset": 8,
+      "name": "NOP 2-4/4-4",
+      "type": "DW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    },
+    {
+      "sta": 178189,
+      "offset": 8,
+      "name": "NOP 2-2/4-2",
+      "type": "HW",
+      "structure": 0,
+      "statusDetails": {
+        "survey": 0,
+        "footing": 0,
+        "column": 0,
+        "beam": 0,
+        "floor_wall": 0,
+        "loc_base": 0,
+        "gard_rail": 0,
+        "ins_loc": 0
+      }
+    }
+  ]
+}
