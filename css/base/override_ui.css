@@ -1,0 +1,191 @@
+/* Override-ui.css */
+
+:root {
+  --base-margin: 10px;
+  --map-btn-size: 3.5rem;
+  --map-gap: 8px;
+  --map-icon-size: 2.8rem;
+  --map-font-size: 12px;
+
+  --safe-top: calc(var(--base-margin) + env(safe-area-inset-top, 0px));
+  --safe-left: calc(var(--base-margin) + env(safe-area-inset-left, 0px));
+  --safe-right: calc(var(--base-margin) + env(safe-area-inset-right, 0px));
+  --safe-bottom: calc(var(--base-margin) + env(safe-area-inset-bottom, 0px));
+}
+
+.standard-map-btn {
+  width: var(--map-btn-size) !important;
+  height: var(--map-btn-size) !important;
+  position: absolute !important;
+  background-color: white;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: calc(var(--map-icon-size) - 1px) calc(var(--map-icon-size) - 2px) !important;
+  border: none;
+  border-radius: 8px !important;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  z-index: 900 !important;
+  transition: all 0.2s ease-in-out;
+  margin: 0 !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.standard-map-btn:hover {
+  background-color: #e8f4ff;
+  border: 1px solid #ccc;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
+}
+
+.custom-standalone-scale {
+    position: absolute;
+    bottom: calc(var(--safe-bottom) + 50px);
+    left: calc(var(--safe-left) + 5px); 
+    z-index: 1000;
+    
+    border: 2px solid #3E63DD;
+    border-top: none; 
+    color: #0d2b45;
+    
+    height: 12px;
+    line-height: 8px; 
+    text-align: center;
+    font-size: 11px;
+    font-weight: bold;
+    
+    text-shadow: 
+        1px 1px 2px #fff, 
+       -1px -1px 2px #fff, 
+        1px -1px 2px #fff, 
+       -1px  1px 2px #fff; 
+    box-shadow: 0px 0px 1px 2px rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.5) ; 
+    box-sizing: border-box;
+    pointer-events: none; 
+}
+
+.custom-standalone-attr {
+    position: absolute;
+    bottom: calc(var(--safe-bottom) + 0px);
+    right: calc(var(--safe-left) + 5px);
+    z-index: 1000;
+    
+    background: rgba(255, 255, 255, 0.7);
+    padding: 2px 5px;
+    font-size: 11px;
+    border-radius: 3px;
+    color: #333;
+    pointer-events: auto;
+}
+
+.dev-attribution {
+    position: absolute ;
+    bottom: calc(var(--safe-bottom) + 4px);
+    left: calc(var(--safe-left) + 26px);
+    z-index: 101;
+    background: rgba(255, 255, 255, 0.4);
+    padding: 2px 10px;
+    font-size: 11px;
+    border-radius: 3px;
+    color: #007bffad;
+    pointer-events: auto;
+}
+.custom-attribution {
+    position: absolute ;
+    bottom: calc(var(--safe-bottom) + 0px);
+    left: calc(var(--safe-left) + 5px);
+    z-index: 1001;
+
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.custom-attribution .attr-avatar-wrap {
+    position: relative;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.custom-attribution .attr-avatar-wrap::before {
+    content: '';
+    position: absolute;
+    inset: -2px;             
+    border-radius: 50%;
+    background: conic-gradient(
+        from 0deg,
+        #8c8c8c 0%,      
+        #8c8c8c 80%,     
+        #ffffff 90%,     
+        #8c8c8c 100%     
+    );
+    animation: attr-spin 6s linear infinite;
+    z-index: 0;
+}
+
+.custom-attribution .attr-avatar {
+    position: relative;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    border: 2px solid #e2e8f0;    
+    object-fit: cover;
+    display: block;
+    z-index: 1;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);  
+    transition: box-shadow 0.3s ease;
+}
+
+.custom-attribution .attr-label {
+    position: absolute;
+    left: 25px; 
+    margin-left: -12px; 
+    top: 50%;
+    transform: translateY(-50%);
+    max-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    opacity: 0;
+
+    background: rgba(255, 255, 255, 0.85);
+    color: #333;
+    font-size: 11px;
+    padding: 4px 0px; 
+    border-radius: 3px;
+    
+    z-index: -1; 
+    transition: max-width 0.35s ease 0.5s,
+                opacity 0.25s ease 0.5s,
+                padding 0.3s ease 0.5s;
+}
+
+.custom-attribution:hover .attr-label {
+    max-width: 200px; 
+    opacity: 1;
+    padding: 4px 8px 4px 20px; 
+    transition-delay: 0s; 
+}
+
+.custom-attribution:hover .attr-avatar {
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes attr-spin {
+    0%   { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+#customLocateBtn {
+    border-radius: 50% !important;
+    background-size: 29px 29px !important;
+}

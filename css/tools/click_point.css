@@ -1,0 +1,125 @@
+/* clickpoint.css */
+
+/* ===== Ripple Effects ===== */
+.ripple-effect {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  margin-left: -10px;
+  margin-top: -10px;
+  background-color: rgba(0, 191, 255, 0.4);
+  border-radius: 50%;
+  animation: ripple-animation 1.5s ease-out forwards;
+  pointer-events: none;
+  z-index: 999;
+}
+
+@keyframes ripple-animation {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(10);
+    opacity: 0;
+  }
+}
+
+.ripple-center-dot {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  margin-left: -3px;
+  margin-top: -3px;
+  background-color: #1e90ff;
+  border-radius: 50%;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+/* ===== Point Popup Content ===== */
+.point-popup-content {
+  padding: 14px 10px 1px;
+  font: 13px 'Sarabun', sans-serif;
+  text-align: center;
+}
+
+.point-popup-btn {
+  padding: 6px 10px;
+  margin: 4px;
+  font-family: 'Sarabun', sans-serif;
+}
+
+/* ===== Stop Ripple Button ===== */
+#stopRippleBtn {
+  padding: 6px 12px;
+  font-size: 12px;
+  border: 2px solid #f5c400;
+  background-color: white;
+  color: #333;
+  border-radius: 6px;
+  display: inline-block;
+  opacity: 1;
+  pointer-events: auto;
+  white-space: nowrap;
+
+  /* เพิ่มเงากระพริบ */
+  box-shadow: 0 0 5px #f5c400, 0 0 10px #f5c400;
+  animation: glow 1.5s infinite ease-in-out;
+}
+
+/* แอนิเมชันเงากระพริบ */
+@keyframes glow {
+  0% {
+    box-shadow: 0 0 5px #696969, 0 0 10px #696969;
+  }
+  50% {
+    box-shadow: 0 0 10px #696969, 0 0 20px #696969;
+  }
+  100% {
+    box-shadow: 0 0 5px #696969, 0 0 10px #696969;
+  }
+}
+
+/* เอฟเฟกต์ตอน fade out (ยุบ+จาง+ขอบเข้ม) */
+#stopRippleBtn.fade-out {
+  opacity: 0;
+  transform: scale(0.85); /* ยุบลงเล็กน้อย */
+  box-shadow: 0 0 0 3px #333; /* ขอบเข้มคล้าย border highlight */
+  pointer-events: none;
+}
+
+/* สำหรับ fade in กลับมา */
+#stopRippleBtn.fade-in {
+  opacity: 1;
+  transform: scale(1);
+  box-shadow: none;
+  pointer-events: auto;
+}
+
+/* ===== Custom Button Base ===== */
+.custom-button {
+  position: absolute;
+  bottom: 35px;
+  left: 10px;
+  z-index: 1001;
+  background-color: #fff9c4;
+  border: 1px solid #888;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: 'Sarabun', sans-serif;
+  font-size: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  transition: opacity 0.6s ease-in-out, transform 1.5s ease;
+  pointer-events: auto;
+}
+
+.custom-button.hidden {
+  opacity: 0;
+  transform: translateY(10px) scale(0.95);
+  pointer-events: none;
+  transition: opacity 0.6s ease-in-out, transform 1.5s ease;
+}

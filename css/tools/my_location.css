@@ -1,0 +1,164 @@
+/* MyLocation.css  */
+
+#customLocateBtn {
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    outline: none;
+}
+
+#customLocateBtn:focus,
+#customLocateBtn:active {
+    outline: none;
+}
+
+#customLocateBtn.locate-active {
+    background-image: url("../../assets/ui/locate-2.png") !important;
+    background-size: var(--map-icon-size) var(--map-icon-size) !important;
+    animation: pulseShadowBlue 1.5s infinite;
+}
+
+#customLocateBtn.lock-active {
+    background-image: url("../../assets/ui/lock-locate.png") !important;
+    background-size: var(--map-icon-size) var(--map-icon-size) !important;
+    animation: pulseShadowGreen 1.5s infinite;
+}
+
+#customLocateBtn.error-state {
+    background-image: url("../../assets/ui/loss-locate.png") !important;
+    background-size: var(--map-icon-size) var(--map-icon-size) !important;
+    animation: pulseShadowRed 1.5s infinite;
+}
+
+@keyframes pulseShadowBlue {
+    0% {
+        box-shadow: 0 4px 10px rgba(14, 165, 233, 0.35), 0 0 0 0 rgba(14, 165, 233, 0.6);
+    }
+    70% {
+        box-shadow: 0 4px 10px rgba(14, 165, 233, 0.35), 0 0 0 5px rgba(14, 165, 233, 0);
+    }
+    100% {
+        box-shadow: 0 4px 10px rgba(14, 165, 233, 0.35), 0 0 0 0 rgba(14, 165, 233, 0);
+    }
+}
+
+@keyframes pulseShadowGreen {
+    0% {
+        box-shadow: 0 4px 10px rgba(34, 197, 94, 0.35), 0 0 0 0 rgba(34, 197, 94, 0.6);
+    }
+    70% {
+        box-shadow: 0 4px 10px rgba(34, 197, 94, 0.35), 0 0 0 7px rgba(34, 197, 94, 0);
+    }
+    100% {
+        box-shadow: 0 4px 10px rgba(34, 197, 94, 0.35), 0 0 0 0 rgba(34, 197, 94, 0);
+    }
+}
+
+@keyframes pulseShadowRed {
+    0% {
+        box-shadow: 0 4px 10px rgba(239, 68, 68, 0.35), 0 0 0 0 rgba(239, 68, 68, 0.6);
+    }
+    70% {
+        box-shadow: 0 4px 10px rgba(239, 68, 68, 0.35), 0 0 0 7px rgba(239, 68, 68, 0);
+    }
+    100% {
+        box-shadow: 0 4px 10px rgba(239, 68, 68, 0.35), 0 0 0 0 rgba(239, 68, 68, 0);
+    }
+}
+
+.user-marker {
+    background: transparent !important;
+    border: none !important;
+}
+
+.user-marker-container {
+    position: relative;
+    width: 20px;
+    height: 20px;
+}
+
+.user-marker-dot {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 15px;
+    height: 15px;
+    background: #3b82f6;
+    border: 2px solid white;
+    border-radius: 50%;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+    transform: translate(-50%, -50%);
+    opacity: 0; 
+    transition: opacity 0.4s ease;
+}
+
+.user-marker-pulse {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 15px;
+    height: 15px;
+    background: rgba(59, 130, 246, 0.3);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    animation: pulseMarker 1.5s ease-out infinite;
+}
+
+@keyframes pulseMarker {
+    0% { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
+    70% { transform: translate(-50%, -50%) scale(5.5); opacity: 0; }
+    100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
+}
+
+.user-marker-active .user-marker-dot,
+.user-marker-active .user-marker-pulse {
+    opacity: 1;
+}
+
+.location-error-message {
+    position: fixed; 
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10000;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+    width: auto;
+    display: flex;
+    justify-content: center;
+}
+
+.location-error-message.show {
+    opacity: 1;
+}
+
+.error-content {
+    background: rgba(239, 68, 68, 0.95);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 25px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.error-icon {
+    font-style: normal;
+    font-size: 16px;
+    animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-2px); }
+    75% { transform: translateX(2px); }
+}

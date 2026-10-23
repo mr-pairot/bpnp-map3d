@@ -1,0 +1,223 @@
+/* css/base/splash.css — หน้าโหลดแอป (โหลดตรงจาก index.html) */
+/* css/Splash.css */
+
+/* Splash Screen Container */
+#splash-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
+    background: radial-gradient(circle at center, #001a88 0%, #000046 100%);
+    z-index: 10001;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-family: 'Sarabun', sans-serif; 
+    transition: opacity 0.7s ease, visibility 0.7s ease;
+}
+
+.splash-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+/* --- Wrapper หลัก --- */
+.splash-icon-wrapper {
+    position: relative;
+    width: 160px;   
+    height: 160px;
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* วงแหวนหมุนรอบไอคอน */
+.loader-ring {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    animation: animateLoading 1.6s linear infinite;
+}
+
+.loader-ring:nth-child(2) {
+    animation-delay: -0.8s;
+    filter: hue-rotate(20deg); 
+    opacity: 0.8;
+}
+
+/* หางของวงแหวน (Gradient Tail) */
+.loader-ring::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(to top, transparent, rgba(0, 210, 255, 0.6));
+    background-size: 80px 160px; 
+    background-repeat: no-repeat;
+    border-top-left-radius: 160px; 
+    border-bottom-left-radius: 160px;
+}
+
+/* หัวของวงแหวน (Glowing Head) */
+.loader-ring::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 12px; 
+    height: 12px;
+    background: #00d2ff; 
+    border-radius: 50%;
+    z-index: 10;
+    box-shadow: 0 0 10px #00d2ff, 0 0 20px #00d2ff, 0 0 40px #00d2ff;
+}
+
+/* --- ไอคอนรถไฟตรงกลาง --- */
+.svg-train-icon {
+    width: 70px;  
+    height: 70px;
+    fill: #ffffff; 
+    filter: drop-shadow(0 0 12px rgba(0, 210, 255, 0.8)); 
+    z-index: 21;
+}
+
+.icon-circle {
+    position: absolute;
+    width: 140px; 
+    height: 140px; 
+    background: radial-gradient(circle, #0026c4 0%, #001a88 100%);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 20;
+    border: 2px solid rgba(0, 210, 255, 0.3);
+    box-shadow: inset 0 0 25px rgba(0,0,0,0.6);
+}
+
+/* Text Styles */
+.splash-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+
+.splash-subtitle {
+    font-size: 1.5rem;
+    font-weight: 300;
+    opacity: 0.9;
+    margin-top: 8px;
+    margin-bottom: 40px;
+    color: #aaddff; 
+}
+
+.loading-text { 
+    font-size: 1.3rem; 
+    font-weight: 300; 
+    letter-spacing: 1px; 
+    opacity: 0.8;
+    white-space: pre-line; /* ทำให้ \n แสดงผลเป็นการขึ้นบรรทัดใหม่ */
+    text-align: center;    /* จัดตัวอักษรให้อยู่กึ่งกลาง */
+    line-height: 1.5;      /* เพิ่มระยะห่างระหว่างบรรทัดเพื่อให้ดูง่ายขึ้น */
+    min-height: 80px;      /* จองความสูงไว้ 80px ตั้งแต่แรก */
+    display: flex;         /* ใช้ flexbox ช่วยจัดระเบียบข้อความ */
+    flex-direction: column; /* ให้ข้อความเรียงจากบนลงล่าง */
+    justify-content: flex-start; /* บังคับให้ข้อความเริ่มชิดขอบบนของกล่องเสมอ */
+    align-items: center;   /* จัดข้อความให้อยู่กึ่งกลางแนวนอน */
+}
+
+.version-tag { 
+    position: absolute; 
+    bottom: 30px; 
+    width: 100%; 
+    text-align: center;
+    font-size: 0.7rem; 
+    opacity: 0.4; 
+    font-family: monospace;
+}
+
+.hide-splash { opacity: 0; visibility: hidden; pointer-events: none; }
+
+/* --- Animation Keyframes --- */
+@keyframes animateLoading {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* =========================================================================
+   พื้นหลังออโรร่าเคลื่อนไหว (splash / หน้าล็อกอิน / หน้าออก / หน้าข้อผิดพลาด)
+   - ใส่ class "bg-aurora" ให้กล่องที่มี position อยู่แล้ว (ทั้ง 4 หน้าเป็น position: fixed)
+     จึงไม่กำหนด position ใน class นี้ เพื่อไม่ทับค่า fixed เดิม
+   - class นี้เพิ่มแสงอย่างเดียว พื้นหลังหลักยังเป็นของแต่ละหน้า
+   - สีกำหนดผ่านตัวแปร --aurora-a / --aurora-b (ค่าเริ่มต้น = ธีมหน้าล็อกอิน)
+   - แสงวิ่งเลียบขอบบน (แสงที่ 1) และขอบล่าง (แสงที่ 2) ไม่ผ่านกลางจอที่มีตัวหมุน
+   - ไม่ใช้ filter: blur() เพราะกินแรงเครื่องมากช่วงเปิดแอป (radial-gradient ให้ขอบนุ่มอยู่แล้ว)
+   ========================================================================= */
+.bg-aurora {
+    --aurora-a: rgba(20, 143, 119, 0.55);   /* เขียวอมฟ้า #148f77 */
+    --aurora-b: rgba(46, 134, 193, 0.50);   /* ฟ้า #2e86c1 */
+    overflow: hidden;
+    isolation: isolate;
+}
+
+/* Splash: โทนม่วงคราม แยกจากวงแหวนโหลดสีฟ้า #00d2ff ไม่ให้สีกลืนกัน */
+#splash-screen.bg-aurora {
+    --aurora-a: rgba(110, 90, 255, 0.38);   /* ม่วงคราม #6e5aff */
+    --aurora-b: rgba(80, 40, 200, 0.45);    /* ครามเข้ม #5028c8 */
+}
+
+.bg-aurora::before,
+.bg-aurora::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    width: 80vmax;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    pointer-events: none;
+    will-change: transform;
+}
+
+.bg-aurora::before {
+    left: -25vmax;
+    top: -25vmax;
+    background: radial-gradient(circle, var(--aurora-a) 0%, transparent 65%);
+    animation: aurora-a 7s ease-in-out -3s infinite alternate;   /* -3s = เริ่มกลางรอบ ขยับทันที */
+}
+
+.bg-aurora::after {
+    right: -25vmax;
+    bottom: -30vmax;
+    background: radial-gradient(circle, var(--aurora-b) 0%, transparent 65%);
+    animation: aurora-b 9s ease-in-out -4s infinite alternate;
+}
+
+/* translate: ตัวแรก = ระยะซ้าย-ขวา, ตัวที่สอง = ความสูง (ขยับน้อย เพื่อไม่ให้แสงลงมากลางจอ) */
+@keyframes aurora-a {                       /* วิ่งตามขอบบน */
+    0%   { transform: translate(-15%, -12%) scale(1); }
+    100% { transform: translate(45%, -4%) scale(1.1); }
+}
+@keyframes aurora-b {                       /* วิ่งตามขอบล่าง */
+    0%   { transform: translate(15%, 8%) scale(1.05); }
+    100% { transform: translate(-45%, 0%) scale(0.95); }
+}
+
+/* ผู้ใช้ที่ตั้งค่า "ลดการเคลื่อนไหว" → แสงนิ่ง */
+@media (prefers-reduced-motion: reduce) {
+    .bg-aurora::before,
+    .bg-aurora::after { animation: none; }
+}

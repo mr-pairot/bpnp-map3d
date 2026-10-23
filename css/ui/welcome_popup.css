@@ -1,0 +1,206 @@
+/* css/welcome_popup.css */
+
+/* 1. พื้นหลัง Overlay: ธีมเดียวกับ Splash Screen (น้ำเงินเข้มไล่เฉด) โปร่งแสง 60% */
+.welcome-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(
+        circle at center, 
+        rgba(0, 26, 136, 0.6) 0%,   /* ตรงกลาง: น้ำเงินสว่าง (#001a88 ที่ 60%) */
+        rgba(0, 0, 70, 0.6) 100%    /* ขอบๆ: น้ำเงินมืด (#000046 ที่ 60%) */
+    );
+    z-index: 10000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    animation: popupFadeIn 0.5s forwards;
+    
+    backdrop-filter: blur(4px); 
+}
+
+/* 2. กล่องข้อความ: สีขาว ตัดกับพื้นหลัง */
+.welcome-content {
+    background: #ffffff; 
+    width: 90%;
+    max-width: 450px;
+    padding: 30px 20px;
+    border-radius: 15px;
+    box-shadow: 
+        0 20px 50px rgba(0, 0, 0, 0.5),      
+        0 0 0 1px rgba(255, 255, 255, 0.1);
+
+    text-align: center;
+    position: relative;
+    font-family: 'Sarabun', sans-serif;
+    overflow: hidden; 
+    transform: scale(0.8);
+    animation: popupPopUp 0.4s 0.2s forwards cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* 3. Progress Bar ด้านบน: สี Cyan (#00d2ff) */
+.welcome-content::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 6px; 
+    width: 0%;
+    
+    background: #00d2ff; 
+    box-shadow: 0 0 10px rgba(0, 210, 255, 0.6); /* เรืองแสง */
+
+    animation: countdownBar 3.5s linear forwards; 
+}
+
+/* ปุ่มปิด (กากบาท) */
+.welcome-close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 28px;
+    color: #999; 
+    cursor: pointer;
+    font-weight: bold;
+    line-height: 1;
+    transition: color 0.2s;
+    background: transparent;      
+    border: none;                 
+    outline: none;                
+    -webkit-tap-highlight-color: transparent; 
+    padding: 0;
+    z-index: 2; 
+}
+
+.welcome-close-btn:active,
+.welcome-close-btn:focus {
+    background: transparent;
+    outline: none;
+}
+
+.welcome-close-btn:hover {
+    color: #00d2ff; /* เปลี่ยนเป็นสี Cyan เมื่อชี้ */
+}
+.welcome-close-btn:after {
+    font-size: 29px;
+    color: #A30031; 
+}
+
+/* --- Typography --- */
+.welcome-title {
+    font-size: 20px;
+    font-weight: bold;
+    color: #001a88; /* น้ำเงินเข้ม */
+    margin-bottom: 5px;
+}
+
+.welcome-subtitle {
+    font-size: 16px;
+    color: #0056b3; /* ฟ้าเข้ม */
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.welcome-dev-label {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.welcome-dev-name {
+    font-size: 16px;
+    font-weight: 500;
+    color: #333;
+    margin: 2px 0;
+}
+
+.welcome-footer {
+    margin-top: 25px;
+    font-size: 13px;
+    color: #999;
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+    font-style: italic;
+    padding-bottom: 10px; 
+}
+
+.welcome-version {
+    position: absolute; 
+    bottom: 5px;       
+    right: 10px;        
+    font-size: 10px;   
+    color: #ccc;        
+    font-family: monospace; 
+    pointer-events: none;
+}
+
+/* --- Animations --- */
+@keyframes popupFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+@keyframes popupPopUp {
+    to { transform: scale(1); }
+}
+@keyframes countdownBar {
+    from { width: 0%; }
+    to { width: 100%; }
+}
+
+/* --- ปิด Popup --- */
+/* Class นี้จะถูกใส่โดย JS เมื่อกดปิดหรือหมดเวลา */
+.welcome-overlay.fade-out {
+    animation: popupFadeOut 0.5s forwards; 
+    pointer-events: none; /* ป้องกันการกดซ้ำระหว่างจางหาย */
+}
+
+@keyframes popupFadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+/* --- เพิ่มเติม: คลาสสำหรับสถานะกำลังอัปเดต --- */
+.welcome-content.is-updating .welcome-close-btn {
+    display: none; /* ซ่อนปุ่มปิด */
+}
+
+/* ซ่อน Subtitle ปกติ */
+.welcome-content.is-updating .welcome-subtitle {
+    display: none; 
+}
+
+/* ข้อความแจ้งเตือนสถานะอัปเดต */
+.welcome-update-msg {
+    display: none;
+    font-size: 16px;
+    color: #e67e22; /* สีส้มแจ้งเตือน */
+    font-weight: bold;
+    margin-bottom: 20px;
+    animation: pulseText 1.5s infinite;
+}
+
+.welcome-content.is-updating .welcome-update-msg {
+    display: block; /* แสดงเมื่ออยู่ในสถานะอัปเดต */
+}
+
+/* เปลี่ยน Progress Bar ให้วิ่งไปมาไม่สิ้นสุด */
+.welcome-content.is-updating::before {
+    background: #e67e22; /* เปลี่ยนเป็นสีส้ม */
+    box-shadow: 0 0 10px rgba(230, 126, 34, 0.6);
+    animation: loadingBarIndeterminate 1.5s infinite ease-in-out;
+}
+
+/* --- Animations เพิ่มเติม --- */
+@keyframes loadingBarIndeterminate {
+    0% { left: -50%; width: 50%; }
+    100% { left: 100%; width: 50%; }
+}
+
+@keyframes pulseText {
+    0% { opacity: 0.6; }
+    50% { opacity: 1; }
+    100% { opacity: 0.6; }
+}
