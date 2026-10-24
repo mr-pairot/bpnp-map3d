@@ -628,13 +628,27 @@ input[type="range"].opacity-slider::-moz-range-progress {
     vertical-align: middle;
 }
 
-/* ── ลากเรียงบนจอสัมผัส (กดค้าง) ── */
-.layer-item[draggable="true"] {
+/* ── ลากเรียงลำดับ (เมาส์ / นิ้ว / ปากกา) ── */
+.layer-item.reorderable {
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   user-select: none;
   touch-action: pan-y;
 }
+.layer-grip {
+  flex: 0 0 auto;
+  width: 16px;
+  margin-right: 2px;
+  color: #9ca3af;
+  font-size: 13px;
+  line-height: 1;
+  letter-spacing: -3px;
+  text-align: center;
+  cursor: grab;
+  touch-action: none;          /* แตะที่จับ = ลากทันที ไม่เลื่อนหน้า */
+}
+.layer-grip:hover { color: #4b5563; }
+.layer-item.touch-dragging .layer-grip { cursor: grabbing; color: #1E90FF; }
 .layer-item.touch-dragging {
   background: #e8f2ff;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);

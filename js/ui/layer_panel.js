@@ -153,7 +153,7 @@
         slider.addEventListener('change', saveSettings);
         syncSliderTrack(slider);
       }
-      if (c.category === 'general') enableDrag(item, box);
+      if (c.category === 'general') enableReorder(item, box);
     });
   }
 
@@ -201,51 +201,17 @@
     });
   }
 
-  // ── ลากเรียงลำดับ (ชั้นข้อมูลทั่วไป) ──
-  function enableDrag(item, box) {
-    item.draggable = true;
-    item.style.cursor = 'grab';
-    item.addEventListener('dragstart', e => {
-      item.classList.add('dragging');
-      e.dataTransfer.effectAllowed = 'move';
-      e.dataTransfer.setData('text/plain', item.dataset.layerId);
-    });
-    item.addEventListener('dragend', () => {
-      item.classList.remove('dragging');
-      applyGeneralOrder();
-      saveSettings();
-    });
-    item.querySelectorAll('input').forEach(input => {
-      input.addEventListener('mousedown', () => { item.draggable = false; });
-      input.addEventListener('mouseup', () => { item.draggable = true; });
-      input.addEventListener('mouseleave', () => { item.draggable = true; });
-    });
-    enableTouchDrag(item, box);
-    if (box.dataset.dragBound) return;
-    box.dataset.dragBound = '1';
-    box.addEventListener('dragover', e => {
-      e.preventDefault();
-      const dragging = box.querySelector('.dragging');
-      if (!dragging) return;
-      const after = Array.from(box.querySelectorAll('.layer-item[draggable="true"]:not(.dragging)')).reduce((closest, child) => {
-        const r = child.getBoundingClientRect();
-        const offset = e.clientY - r.top - r.height / 2;
-        return (offset < 0 && offset > closest.offset) ? { offset, el: child } : closest;
-      }, { offset: Number.NEGATIVE_INFINITY }).el;
-      if (after) box.insertBefore(dragging, after); else box.appendChild(dragging);
-    });
-    box.addEventListener('drop', e => e.preventDefault());
-  }
-
-  // ── ลากเรียงบนจอสัมผัส: กดค้าง 0.45 วินาที แล้วลาก ──
-  //   - การกดค้างเพื่อลากจะไม่เปิด/ปิดชั้นนั้น (ไม่ติ๊กเช็กบ็อกซ์)
-  //   - ไม่มีเมนู/การเลือกข้อความของระบบเด้งขึ้น (CSS + กัน contextmenu)
-  //   - ขยับนิ้วก่อนครบเวลา = เลื่อนรายการตามปกติ / กดที่แถบความทึบหรือปุ่มป้าย/Pier = ไม่เริ่มลาก
-  const HOLD_MS = 450, MOVE_CANCEL_PX = 8;
+  // ── ลากเรียงลำดับชั้นข้อมูลทั่วไป (Pointer Events: เมาส์ / นิ้ว / ปากกา) ──
+  //   - ที่จับ ⋮⋮ หน้าแต่ละแถว: ลากได้ทันทีทุกอุปกรณ์ (touch-action: none → เบราว์เซอร์ไม่แย่งไปเลื่อนหน้า)
+  //   - เมาส์: กดที่แถวแล้วลากเกิน 5 px
+  //   - นิ้ว/ปากกา: กดค้างที่แถว 0.45 วินาทีแล้วลาก (ขยับก่อนครบเวลา = เลื่อนรายการตามปกติ)
+  //   - ไม่ใช้ HTML5 drag-and-drop (draggable) เพราะบน Android การกดค้างจะเริ่ม drag ของระบบแทนและยกเลิกการลากของเรา
+  //   - ลากเสร็จ: ไม่เปิด/ปิดชั้นนั้น (กัน click ที่ตามมา) · กดที่แถบความทึบ/ปุ่มป้าย/Pier ไม่เริ่มลาก
+  const HOLD_MS = 450, MOVE_CANCEL_PX = 8, MOUSE_START_PX = 5;
   let suppressClickUntil = 0;
 
   function placeAt(box, dragging, clientY) {
-    const after = Array.from(box.querySelectorAll('.layer-item[draggable="true"]:not(.dragging)')).reduce((closest, child) => {
+    const after = Array.from(box.querySelectorAll('.layer-item.reorderable:not(.dragging)')).reduce((closest, child) => {
       const r = child.getBoundingClientRect();
       const offset = clientY - r.top - r.height / 2;
       return (offset < 0 && offset > closest.offset) ? { offset, el: child } : closest;
@@ -254,52 +220,84 @@
     else if (box.lastElementChild !== dragging) box.appendChild(dragging);
   }
 
-  function enableTouchDrag(item, box) {
-    let timer = null, startX = 0, startY = 0, dragging = false;
+  function enableReorder(item, box) {
+    item.classList.add('reorderable');
+    const grip = document.createElement('span');
+    grip.className = 'layer-grip';
+    grip.title = 'ลากเพื่อเรียงลำดับการทับซ้อน';
+    grip.setAttribute('aria-hidden', 'true');
+    grip.textContent = '⋮⋮';
+    item.prepend(grip);
+
+    let st = null;   // { id, type, x, y, timer, dragging }
     const scroller = () => item.closest('.layer-content') || box;
 
-    const cancel = () => { clearTimeout(timer); timer = null; };
+    function start() {
+      if (!st || st.dragging) return;
+      clearTimeout(st.timer);
+      st.dragging = true;
+      suppressClickUntil = Date.now() + 100000;          // กันการติ๊กจนกว่าจะปล่อย
+      item.classList.add('dragging', 'touch-dragging');
+      try { item.setPointerCapture(st.id); } catch (e) { /* บางเบราว์เซอร์ไม่รองรับ */ }
+      if (st.type !== 'mouse' && navigator.vibrate) { try { navigator.vibrate(25); } catch (e) {} }
+    }
 
-    item.addEventListener('touchstart', e => {
-      if (e.touches.length !== 1 || e.target.closest('.opacity-slider-container, .hs-toggle-label')) return;
-      startX = e.touches[0].clientX; startY = e.touches[0].clientY;
-      cancel();
-      timer = setTimeout(() => {
-        timer = null;
-        dragging = true;
-        suppressClickUntil = Date.now() + 100000;      // กันการติ๊กจนกว่าจะปล่อยนิ้ว
-        item.classList.add('dragging', 'touch-dragging');
-        if (navigator.vibrate) { try { navigator.vibrate(25); } catch (err) {} }
-      }, HOLD_MS);
-    }, { passive: true });
-
-    item.addEventListener('touchmove', e => {
-      const t = e.touches[0];
-      if (!dragging) {
-        if (timer && (Math.abs(t.clientX - startX) > MOVE_CANCEL_PX || Math.abs(t.clientY - startY) > MOVE_CANCEL_PX)) cancel();
-        return;
-      }
-      e.preventDefault();                               // ไม่ให้รายการเลื่อนระหว่างลาก
-      placeAt(box, item, t.clientY);
-      // ลากใกล้ขอบบน/ล่างของแผง → เลื่อนรายการตาม
-      const sc = scroller(), r = sc.getBoundingClientRect();
-      if (t.clientY < r.top + 30) sc.scrollTop -= 12;
-      else if (t.clientY > r.bottom - 30) sc.scrollTop += 12;
-    }, { passive: false });
-
-    const finish = () => {
-      cancel();
-      if (!dragging) return;
-      dragging = false;
+    function end(commit) {
+      if (!st) return;
+      clearTimeout(st.timer);
+      const was = st.dragging, id = st.id;
+      st = null;
+      unlisten();
+      if (!was) return;
+      try { item.releasePointerCapture(id); } catch (e) {}
       item.classList.remove('dragging', 'touch-dragging');
-      suppressClickUntil = Date.now() + 500;            // click ที่ตามมาหลังยกนิ้วไม่นับ
-      applyGeneralOrder();
-      saveSettings();
-    };
-    item.addEventListener('touchend', finish);
-    item.addEventListener('touchcancel', finish);
+      suppressClickUntil = Date.now() + 500;             // click ที่ตามมาหลังปล่อยไม่นับ
+      if (commit) { applyGeneralOrder(); saveSettings(); }
+    }
 
-    // กันการติ๊ก/ยกเลิกชั้นจากการกดค้างเพื่อลาก
+    // ติดตาม pointer ทั้งหน้า ตั้งแต่กดจนปล่อย (แถวสูงไม่กี่ px — เมาส์/นิ้วหลุดออกจากแถวเร็วมาก)
+    function onMove(e) {
+      if (!st || e.pointerId !== st.id) return;
+      if (!st.dragging) {
+        const d = Math.hypot(e.clientX - st.x, e.clientY - st.y);
+        if (st.type === 'mouse') { if (d > MOUSE_START_PX) start(); else return; }
+        else { if (d > MOVE_CANCEL_PX) { clearTimeout(st.timer); st = null; unlisten(); } return; }
+      }
+      e.preventDefault();
+      placeAt(box, item, e.clientY);
+      const sc = scroller(), r = sc.getBoundingClientRect();
+      if (e.clientY < r.top + 30) sc.scrollTop -= 12;
+      else if (e.clientY > r.bottom - 30) sc.scrollTop += 12;
+    }
+    function onUp(e) { if (st && e.pointerId === st.id) end(true); }
+    function listen() {
+      document.addEventListener('pointermove', onMove, { passive: false });
+      document.addEventListener('pointerup', onUp);
+      document.addEventListener('pointercancel', onUp);
+    }
+    function unlisten() {
+      document.removeEventListener('pointermove', onMove);
+      document.removeEventListener('pointerup', onUp);
+      document.removeEventListener('pointercancel', onUp);
+    }
+
+    item.addEventListener('pointerdown', e => {
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      if (e.target.closest('.opacity-slider-container, .hs-toggle-label')) return;
+      const viaGrip = !!e.target.closest('.layer-grip');
+      if (!viaGrip && e.pointerType === 'mouse' && e.target.closest('input')) return;   // คลิกเช็กบ็อกซ์ด้วยเมาส์ = ติ๊กตามปกติ
+      if (st) end(false);
+      st = { id: e.pointerId, type: e.pointerType, x: e.clientX, y: e.clientY, timer: null, dragging: false };
+      listen();
+      if (viaGrip) { e.preventDefault(); start(); }
+      else if (e.pointerType !== 'mouse') st.timer = setTimeout(start, HOLD_MS);
+    });
+
+    // นิ้ว: กันหน้าเลื่อนระหว่างลาก (Pointer Events ยกเลิกการเลื่อนเองไม่ได้)
+    item.addEventListener('touchmove', e => { if (st && st.dragging) e.preventDefault(); }, { passive: false });
+    // ไม่ให้เบราว์เซอร์เริ่ม drag-and-drop ของระบบ (เช่น ลากข้อความ/รูป)
+    item.addEventListener('dragstart', e => e.preventDefault());
+    // กันการติ๊ก/ยกเลิกชั้นจากการลาก
     item.addEventListener('click', e => {
       if (Date.now() < suppressClickUntil) { e.preventDefault(); e.stopPropagation(); }
     }, true);
