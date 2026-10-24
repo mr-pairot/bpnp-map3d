@@ -152,8 +152,10 @@
     });
 
     if (vectorAvailable) {
-      const sample = vec.layers.find(l => l.type === 'symbol' && l.layout && Array.isArray(l.layout['text-font']));
-      if (sample) labelFont = sample.layout['text-font'].slice(0, 1);
+      const fonts = vec.layers.filter(l => l.type === 'symbol' && l.layout && Array.isArray(l.layout['text-font']))
+                               .map(l => l.layout['text-font'][0]);
+      const regular = fonts.find(f => /Regular/i.test(f)) || fonts[0];
+      if (regular) labelFont = [regular];
       Object.assign(style.sources, vec.sources);
       const vLayers = applyThaiLabels(JSON.parse(JSON.stringify(vec.layers)));
       vectorLayerIds = vLayers.map(l => l.id);
