@@ -74,5 +74,7 @@
   }
 
   BPNP.loader = { script, css, preload, withVersion, waitForGlobal };
+  // ต้องตรงกับแท็ก maplibre-gl ใน index.html (ใช้โหลดจาก CDN สำรองเมื่อ CDN หลักช้า/ถูกบล็อก)
+  BPNP.boot.MAPLIBRE_VERSION = '5.24.0';
   window.loadScript = script;
 })();

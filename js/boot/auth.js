@@ -341,20 +341,62 @@
     }, 300);
   }
 
+  // MapLibre v5 ต้องใช้ WebGL 2 (Leaflet เดิมไม่ต้องใช้) — ตรวจก่อนเพื่อแจ้งสาเหตุให้ชัด
+  function checkWebGL2() {
+    try {
+      const c = document.createElement('canvas');
+      const gl = c.getContext('webgl2');
+      if (gl) { const ext = gl.getExtension('WEBGL_lose_context'); if (ext) ext.loseContext(); return true; }
+    } catch (e) { /* ไม่รองรับ */ }
+    return false;
+  }
+
+  // โหลดไลบรารี MapLibre: รอจาก index.html ก่อน ถ้าไม่มาให้โหลดจาก CDN สำรอง
+  async function ensureMapLibre() {
+    try {
+      await BPNP.loader.waitForGlobal('maplibregl', 20000);
+    } catch (e) {
+      console.warn('[Auth] MapLibre จาก CDN หลักโหลดไม่ทัน → ใช้ CDN สำรอง');
+      const v = BPNP.boot.MAPLIBRE_VERSION;
+      await new Promise((resolve, reject) => {
+        const el = document.createElement('script');
+        el.src = `https://unpkg.com/maplibre-gl@${v}/dist/maplibre-gl.js`;
+        el.onload = resolve;
+        el.onerror = () => reject(new Error('โหลดไลบรารีแผนที่ไม่สำเร็จทั้ง CDN หลักและสำรอง'));
+        document.head.appendChild(el);
+      });
+      await BPNP.loader.waitForGlobal('maplibregl', 5000);
+    }
+  }
+
   async function loadMainScripts(name) {
     const status = t => `<b>ยินดีต้อนรับคุณ ${esc(name)}</b><br><span style="font-size:0.8em;color:#A0AEC0;line-height:1.4;display:inline-block;">${t}</span>`;
     updateLoadingText(status('ขณะนี้กำลังเตรียมส่วนแสดงผล...'));
 
+    // บอกได้ว่าล้มเหลวที่ขั้นไหน (แสดงบนหน้าจอ + บันทึกลง EventLog)
+    let stage = 'ตรวจ WebGL';
     try {
+      if (!checkWebGL2()) {
+        const e = new Error('อุปกรณ์หรือเบราว์เซอร์นี้ไม่รองรับ WebGL 2 ซึ่งจำเป็นสำหรับแผนที่ 3D');
+        e.userMessage = 'อุปกรณ์หรือเบราว์เซอร์นี้ไม่รองรับการแสดงแผนที่แบบใหม่ (WebGL 2)\nลองเปิดด้วย Chrome หรือ Safari เวอร์ชันล่าสุด';
+        throw e;
+      }
+      stage = 'โหลดรายการสคริปต์';
       await BPNP.loader.script('js/boot/app_manifest.js');
       BPNP.boot.APP_SCRIPTS.forEach(BPNP.loader.preload);
+      stage = 'โหลด CSS';
       await Promise.all(BPNP.boot.APP_CSS.map(h => BPNP.loader.css(h).catch(err => console.warn(err.message))));
-      await BPNP.loader.waitForGlobal('maplibregl');
+      stage = 'โหลดไลบรารีแผนที่';
+      await ensureMapLibre();
+      if (typeof turf === 'undefined') await BPNP.loader.waitForGlobal('turf', 10000).catch(() => console.warn('[Auth] turf ยังไม่พร้อม'));
+      stage = 'โหลดสคริปต์แอป';
       await Promise.all(BPNP.boot.APP_SCRIPTS.map(src => BPNP.loader.script(src)));
 
+      stage = 'สร้างแผนที่';
       updateLoadingText(status('กำลังเปิดแผนที่...'));
       await BPNP.app.start();
       hideSplash();
+      stage = 'สร้างปุ่ม';
       BPNP.ui.initAllUI();
       if (window.currentUser.offline && BPNP.core.toast) BPNP.core.toast.show('โหมดออฟไลน์: ใช้ข้อมูลที่เก็บไว้ในเครื่อง', false, 4000);
 
@@ -364,8 +406,11 @@
       }, 600);
       logUserEvent('Open App', getDeviceInfo());
     } catch (err) {
-      console.error(err);
-      showErrorPage('เกิดข้อผิดพลาดในการโหลดระบบแผนที่ กรุณารีเฟรชหน้า', true);
+      console.error('[Auth] โหลดแอปไม่สำเร็จที่ขั้น', stage, err);
+      const detail = `ขั้น: ${stage} | ${err && err.message ? err.message : err} | v${window.APP_VERSION} | ${navigator.userAgent}`;
+      logUserEvent('App Error', detail.slice(0, 290));
+      showErrorPage(err && err.userMessage ? err.userMessage : 'เกิดข้อผิดพลาดในการโหลดระบบแผนที่ กรุณารีเฟรชหน้า', true,
+        `ขั้น: ${stage}\n${err && err.message ? err.message : err}\nเวอร์ชัน: ${window.APP_VERSION}\n${navigator.userAgent}`);
     }
   }
 
@@ -440,17 +485,26 @@
     `);
   }
 
-  function showErrorPage(reason, showRetry = false) {
+  function showErrorPage(reason, showRetry = false, detail = '') {
     hideSplash();
     const btn = showRetry
       ? `<button onclick="location.reload()" style="${BTN}background:#e74c3c;color:white;">ลองใหม่อีกครั้ง</button>`
       : `<button onclick="${CLOSE_JS}" style="${BTN}background:#2c3e50;color:white;">ปิดหน้าต่าง</button>`;
+    // รายละเอียดทางเทคนิค: ให้ผู้ใช้กดคัดลอกส่งผู้ดูแลระบบได้
+    const detailHtml = detail ? `
+      <details style="margin-top:18px;max-width:340px;width:100%;text-align:left;font-size:11px;opacity:0.75;">
+        <summary style="cursor:pointer;text-align:center;">รายละเอียดสำหรับผู้ดูแลระบบ</summary>
+        <pre id="error-detail" style="white-space:pre-wrap;word-break:break-word;background:rgba(0,0,0,0.25);padding:8px;border-radius:6px;margin:8px 0;">${esc(detail)}</pre>
+        <button onclick="navigator.clipboard && navigator.clipboard.writeText(document.getElementById('error-detail').innerText).then(()=>{this.textContent='คัดลอกแล้ว'})"
+          style="border:1px solid rgba(255,255,255,0.4);background:transparent;color:white;border-radius:8px;padding:6px 12px;font-family:'Sarabun',sans-serif;cursor:pointer;">คัดลอกรายละเอียด</button>
+      </details>` : '';
     pageShell('error-page', `
       <div style="font-size:56px;margin-bottom:20px;">🚫</div>
       <h2 style="margin:0 0 12px;">ไม่สามารถเข้าใช้งานได้</h2>
-      <p style="margin:0 0 8px;opacity:0.85;font-size:15px;">${esc(reason)}</p>
+      <p style="margin:0 0 8px;opacity:0.85;font-size:15px;white-space:pre-line;">${esc(reason)}</p>
       <p style="margin:0;opacity:0.5;font-size:12px;">กรุณาติดต่อผู้ดูแลระบบหากคิดว่าเป็นข้อผิดพลาด</p>
       ${btn}
+      ${detailHtml}
     `);
   }
 
