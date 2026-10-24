@@ -96,7 +96,7 @@
       const inPhase   = BPNP.layers.isSupported(c);
       const missing   = inPhase && !BPNP.map.registry.has(c.id);   // โมดูลของชั้นนี้โหลดไม่สำเร็จ
       const supported = inPhase && !missing;
-      const tag = !inPhase ? `เฟส ${c.phase}` : (missing ? 'ไม่พร้อมใช้งาน' : '');
+      const tag = !inPhase ? `เฟส ${c.phaseLabel || c.phase}` : (missing ? 'ไม่พร้อมใช้งาน' : '');
       const item = document.createElement('div');
       item.className = 'layer-item' + (c.hasOpacityControl && supported ? ' has-slider' : '') + (supported ? '' : ' is-pending');
       item.dataset.layerId = c.id;
@@ -220,6 +220,7 @@
       input.addEventListener('mouseup', () => { item.draggable = true; });
       input.addEventListener('mouseleave', () => { item.draggable = true; });
     });
+    enableTouchDrag(item, box);
     if (box.dataset.dragBound) return;
     box.dataset.dragBound = '1';
     box.addEventListener('dragover', e => {
@@ -234,6 +235,74 @@
       if (after) box.insertBefore(dragging, after); else box.appendChild(dragging);
     });
     box.addEventListener('drop', e => e.preventDefault());
+  }
+
+  // ── ลากเรียงบนจอสัมผัส: กดค้าง 0.45 วินาที แล้วลาก ──
+  //   - การกดค้างเพื่อลากจะไม่เปิด/ปิดชั้นนั้น (ไม่ติ๊กเช็กบ็อกซ์)
+  //   - ไม่มีเมนู/การเลือกข้อความของระบบเด้งขึ้น (CSS + กัน contextmenu)
+  //   - ขยับนิ้วก่อนครบเวลา = เลื่อนรายการตามปกติ / กดที่แถบความทึบหรือปุ่มป้าย/Pier = ไม่เริ่มลาก
+  const HOLD_MS = 450, MOVE_CANCEL_PX = 8;
+  let suppressClickUntil = 0;
+
+  function placeAt(box, dragging, clientY) {
+    const after = Array.from(box.querySelectorAll('.layer-item[draggable="true"]:not(.dragging)')).reduce((closest, child) => {
+      const r = child.getBoundingClientRect();
+      const offset = clientY - r.top - r.height / 2;
+      return (offset < 0 && offset > closest.offset) ? { offset, el: child } : closest;
+    }, { offset: Number.NEGATIVE_INFINITY }).el;
+    if (after) { if (after !== dragging.nextSibling) box.insertBefore(dragging, after); }
+    else if (box.lastElementChild !== dragging) box.appendChild(dragging);
+  }
+
+  function enableTouchDrag(item, box) {
+    let timer = null, startX = 0, startY = 0, dragging = false;
+    const scroller = () => item.closest('.layer-content') || box;
+
+    const cancel = () => { clearTimeout(timer); timer = null; };
+
+    item.addEventListener('touchstart', e => {
+      if (e.touches.length !== 1 || e.target.closest('.opacity-slider-container, .hs-toggle-label')) return;
+      startX = e.touches[0].clientX; startY = e.touches[0].clientY;
+      cancel();
+      timer = setTimeout(() => {
+        timer = null;
+        dragging = true;
+        suppressClickUntil = Date.now() + 100000;      // กันการติ๊กจนกว่าจะปล่อยนิ้ว
+        item.classList.add('dragging', 'touch-dragging');
+        if (navigator.vibrate) { try { navigator.vibrate(25); } catch (err) {} }
+      }, HOLD_MS);
+    }, { passive: true });
+
+    item.addEventListener('touchmove', e => {
+      const t = e.touches[0];
+      if (!dragging) {
+        if (timer && (Math.abs(t.clientX - startX) > MOVE_CANCEL_PX || Math.abs(t.clientY - startY) > MOVE_CANCEL_PX)) cancel();
+        return;
+      }
+      e.preventDefault();                               // ไม่ให้รายการเลื่อนระหว่างลาก
+      placeAt(box, item, t.clientY);
+      // ลากใกล้ขอบบน/ล่างของแผง → เลื่อนรายการตาม
+      const sc = scroller(), r = sc.getBoundingClientRect();
+      if (t.clientY < r.top + 30) sc.scrollTop -= 12;
+      else if (t.clientY > r.bottom - 30) sc.scrollTop += 12;
+    }, { passive: false });
+
+    const finish = () => {
+      cancel();
+      if (!dragging) return;
+      dragging = false;
+      item.classList.remove('dragging', 'touch-dragging');
+      suppressClickUntil = Date.now() + 500;            // click ที่ตามมาหลังยกนิ้วไม่นับ
+      applyGeneralOrder();
+      saveSettings();
+    };
+    item.addEventListener('touchend', finish);
+    item.addEventListener('touchcancel', finish);
+
+    // กันการติ๊ก/ยกเลิกชั้นจากการกดค้างเพื่อลาก
+    item.addEventListener('click', e => {
+      if (Date.now() < suppressClickUntil) { e.preventDefault(); e.stopPropagation(); }
+    }, true);
   }
 
   // ลำดับการทับซ้อน = ลำดับในรายการ (บนสุดของรายการ = วาดบนสุด) เหมือน _updateGeneralZIndex เดิม
@@ -266,8 +335,10 @@
       }
     });
     // ไม่ให้การเลื่อน/แตะในแผงส่งต่อไปที่แผนที่
-    ['mousedown', 'touchstart', 'wheel', 'dblclick', 'contextmenu'].forEach(ev =>
+    ['mousedown', 'touchstart', 'wheel', 'dblclick'].forEach(ev =>
       panel.addEventListener(ev, e => e.stopPropagation(), { passive: true }));
+    // กดค้าง/คลิกขวาในแผง: ไม่ให้เมนูของระบบเด้งขึ้น
+    panel.addEventListener('contextmenu', e => { e.preventDefault(); e.stopPropagation(); });
   }
 
   // ── เปิดเลเยอร์ตามที่บันทึกไว้ (ทยอยทีละชั้น ไม่ให้ค้างตอนเปิดแอป) ──

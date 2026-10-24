@@ -83,11 +83,11 @@
     </div>
 
     <div class="custom-button" id="stopRippleBtn" onclick="BPNP.tools.clickPoint && BPNP.tools.clickPoint.stop()" style="display: none;">
-      📡 หยุดแสดงพิกัด กดปุ่ม Tab/Esc
+      📡 หยุดแสดงพิกัด (หรือกด Space/Esc)
     </div>
 
     <div class="dev-attribution" >
-        <span class="attr-label">&copy; Mr.Pairot@gmail.com [2025-05] · BPNP Map 3D</span>
+        <span class="attr-label">&copy; Mr.Pairot@gmail.com [2025-05]</span>
     </div>   
 	<div class="custom-attribution" onclick="toggleAttributionMenu(event)" title="คลิกเพื่อดูข้อมูลการพัฒนา หรือรีเซ็ตระบบ">
 	    <span class="attr-label">มีอะไรใหม่ & รีเซ็ตระบบ</span>
@@ -164,13 +164,32 @@
       btn.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); config.onClick(e); });
     }
     // ไม่ให้การแตะปุ่มส่งต่อไปที่แผนที่ (กดค้างดูพิกัด / ลากแผนที่)
-    ['mousedown', 'touchstart', 'dblclick', 'contextmenu'].forEach(ev =>
-      btn.addEventListener(ev, e => e.stopPropagation(), { passive: ev !== 'contextmenu' }));
+    ['mousedown', 'touchstart', 'dblclick'].forEach(ev =>
+      btn.addEventListener(ev, e => e.stopPropagation(), { passive: true }));
+    // กดค้าง/คลิกขวาที่ปุ่ม: ไม่ให้เมนูของระบบเด้งขึ้น
+    btn.addEventListener('contextmenu', e => { e.preventDefault(); e.stopPropagation(); });
     document.body.appendChild(btn);
     return btn;
   }
 
   function registerButton(fn) { buttonInits.push(fn); }
+
+  // ── คอลัมน์ซ้าย (ใต้ปุ่มชั้นข้อมูล): เรียงส่วนควบคุมที่แสดงอยู่ต่อกันลงมา ไม่ให้ทับกัน ──
+  //   แถว 0 = ปุ่มค้นหา กม. (เฟส 5) · แถว 1 = ปุ่มชั้นข้อมูล · แถว 2+ = รายการที่ลงทะเบียน (ตาม order)
+  const leftItems = [];
+  function leftColumnAdd(el, order, apply) {
+    leftItems.push({ el, order, apply: apply || (top => { el.style.top = top; }) });
+    leftItems.sort((a, b) => a.order - b.order);
+    leftColumnRefresh();
+  }
+  function leftColumnRefresh() {
+    let row = 2;
+    leftItems.forEach(it => {
+      if (!it.el.isConnected || it.el.style.display === 'none') return;
+      it.apply(`calc(var(--safe-top) + (var(--map-btn-size) + var(--map-gap)) * ${row})`);
+      row++;
+    });
+  }
 
   function initAllUI() {
     buttonInits.forEach(fn => { try { fn(); } catch (err) { console.error('[UI] สร้างปุ่มไม่สำเร็จ:', err); } });
@@ -307,6 +326,12 @@
 
   document.addEventListener('click', closeAttrMenu);
 
+  // กดค้าง/คลิกขวาบนส่วนควบคุมของแอป: ไม่ให้เมนูของระบบ (บันทึกรูป/คัดลอก) เด้งขึ้น
+  const NO_SYSTEM_MENU = '.maplibregl-marker, .standard-map-btn, .layer-panel, .info.legend, .bp-bottom-panel, .parcel-search-box, .custom-standalone-scale';
+  document.addEventListener('contextmenu', e => {
+    if (e.target.closest && e.target.closest(NO_SYSTEM_MENU)) e.preventDefault();
+  });
+
   // บันทึกการปิดหน้าต่าง (ส่งครั้งเดียวต่อการซ่อนหน้า)
   let sessionEndSent = false;
   document.addEventListener('visibilitychange', () => {
@@ -317,7 +342,7 @@
     }
   });
 
-  Object.assign(BPNP.ui, { buildMapDOM, createStandardButton, registerButton, initAllUI, checkTermsOfUse, showAlert, resetApp });
+  Object.assign(BPNP.ui, { buildMapDOM, createStandardButton, registerButton, initAllUI, checkTermsOfUse, showAlert, resetApp, leftColumnAdd, leftColumnRefresh });
 
   // ชื่อเดิม: ใช้กับ onclick ใน HTML และโมดูลที่ย้ายมาในเฟสถัดไป
   window.createStandardButton  = createStandardButton;
