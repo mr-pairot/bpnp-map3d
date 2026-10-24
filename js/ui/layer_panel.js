@@ -32,7 +32,8 @@
     const prev = loadSettings() || {};
     const overlays = Object.assign({}, prev.overlays);   // เก็บค่าของเลเยอร์ที่ยังไม่รองรับไว้ด้วย
     BPNP.layers.CONFIG.forEach(c => {
-      if (!BPNP.layers.isSupported(c)) return;
+      // ชั้นที่ยังไม่รองรับ/โมดูลโหลดไม่สำเร็จ → คงค่าที่บันทึกไว้เดิม
+      if (!BPNP.layers.isSupported(c) || !BPNP.map.registry.has(c.id)) return;
       overlays[c.id] = {
         isActive: BPNP.map.registry.isVisible(c.id),
         opacity:  Math.round(BPNP.map.registry.getOpacity(c.id) * 100)
@@ -88,13 +89,16 @@
         sep.style.cssText = 'border-top:1px solid #ccc;margin:4px 0;';
         box.appendChild(sep);
       }
-      const supported = BPNP.layers.isSupported(c);
+      const inPhase   = BPNP.layers.isSupported(c);
+      const missing   = inPhase && !BPNP.map.registry.has(c.id);   // โมดูลของชั้นนี้โหลดไม่สำเร็จ
+      const supported = inPhase && !missing;
+      const tag = !inPhase ? `เฟส ${c.phase}` : (missing ? 'ไม่พร้อมใช้งาน' : '');
       const item = document.createElement('div');
       item.className = 'layer-item' + (c.hasOpacityControl && supported ? ' has-slider' : '') + (supported ? '' : ' is-pending');
       item.dataset.layerId = c.id;
 
       let html = `<input type="checkbox" id="ov_${c.id}" value="${c.id}" ${supported ? '' : 'disabled'}>` +
-                 `<label for="ov_${c.id}">${esc(c.name)}${supported ? '' : ` <span class="layer-phase-tag">เฟส ${c.phase}</span>`}</label>`;
+                 `<label for="ov_${c.id}">${esc(c.name)}${tag ? ` <span class="layer-phase-tag">${tag}</span>` : ''}</label>`;
       if (supported && (c.hasOpacityControl || c.hasPierToggle)) {
         html += `<div style="display:flex;align-items:center;gap:6px;">`;
         if (c.hasPierToggle) {
