@@ -93,7 +93,8 @@ function buildCodeHash() {
 
 function main() {
     // 0) KML → GeoJSON (data/kml → data/geojson) ก่อนคำนวณเวอร์ชันข้อมูล
-    require('./kml2geojson.js').run({ quiet: true });
+    const converted = require('./kml2geojson.js').run({ quiet: true });
+    if (!converted) fail('ไม่พบไฟล์ KML ใน data/kml/ — ไม่มีข้อมูลให้แปลง (ตรวจว่าอัปโหลดโฟลเดอร์ data/kml ครบ)');
 
     let versionJson = {};
     if (fs.existsSync(VERSION_FILE)) {
