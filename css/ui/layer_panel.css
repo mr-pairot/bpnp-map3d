@@ -627,3 +627,19 @@ input[type="range"].opacity-slider::-moz-range-progress {
     font-weight: normal;
     vertical-align: middle;
 }
+
+/* ── ลากเรียงบนจอสัมผัส (กดค้าง) ── */
+.layer-item[draggable="true"] {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: pan-y;
+}
+.layer-item.touch-dragging {
+  background: #e8f2ff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  border-radius: 6px;
+  transform: scale(1.02);
+  position: relative;
+  z-index: 2;
+}
