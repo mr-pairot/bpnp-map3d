@@ -47,7 +47,7 @@
   <rect class="bg" width="512" height="512" rx="115" />
   
   <!-- Map & Buildings Group (รวมแผนที่และตึกเป็นชุดเดียวกัน) -->
-  <g transform="translate(245, 295) scale(0.95, 1.17)">
+  <g transform="translate(255, 300) scale(0.95, 1.17)">
     
     <!-- กระดาษแผนที่ -->
     <g id="map-paper">
@@ -65,7 +65,7 @@
     </g>
 
     <!-- Isometric Buildings Group -->
-    <g transform="translate(-30, 40) scale(1.1)">
+    <g transform="translate(-45, 40) scale(1.3)">
       <polygon class="b-shadow" points="0,35 30,50 70,30 40,15" />
       <polygon class="b-left" points="0,-25 30,-10 30,50 0,35" />
       <polygon class="b-right" points="30,-10 60,-25 60,35 30,50" />
@@ -81,14 +81,14 @@
   </g>
 
   <!-- Location Pin Group -->
-  <g transform="translate(250, 250) scale(1, 0.95) scale(1.2)">
+  <g transform="translate(210, 270) scale(1.4, 1.3)">
     <path class="pin" d="M0,0 C-20,-35 -60,-100 -60,-130 A60,60 0 1,1 60,-130 C60,-100 20,-35 0,0 Z" />
     <circle class="white-fill" cx="0" cy="-130" r="27" />
   </g>
 
   <!-- Pencil -->
-  <g transform="translate(380, 260) rotate(23)">
-    <path d="M-30,-140 C-30,-160 30,-160 30,-140 L30,70 L0,135 L-30,70 Z" fill="var(--white-border)" stroke="var(--white-border)" stroke-width="16" stroke-linejoin="round"/>
+  <g transform="translate(365, 250) scale(1.2) rotate(30)">
+    <path d="M-30,-140 C-30,-160 30,-160 30,-140 L30,70 L0,135 L-30,70 Z" fill="var(--white-border)" stroke="var(--white-border)" stroke-width="1" stroke-linejoin="round"/>
     <path class="p-eraser" d="M-30,-140 C-30,-155 30,-155 30,-140 L30,-95 L-30,-95 Z" />
     <rect class="white-fill" x="-30" y="-95" width="60" height="20" />
     <path class="p-body" d="M-30,-75 L30,-75 L30,65 Q15,75 0,65 Q-15,75 -30,65 Z" />
