@@ -8,7 +8,8 @@
  *   - แปลงด้วย @tmcw/togeojson (ตัวแปลงมาตรฐาน) + @xmldom/xmldom
  *   - MultiGeometry ที่ได้เป็น GeometryCollection → รวมเป็น Multi* (ชนิดเดียวกัน) หรือแยกเป็นหลาย feature
  *   - ตัดค่าความสูง (z) และปัดพิกัดเหลือทศนิยม 7 ตำแหน่ง (~1 ซม.) → ไฟล์เล็กลงมาก
- *   - จัด ring ของ Polygon แบบ even-odd (ชิ้นงานที่ CAD ใส่ไว้เป็น inner ring นอกรูป → แยกเป็นรูปของตัวเอง)
+ *   - Polygon หลาย ring → คำนวณ even-odd แบบแม่นยำด้วย XOR (polyclip-ts) ให้ตรงกับที่ Leaflet วาด
+ *     (CAD มักส่งชิ้นงานแยกเป็น inner ring นอกรูป หรือส่งเส้นขอบซ้ำหลายชุด)
  *   - ตัด property ด้านสไตล์ของ KML ออก (สไตล์กำหนดใน js/layers/ แทน) เหลือ styleUrl ไว้
  *   - ตัดช่องว่างหัว-ท้ายข้อความ (เช่น "\t12\t" → "12")
  *
@@ -54,7 +55,7 @@ function cleanCoords(c) {
   return c.map(cleanCoords);
 }
 
-// ── Polygon แบบ even-odd ──
+// ── Polygon แบบ even-odd (วิธีสำรอง) ──
 // KML ที่ส่งออกจาก CAD มักใส่ชิ้นงานแยกกันไว้เป็น "inner ring" ทั้งที่อยู่นอก outer ring
 // Leaflet (SVG fill-rule: evenodd) วาดชิ้นเหล่านั้นได้ แต่ MapLibre ถือเป็นรู → พื้นหายทั้งรูป
 // จึงจัดใหม่ตามความลึกการซ้อน: ซ้อนคู่ (0, 2, ...) = รูปทรง, ซ้อนคี่ = รูของวงที่ครอบใกล้ที่สุด
@@ -97,8 +98,29 @@ function evenOddPolygons(rings) {
   });
   return Array.from(polys.values());
 }
+// even-odd แบบแม่นยำ = XOR ของทุก ring (พื้นที่ที่ถูกครอบเป็นจำนวนคี่ครั้ง) — ตรงกับที่ Leaflet/SVG วาด
+// รองรับเส้นขอบที่ CAD ส่งออกซ้ำหลายชุด (เช่น outer 3 ชุด + inner 3 ชุด) ซึ่งวิธีดูความลึกการซ้อนตัดสินผิด
+let polyclip = null;
+const stats = { xor: 0, snapped: 0, fallback: 0 };
+function xorRings(rings) {
+  rings = rings.filter(r => r.length >= 4);
+  if (rings.length <= 1) return rings.length ? [rings] : [];
+  if (!polyclip) polyclip = require('polyclip-ts');
+  // ลองที่ความละเอียด ~1 ซม. ก่อน ถ้ารูปทรงจาก CAD เสื่อมสภาพจนคำนวณไม่ได้ ลองใหม่ที่ ~10 ซม. / ~20 ซม. / ~1 ม.
+  for (const snap of [null, 1e6, 5e5, 1e5]) {
+    try {
+      const input = snap ? rings.map(r => r.map(([x, y]) => [Math.round(x * snap) / snap, Math.round(y * snap) / snap])) : rings;
+      const out = polyclip.xor(...input.map(r => [r]));
+      if (snap) stats.snapped++; else stats.xor++;
+      return out.map(poly => poly.map(ring => ring.map(([x, y]) => [round(x), round(y)])));
+    } catch (err) { /* ลองขั้นถัดไป */ }
+  }
+  stats.fallback++;
+  return evenOddPolygons(rings);   // สำรองสุดท้าย: วิธีดูความลึกการซ้อน
+}
+
 function fixPolygon(g) {
-  const list = g.type === 'Polygon' ? evenOddPolygons(g.coordinates) : g.coordinates.flatMap(evenOddPolygons);
+  const list = g.type === 'Polygon' ? xorRings(g.coordinates) : g.coordinates.flatMap(xorRings);
   if (!list.length) return null;
   return list.length === 1 ? { type: 'Polygon', coordinates: list[0] } : { type: 'MultiPolygon', coordinates: list };
 }
@@ -151,7 +173,11 @@ function convertFile(file, deps) {
   let skipped = 0;
   fc.features.forEach(f => {
     const props = cleanProps(f.properties);
+    const fb0 = stats.fallback;
     let geoms = normalizeGeometry(f.geometry);
+    if (stats.fallback > fb0) {
+      console.warn(`  ⚠ ${path.basename(file)} รายการที่ ${fc.features.indexOf(f)} (${props.name || props['Sta.'] || '-'}): คำนวณ even-odd แบบแม่นยำไม่ได้ ใช้วิธีสำรอง — ตรวจการแสดงผลจุดนี้`);
+    }
     // Placemark ที่ไม่มีรูปทรงแต่มีพิกัดในข้อมูล (เช่น alignment_20m) → สร้าง Point ให้
     if (!geoms.length) {
       const lat = parseFloat(props.Latitude ?? props.latitude ?? props.lat);
@@ -183,7 +209,7 @@ function run({ quiet = false } = {}) {
     inTotal += inSize; outTotal += outSize;
     if (!quiet) console.log(`  ${rel.padEnd(34)} ${String(fc.features.length).padStart(5)} features  ${kb(inSize)} → ${kb(outSize)}`);
   });
-  console.log(`✔ KML → GeoJSON: ${files.length} ไฟล์ (${kb(inTotal)} → ${kb(outTotal)})`);
+  console.log(`✔ KML → GeoJSON: ${files.length} ไฟล์ (${kb(inTotal)} → ${kb(outTotal)}) · polygon even-odd: ${stats.xor + stats.snapped} XOR${stats.snapped ? ` (${stats.snapped} ต้องปัดพิกัดหยาบขึ้น)` : ''}${stats.fallback ? `, ⚠ ${stats.fallback} ใช้วิธีสำรอง` : ''}`);
   return files.length;
 }
 
