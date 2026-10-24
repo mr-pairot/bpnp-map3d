@@ -6,7 +6,7 @@
  *   - เปิดแล้วแสดงกล่องอธิบายความหมายสีตัวเลข 20 วินาที
  *   - ใช้ซ้ำกับสะพานในเฟส 4 (กลุ่ม 'bridge')
  *
- *   BPNP.layers.heightSigns.registerGroup(name, loadItems)   loadItems() → Promise<[{ lngLat, size, status }]>
+ *   BPNP.layers.heightSigns.registerGroup(name, loadItems, { anchorY })   loadItems() → Promise<[{ lngLat, size, status }]>
  *   BPNP.layers.heightSigns.setEnabled(name, bool) / isEnabled(name)
  *
  * HTML marker: ห้ามกำหนด position ที่ element ราก (.height-limit-sign ใช้ ::before/::after อิงกับรากที่ MapLibre วางแบบ absolute)
@@ -78,7 +78,9 @@
 
 (function () {
   const SIGN_SIZE = 34, SIGN_GAP = 4;
-  const ANCHOR_Y = 44;            // จุดยึดเดิม: ป้ายอยู่เหนือจุดศูนย์กลางโครงสร้าง (44 − 17 = 27 px)
+  // จุดยึดแนวตั้งเดิม (iconAnchor Y ของ Leaflet): Underpass 44 → ป้ายอยู่เหนือจุด 27 px
+  //                                              Bridge −(7+4) → ป้ายอยู่ใต้วงกลม (กึ่งกลางต่ำกว่าจุด 28 px)
+  const DEFAULT_ANCHOR_Y = 44;
   const MIN_ZOOM = BPNP.geo.fromLeafletZoom(14);
   const groups = {};
 
@@ -128,7 +130,7 @@
           create: it => ({
             element: element(it.value, it.status),
             anchor: 'center',
-            offset: [-(it.slot * (SIGN_SIZE + SIGN_GAP)), -(ANCHOR_Y - SIGN_SIZE / 2)]
+            offset: [-(it.slot * (SIGN_SIZE + SIGN_GAP)), -(g.anchorY - SIGN_SIZE / 2)]
           })
         });
         return g.set;
@@ -137,7 +139,9 @@
     return g.loading;
   }
 
-  function registerGroup(name, loadItems) { groups[name] = { loadItems, enabled: false, set: null, loading: null }; }
+  function registerGroup(name, loadItems, opts = {}) {
+    groups[name] = { loadItems, enabled: false, set: null, loading: null, anchorY: opts.anchorY ?? DEFAULT_ANCHOR_Y };
+  }
 
   async function setEnabled(name, on) {
     const g = groups[name];

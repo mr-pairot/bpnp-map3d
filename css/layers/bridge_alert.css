@@ -1,0 +1,150 @@
+/* css/layers/bridge_alert.css — แจ้งเตือนงานสะพานล่าช้า (เดิมฝังใน Critical_Alert_Str.js)
+ * กฎทั่วไป (.group / .btn / .actions / input[type=range]) จำกัดไว้ใน .alert-panel
+ * (ต้นฉบับประกาศแบบ global ทำให้แถบเลื่อนและปุ่มส่วนอื่นของแอปเปลี่ยนรูปไปด้วย) */
+/* --- Wrapper --- */
+.critical-alert-wrapper {
+    position: absolute;
+    top: calc(var(--safe-top, 10px) + var(--map-btn-size, 3.5rem)*2 + var(--map-gap, 8px)*2);   /* คอลัมน์ซ้าย จัดลำดับโดย BPNP.ui.leftColumnAdd */
+    left: var(--safe-left, 10px);
+    z-index: 1000;
+}
+
+/* --- Panel --- */
+.alert-panel {
+    position: absolute;
+    top: -6px;
+    left: -6px;
+    width: 210px;
+    padding: 39px 6px 6px 6px;
+    background: rgba(255, 255, 255, 0.98);
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.2);
+    display: none;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: .25s;
+    z-index: 5;
+}
+.alert-panel.active {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* --- Groups --- */
+.alert-panel .group            { margin-bottom: 3px; padding: 6px; border-radius: 5px; }
+.alert-panel .red-bg           { background: #fee2e2; }
+.alert-panel .orange-bg        { background: #ffedd5; }
+.alert-panel .yellow-bg        { background: #fef9c3; }
+.alert-panel .group-title      { display: flex; justify-content: space-between; font-size: 12px; font-weight: bold; }
+.alert-panel .slider-row       { font-size: 10px; margin-top: 4px; }
+.alert-panel input[type=range] { width: 100%; cursor: pointer; }
+
+/* --- Buttons --- */
+.alert-panel .actions         { display: flex; gap: 6px; margin-top: 8px; }
+.alert-panel .btn             { flex: 1; padding: 6px; border-radius: 5px; border: none; font-weight: bold; cursor: pointer; transition: 0.2s; }
+.alert-panel .btn.set         { background: #3E63DD; color: #fff; }
+.alert-panel .btn.set:hover   { background: #2349C8; }
+.alert-panel .btn.reset       { background: #eee; }
+.alert-panel .btn.reset:hover { background: #bdbdbd; }
+
+/* --- Toggle Button --- */
+.toggle-alert-str {
+    font-size: 0.8rem;
+    display: inline-block;
+    vertical-align: top;
+    margin: 0;
+    -webkit-tap-highlight-color: transparent;
+    outline: none;
+    cursor: pointer;
+    position: relative;
+    z-index: 10;
+}
+.toggle-alert__input { display: none; }
+.toggle-alert__button {
+    position: relative;
+    display: inline-block;
+    width: 150px;
+    height: 30px;
+    background: #ffffff;
+    color: #555;
+    border: solid 1px #d2d2d2;
+    border-radius: 20px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.toggle-alert__button::before {
+    position: absolute;
+    content: '';
+    top: 5px; left: 5px;
+    width: 20px; height: 20px;
+    background: #d2d2d2;
+    border-radius: 100%;
+    transition: all 0.3s ease;
+    z-index: 2;
+}
+.toggle-alert__button::after {
+    content: "Bridge: Critical Alert ";
+    position: absolute;
+    top: 0;
+    height: 30px;
+    line-height: 30px;
+    left: 28px;
+    font-size: 11px;
+    font-weight: bold;
+    color: #777;
+    transition: color 0.3s ease;
+}
+.toggle-alert__input:checked + .toggle-alert__button             { background: #2973CB; border-color: #2973CB; }
+.toggle-alert__input:checked + .toggle-alert__button::before     { background: #FFF; }
+.toggle-alert__input:checked + .toggle-alert__button::after      { color: #FFF; }
+
+/* --- Toggle Checkmark Icon --- */
+.toggle-alert__button--correct {
+    position: absolute;
+    width: 12px; height: 12px;
+    top: 9px; left: 9px;
+    fill: none;
+    stroke: #2973CB;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    visibility: hidden;
+    opacity: 0;
+    transform: scale(0.5);
+    z-index: 3;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.toggle-alert__input:checked + .toggle-alert__button > .toggle-alert__button--correct {
+    visibility: visible;
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* --- Ripple Animation --- */
+.alert-ripple-container {
+    position: relative;
+    width: 40px; height: 40px;
+    margin-top: -20px; margin-left: -20px;
+    pointer-events: none;
+}
+.alert-ripple {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 100%; height: 100%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    animation: alert-ripple-anim 1.5s infinite ease-out;
+    z-index: 10;
+    will-change: transform, opacity;
+}
+.alert-ripple-red    { background-color: rgba(239, 68, 68, 0.5);    border: 2px solid rgba(220, 38, 38, 1);    }
+.alert-ripple-orange { background-color: rgba(245, 158, 11, 0.6); border: 2px solid rgba(217, 119, 6, 1); }
+.alert-ripple-yellow { background-color: rgba(242, 254, 16, 0.6); border: 2px solid rgba(250, 230, 8, 1); }
+
+@keyframes alert-ripple-anim {
+    0%   { transform: translate(-50%, -50%) scale(0.3); opacity: 1; }
+    100% { transform: translate(-50%, -50%) scale(1.6); opacity: 0; }
+}
+
+.empty-alert-icon { background: transparent; border: none; }

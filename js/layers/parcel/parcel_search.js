@@ -51,6 +51,7 @@
     document.addEventListener('click', e => {
       if (box.classList.contains('open') && !box.contains(e.target) && !btn.contains(e.target)) close();
     });
+    BPNP.ui.leftColumnAdd(btn, 20, top => { btn.style.top = top; box.style.top = top; });
   }
 
   function update() {
@@ -106,7 +107,7 @@
   }
 
   BPNP.layers.parcelSearch = {
-    show() { build(); index = null; btn.style.display = ''; },
-    hide() { if (!btn) return; close(); btn.style.display = 'none'; }
+    show() { build(); index = null; btn.style.display = ''; BPNP.ui.leftColumnRefresh(); },
+    hide() { if (!btn) return; close(); btn.style.display = 'none'; BPNP.ui.leftColumnRefresh(); }
   };
 })();

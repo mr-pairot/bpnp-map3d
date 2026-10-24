@@ -25,7 +25,7 @@ window.BPNP_CONFIG = {
   },
 
   // เฟสสูงสุดที่รองรับแล้ว: เลเยอร์ที่ phase มากกว่านี้จะแสดง "ยังไม่รองรับ" ในรายการชั้นข้อมูล
-  supportedPhase: 3,
+  supportedPhase: 4,
 
   map: {
     center:         [103.64, 16.1],   // [lng, lat]
@@ -33,7 +33,7 @@ window.BPNP_CONFIG = {
     minZoom:        4,
     maxZoom:        21,
     defaultBasemap: 'osm',
-    allowRotate:    true,            // เปิดในเฟส 3D
+    allowRotate:    false,            // เปิดในเฟส 3D
     vectorStyleUrl: 'https://tiles.openfreemap.org/styles/liberty',
     fallbackGlyphs: 'https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf'
   },

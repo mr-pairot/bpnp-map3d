@@ -9,6 +9,7 @@
  *   slot      ลำดับซ้อนใน layer_registry (ค่าเริ่มต้นตาม category)
  *   source    ไฟล์ข้อมูล — data/geojson/ สร้างจาก data/kml/ อัตโนมัติตอน build (tools/kml2geojson.js)
  *   phase     เฟสที่ย้ายเลเยอร์นี้ — มากกว่า BPNP_CONFIG.supportedPhase → แสดง "ยังไม่รองรับ"
+ *   phaseLabel ป้ายเฟสที่แสดงในรายการ (ถ้าไม่ระบุใช้เลข phase) เช่น เฟสย่อย 4B = phase 4.5
  *
  * แก้ชื่อที่แสดง / ค่าเริ่มต้นได้ที่ไฟล์นี้ที่เดียว
  * ───────────────────────────────────────────────────────────────────────── */
@@ -17,7 +18,7 @@ BPNP.layers.CONFIG = [
   { id: 'dol',            name: 'ผังที่ดิน กรมที่ดิน (red)',  nameLoaded: 'ผังที่ดิน กรมที่ดิน',     category: 'general', kind: 'raster', phase: 1, isDefault: false, hasOpacityControl: true,  isControlVisible: true  },
   { id: 'dpt',            name: 'ผังเมือง (DPT)',            nameLoaded: 'Longdo ผังเมืองรวม',    category: 'general', kind: 'raster', phase: 1, isDefault: false, hasOpacityControl: true,  isControlVisible: false },
   { id: 'tomtomTraffic',  name: 'Traffic Flow',             nameLoaded: 'TomTom Traffic',        category: 'general', kind: 'raster', phase: 1, isDefault: false, hasOpacityControl: true,  isControlVisible: false },
-  { id: 'dohKmPost',      name: 'หลักกม.',                   nameLoaded: 'หลัก กม. กรมทางหลวง',   category: 'general', kind: 'vector', phase: 4, source: 'data/json/doh_km_post.json',             isDefault: false, hasOpacityControl: true,  isControlVisible: false },
+  { id: 'dohKmPost',      name: 'หลักกม.',                   nameLoaded: 'หลัก กม. กรมทางหลวง',   category: 'general', kind: 'vector', phase: 4.5, phaseLabel: '4B', source: 'data/json/doh_km_post.json',             isDefault: false, hasOpacityControl: true,  isControlVisible: false },
   { id: 'stationName',    name: 'รายชื่อสถานี (train icon)',   nameLoaded: 'Station Icon',          category: 'general', kind: 'vector', phase: 2, source: 'data/geojson/railway/station_name.geojson',      isDefault: false,                           isControlVisible: true  },
   { id: 'alTrack',        name: 'Alignment Track (red)',    nameLoaded: 'Alignment Track',       category: 'general', kind: 'vector', phase: 2, source: 'data/geojson/alignment/al_track.geojson',        isDefault: true,  hasOpacityControl: false, isControlVisible: true  },
   { id: 'layer_ROW',      name: 'เขตทางรถไฟ (orange)',       nameLoaded: 'ROW Boundary',          category: 'general', kind: 'vector', phase: 2, source: 'data/geojson/railway/row_boundary.geojson',      isDefault: true,  hasOpacityControl: false, isControlVisible: true  },
@@ -45,8 +46,8 @@ BPNP.layers.CONFIG = [
   { id: 'pierNameVB118',      name: 'Pier_Name_VB118', nameLoaded: 'Pier Name VB118',    category: 'structure', kind: 'vector', phase: 2, source: 'data/geojson/footing/vb118_point.geojson',  isDefault: false, hasOpacityControl: false, isControlVisible: false },
 
   // ── Signalling and Track ──
-  { id: 'layer_track_progress', name: 'Track Progress', nameLoaded: 'ความคืบหน้างานวางราง', category: 'progress', kind: 'vector', phase: 4, source: 'data/json/track_progress.json', isDefault: false, hasOpacityControl: false, isControlVisible: true },
-  { id: 'layer_sw_loc',         name: 'SW - LOC',       nameLoaded: 'งานตู้ LOC',          category: 'progress', kind: 'vector', phase: 4, source: 'data/json/sw_loc.json',         isDefault: false, hasOpacityControl: false, isControlVisible: true }
+  { id: 'layer_track_progress', name: 'Track Progress', nameLoaded: 'ความคืบหน้างานวางราง', category: 'progress', kind: 'vector', phase: 4.5, phaseLabel: '4B', source: 'data/json/track_progress.json', isDefault: false, hasOpacityControl: false, isControlVisible: true },
+  { id: 'layer_sw_loc',         name: 'SW - LOC',       nameLoaded: 'งานตู้ LOC',          category: 'progress', kind: 'vector', phase: 4.5, phaseLabel: '4B', source: 'data/json/sw_loc.json',         isDefault: false, hasOpacityControl: false, isControlVisible: true }
 ];
 
 BPNP.layers.byId = id => BPNP.layers.CONFIG.find(c => c.id === id) || null;

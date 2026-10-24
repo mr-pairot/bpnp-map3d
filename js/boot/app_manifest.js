@@ -44,7 +44,10 @@ BPNP.boot.LAYER_SCRIPTS = [
   'js/layers/parcel/parcel_legend.js',
   'js/layers/parcel/parcel_search.js',
   'js/layers/structure/height_signs.js',
-  'js/layers/structure/underpass_box.js'
+  'js/layers/structure/underpass_box.js',
+  'js/layers/structure/bridge.js',
+  'js/layers/structure/bridge_panel.js',
+  'js/layers/structure/bridge_alert.js'
 ];
 
 // ประกอบแอป — โหลดหลังสุดเสมอ
@@ -65,5 +68,7 @@ BPNP.boot.APP_CSS = [
   'css/layers/legend.css',
   'css/layers/parcel.css',
   'css/layers/structure.css',
-  'css/ui/bottom_panel.css'
+  'css/ui/bottom_panel.css',
+  'css/layers/bridge.css',
+  'css/layers/bridge_alert.css'
 ];
