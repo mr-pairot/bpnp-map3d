@@ -9,8 +9,8 @@ window.BPNP_CONFIG = {
   siteUrl:       'https://bpnp-map3d.netlify.app',
 
   // ── ใส่ค่าหลังสร้าง LIFF และ Deploy GAS (ดู backend/gas/README.md) ──
-  liffId:        'XXXXXXXXXX-XXXXXXXX',
-  gasUrl:        'https://script.google.com/macros/s/XXXXXXXX/exec',
+  liffId:        '2007032148-wk1xMGrD',
+  gasUrl:        'https://script.google.com/macros/s/AKfycbwVBKtdNidFt6niAteBBAw5Gyf5wCAbH4UWn5ZU-mJxZABu3blqotM44ERiLawqSRBm/exec',
 
   storagePrefix: 'bpnp3d_',          // prefix ของ localStorage / cookie ทุกคีย์
 
