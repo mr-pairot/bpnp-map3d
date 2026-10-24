@@ -6,6 +6,10 @@
   command = "node tools/build.js"
   publish = "."
 
+# Netlify ติดตั้งแพ็กเกจใน package.json ให้อัตโนมัติก่อนรัน command (ใช้แปลง KML → GeoJSON)
+[build.environment]
+  NODE_VERSION = "22"
+
 # เอกสารและต้นฉบับ GAS ไม่ต้องเปิดให้เข้าถึงจากเว็บ
 [[redirects]]
   from = "/backend/*"
