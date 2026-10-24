@@ -1,6 +1,7 @@
 /* js/boot/app_manifest.js
  * ─────────────────────────────────────────────────────────────────────────
- * รายการ JS/CSS ที่โหลดหลังล็อกอิน (รันตามลำดับในรายการ)
+ * รายการ JS/CSS ที่โหลดหลังล็อกอิน (รันตามลำดับ: APP_SCRIPTS → LAYER_SCRIPTS → APP_MAIN)
+ * APP_SCRIPTS ขาดไม่ได้ (โหลดไม่ได้ = เปิดแอปไม่ได้) / LAYER_SCRIPTS ขาดได้
  * ไม่ต้องใส่ ?v=... — loader.js ต่อท้าย APP_VERSION ให้อัตโนมัติ
  *
  * โมดูลเลเยอร์โหลดพร้อมแอป (โค้ดเล็ก) แต่ "ข้อมูล" โหลดเมื่อเปิดเลเยอร์ครั้งแรกเท่านั้น
@@ -19,25 +20,29 @@ BPNP.boot.APP_SCRIPTS = [
   'js/map/map_core.js',
   'js/map/controls.js',
 
-  // ── layers ──
+  // ── layers (แกน) ──
   'js/layers/layers_config.js',
   'js/layers/layer_utils.js',
   'js/layers/raster_overlays.js',
-  'js/layers/video_links.js',
-  'js/layers/alignment.js',
-  'js/layers/railway.js',
-  'js/layers/road.js',
-  'js/layers/structure/footing.js',
 
   // ── ui / tools ──
   'js/ui/layer_panel.js',
   'js/ui/about_popup.js',
   'js/tools/my_location.js',
-  'js/tools/click_point.js',
-
-  // ── ประกอบแอป (ต้องอยู่ท้ายสุด) ──
-  'js/app.js'
+  'js/tools/click_point.js'
 ];
+
+// โมดูลชั้นข้อมูล: ถ้าไฟล์ใดโหลดไม่สำเร็จ แอปยังเปิดได้ (ชั้นนั้นแสดง "ไม่พร้อมใช้งาน" + บันทึก App Warning)
+BPNP.boot.LAYER_SCRIPTS = [
+  'js/layers/video_links.js',
+  'js/layers/alignment.js',
+  'js/layers/railway.js',
+  'js/layers/road.js',
+  'js/layers/structure/footing.js'
+];
+
+// ประกอบแอป — โหลดหลังสุดเสมอ
+BPNP.boot.APP_MAIN = 'js/app.js';
 
 BPNP.boot.APP_CSS = [
   'css/base/style.css',

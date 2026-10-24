@@ -383,7 +383,7 @@
       }
       stage = 'โหลดรายการสคริปต์';
       await BPNP.loader.script('js/boot/app_manifest.js');
-      BPNP.boot.APP_SCRIPTS.forEach(BPNP.loader.preload);
+      BPNP.boot.APP_SCRIPTS.concat(BPNP.boot.LAYER_SCRIPTS || [], BPNP.boot.APP_MAIN || []).forEach(BPNP.loader.preload);
       stage = 'โหลด CSS';
       await Promise.all(BPNP.boot.APP_CSS.map(h => BPNP.loader.css(h).catch(err => console.warn(err.message))));
       stage = 'โหลดไลบรารีแผนที่';
@@ -392,6 +392,17 @@
       stage = 'โหลดสคริปต์แอป';
       await Promise.all(BPNP.boot.APP_SCRIPTS.map(src => BPNP.loader.script(src)));
 
+      stage = 'โหลดโมดูลชั้นข้อมูล';
+      const layerResults = await Promise.allSettled((BPNP.boot.LAYER_SCRIPTS || []).map(src => BPNP.loader.script(src)));
+      const failedLayers = (BPNP.boot.LAYER_SCRIPTS || []).filter((src, i) => layerResults[i].status === 'rejected');
+      if (failedLayers.length) {
+        console.warn('[Auth] โมดูลชั้นข้อมูลโหลดไม่สำเร็จ:', failedLayers);
+        logUserEvent('App Warning', `โหลดไม่สำเร็จ: ${failedLayers.join(', ')} | v${window.APP_VERSION}`);
+      }
+
+      stage = 'โหลดสคริปต์แอป';
+      if (BPNP.boot.APP_MAIN) await BPNP.loader.script(BPNP.boot.APP_MAIN);
+
       stage = 'สร้างแผนที่';
       updateLoadingText(status('กำลังเปิดแผนที่...'));
       await BPNP.app.start();
@@ -399,6 +410,7 @@
       stage = 'สร้างปุ่ม';
       BPNP.ui.initAllUI();
       if (window.currentUser.offline && BPNP.core.toast) BPNP.core.toast.show('โหมดออฟไลน์: ใช้ข้อมูลที่เก็บไว้ในเครื่อง', false, 4000);
+      else if (failedLayers.length && BPNP.core.toast) BPNP.core.toast.show('ชั้นข้อมูลบางส่วนโหลดไม่สำเร็จ (แจ้งผู้ดูแลระบบแล้ว)', false, 5000);
 
       setTimeout(() => {
         if (typeof BPNP.ui.checkTermsOfUse === 'function') BPNP.ui.checkTermsOfUse();
