@@ -52,3 +52,11 @@
 /* ซ่อน logo/attribution มาตรฐาน (ใช้ .custom-standalone-attr แทน) */
 .maplibregl-ctrl-logo,
 .maplibregl-ctrl-attrib { display: none !important; }
+
+/* หมุดบนแผนที่ (สถานี, ป้ายความสูง, ป้ายโครงสร้าง): กดค้างไม่ให้ระบบเลือกข้อความ/เมนูบันทึกรูป */
+.maplibregl-marker,
+.maplibregl-marker img {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
