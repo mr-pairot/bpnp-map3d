@@ -13,6 +13,9 @@
  *   ข้อความภาษาไทยให้ใช้ HTML marker (เบราว์เซอร์วาดเอง) หรือแสดงใน popup แทน
  *   U.clickPopup(map, layerIds, html, o) คลิก feature → popup + เปลี่ยน cursor
  *   U.hoverLabel(map, layerId, text, o)  ชี้เมาส์ → ป้ายชั่วคราว (แทน tooltip แบบ hover เดิม)
+ *   U.bboxCenter(geometry)               จุดกึ่งกลางกรอบ (= getBounds().getCenter() ของ Leaflet)
+ *   U.legendStack()                      ที่วาง legend มุมขวาบน
+ *   U.htmlMarkerSet(map, opts)           ชุด HTML marker แสดงเฉพาะในจอ + ตามซูม
  *   U.register(def)                      ลงทะเบียนโมดูลเลเยอร์ (app.js เรียก register ให้ตอนเริ่ม)
  * ───────────────────────────────────────────────────────────────────────── */
 (function () {
@@ -112,6 +115,63 @@
     return pop;
   }
 
+  // ── จุดกึ่งกลางกรอบสี่เหลี่ยม (= layer.getBounds().getCenter() ของ Leaflet) ──
+  function bboxCenter(geometry) {
+    let a = Infinity, b = Infinity, c = -Infinity, d = -Infinity;
+    (function walk(x) {
+      if (typeof x[0] === 'number') { if (x[0] < a) a = x[0]; if (x[1] < b) b = x[1]; if (x[0] > c) c = x[0]; if (x[1] > d) d = x[1]; return; }
+      x.forEach(walk);
+    })(geometry.coordinates);
+    return [(a + c) / 2, (b + d) / 2];
+  }
+
+  // ── ที่วาง legend มุมขวาบน (แทนมุมควบคุมของ Leaflet) ──
+  function legendStack() {
+    let el = document.querySelector('.bpnp-legend-stack');
+    if (!el) {
+      el = document.createElement('div');
+      el.className = 'bpnp-legend-stack';
+      ['mousedown', 'touchstart', 'wheel', 'dblclick', 'contextmenu', 'click'].forEach(ev =>
+        el.addEventListener(ev, e => e.stopPropagation(), { passive: ev !== 'click' && ev !== 'contextmenu' }));
+      document.body.appendChild(el);
+    }
+    return el;
+  }
+
+  // ── ชุด HTML marker ที่แสดงเฉพาะในจอ + ตามระดับซูม ──
+  // items: [{ lngLat, ... }]
+  // create(item, variant) → { element, anchor?, offset? }   variant(zoom, item) → ค่าแบบไหน (null = ไม่แสดง)
+  // กติกา: element รากห้ามกำหนด position / transform (MapLibre ใช้วางหมุด)
+  function htmlMarkerSet(map, opts) {
+    const state = opts.items.map(item => ({ item, marker: null, variant: null }));
+    let enabled = false;
+
+    function refresh() {
+      const z = map.getZoom();
+      const b = map.getBounds();
+      const padX = (b.getEast() - b.getWest()) * (opts.pad ?? 0.1);
+      const padY = (b.getNorth() - b.getSouth()) * (opts.pad ?? 0.1);
+      state.forEach(s => {
+        const [lng, lat] = s.item.lngLat;
+        const inView = lng >= b.getWest() - padX && lng <= b.getEast() + padX && lat >= b.getSouth() - padY && lat <= b.getNorth() + padY;
+        const v = (enabled && inView) ? opts.variant(z, s.item) : null;
+        if (v === s.variant) return;
+        if (s.marker) { s.marker.remove(); s.marker = null; }
+        s.variant = v;
+        if (v === null || v === undefined) return;
+        const c = opts.create(s.item, v);
+        s.marker = new maplibregl.Marker({ element: c.element, anchor: c.anchor || 'center', offset: c.offset || [0, 0] })
+          .setLngLat(s.item.lngLat).addTo(map);
+      });
+    }
+    map.on('moveend', refresh);
+    return {
+      setEnabled(on) { enabled = !!on; refresh(); },
+      refresh,
+      get enabled() { return enabled; }
+    };
+  }
+
   function register(def) { modules.push(def); }
 
   function registerAll(map) {
@@ -120,5 +180,5 @@
     });
   }
 
-  BPNP.layers.utils = { z, loadGeoJSON, labelFont, ensureLabelBox, labelLayout, clickPopup, hoverLabel, register, registerAll };
+  BPNP.layers.utils = { z, loadGeoJSON, labelFont, ensureLabelBox, labelLayout, clickPopup, hoverLabel, bboxCenter, legendStack, htmlMarkerSet, register, registerAll };
 })();

@@ -1,6 +1,6 @@
 # BPNP Map 3D — แนวทางจัดทำ repo ใหม่และย้ายไป MapLibre
 
-> สถานะ: **เฟส 0–1 เสร็จ (v3.0.00) · เฟส 2 เสร็จ (v3.1.00)** · ดูหัวข้อ 14–15 สำหรับสิ่งที่ปรับและพบระหว่างทำ
+> สถานะ: **เฟส 0–1 (v3.0.00) · เฟส 2 (v3.1.xx) · เฟส 3 (v3.2.00) เสร็จ** · ดูหัวข้อ 14–15 สำหรับสิ่งที่ปรับและพบระหว่างทำ
 > อ้างอิงจาก: BPNP_Map v2.4.01 (Leaflet) และ `Code_demo.gs`
 > เว็บเป้าหมาย: `https://bpnp-map3d.netlify.app`
 
@@ -636,3 +636,36 @@ Leaflet วาดแบบ even-odd: แถบถนนถูกครอบ 3 �
 - ถ้ายังไม่ได้ ใช้วิธีเดิมสำรอง และ Deploy log จะบอกชื่อไฟล์ + Sta. ให้ตรวจ
 - ตรวจเทียบกับการวาดแบบ Leaflet: สุ่ม 34,800 จุด (service road) ต่างกัน 4 จุด (ห่างขอบระดับมิลลิเมตรจากการปัดพิกัด), access road 6,400 จุด ตรงทั้งหมด
 - เวลา build บน Netlify เพิ่มเป็นราว 1.5–2 นาที (คำนวณ polygon ทั้งชุด รวมสะพาน/overpass ของเฟส 3–4)
+
+---
+
+## 21. เฟส 3 (v3.2.00) — แปลงเวนคืน, Underpass, Box Culvert
+
+| ส่วน | ไฟล์ใหม่ | ย้ายมาจาก |
+|---|---|---|
+| แปลงเวนคืน + Pay Out (สี, popup + รูป, ชี้เมาส์, กะพริบ) | `js/layers/parcel/parcel.js` | `setPatternLegend.js`, `setPatternLegend_2.js`, `setPopup.js`, main.js |
+| legend แปลงเวนคืน | `js/layers/parcel/parcel_legend.js` | `addPolygonLandLegend` |
+| ค้นหารหัสแปลง | `js/layers/parcel/parcel_search.js` | เขียนใหม่แทน `leaflet-search.js` (970 บรรทัด) |
+| แผงตารางด้านล่าง | `js/ui/bottom_panel.js` | `bottomPanel.js` |
+| Underpass + Box Culvert + legend Underpass | `js/layers/structure/underpass_box.js` | `setupStructureLayer` (main.js), `setUnderpassLegend.js` |
+| ป้ายความสูง + กล่องอธิบาย | `js/layers/structure/height_signs.js` | `HeightSignManager.js`, `HeightSignAlert.js` |
+| YouTube ตาม กม. (+ เลือกเดือน) | `js/layers/video_links.js` (แก้) | `openYoutubeByKM_box.js` |
+| CSS | `css/layers/legend.css`, `parcel.css`, `structure.css`, `css/ui/bottom_panel.css` | `legend.css`, `leaflet-search.css`, `box.css`, `bottomPanel.css` |
+
+ตัวช่วยใหม่ใน `layer_utils.js`: `bboxCenter` (= getBounds().getCenter()), `legendStack` (ที่วาง legend มุมขวาบน), `htmlMarkerSet` (HTML marker แสดงเฉพาะในจอ + ตามซูม)
+`namespace.js`: `BPNP.safeHtml()` — ข้อความจากข้อมูลที่มีแท็ก b/strong/i/em/u/br แสดงรูปแบบได้ ส่วนอื่น escape
+
+### ข้อสังเกตจากโค้ดเดิม (ทำให้ผลลัพธ์เหมือนเดิม)
+- การ "รวม ring" ของแปลงใน `processPolygonLayer` / `processPayOutLayer` ไม่เคยทำงานจริง (เงื่อนไขไม่ตรงกับข้อมูลที่ omnivore สร้าง) → ใช้รูปทรง even-odd จากตอน build
+- สีข้อความ "สถานะหน้างาน" ใน popup เดิมกำหนดด้วยค่า object จึงไม่มีผล → คงสีปกติไว้
+- `layer.openPopup()` จากการค้นหา/รายการเดิมไม่เปิด popup (ไม่ได้ bindPopup) → ตอนนี้เปิด popup ตามที่ตั้งใจ (ยืนยันในแผนเฟส 3 แล้ว)
+- ข้อความ Status มีแท็ก `<b>`/`<br>` ในข้อมูล → แสดงด้วย `safeHtml`
+
+### ผลทดสอบ (Chromium headless)
+- แปลง: สีตามสถานะ, popup (กม.ประมาณ, สถานะ, หมายเหตุ, รูป 2 รูปของ ท3234.4 → `T3234.4_*.jpg`), คลิกบนแผนที่, legend (จำนวน/พื้นที่), [รายละเอียด] → แผงล่าง → กดแถว → ขอบแดง 2 วินาที (เริ่มนับหลังแผนที่วาดเสร็จ), ค้นหา (รายการแนะนำ, Enter, "ไม่พบข้อมูล"), ปิดชั้นแล้ว legend/ปุ่มค้นหาหาย
+- Underpass/Box: ซูม 11.5 ไม่แสดง / 12.5 ป้ายชื่อ / 13.5 ป้ายชื่อ+กม. / 15.5 รูป+ชี้เมาส์, ป้ายห่างจุด 30 px ตรงตามเดิม, popup ธีมสี + ปุ่ม YouTube, legend Underpass
+- ป้ายความสูง: อยู่เหนือจุด 27 px ตรงตามเดิม, ซ่อนเมื่อซูมต่ำ, กล่องอธิบายแสดง, บันทึกค่า, ทำงานแยกจากการเปิดชั้น Underpass
+- HTML marker ทุกชนิดตรวจแล้วว่า element รากเป็น `position: absolute` (กติกาหัวข้อ 19)
+
+### เฟส 4 เริ่มจาก
+Bridge (`BridgeLayerManager3.js` — ใช้ `height_signs.js` กลุ่ม 'bridge'), หลัก กม. กรมทางหลวง (`DOH_ShowKM.js`), Track Progress (`tw_ProgressManager.js`), SW-LOC (`sw_loc_manager.js`)

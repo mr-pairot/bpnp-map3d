@@ -38,7 +38,13 @@ BPNP.boot.LAYER_SCRIPTS = [
   'js/layers/alignment.js',
   'js/layers/railway.js',
   'js/layers/road.js',
-  'js/layers/structure/footing.js'
+  'js/layers/structure/footing.js',
+  'js/ui/bottom_panel.js',
+  'js/layers/parcel/parcel.js',
+  'js/layers/parcel/parcel_legend.js',
+  'js/layers/parcel/parcel_search.js',
+  'js/layers/structure/height_signs.js',
+  'js/layers/structure/underpass_box.js'
 ];
 
 // ประกอบแอป — โหลดหลังสุดเสมอ
@@ -55,5 +61,9 @@ BPNP.boot.APP_CSS = [
   'css/tools/my_location.css',
   'css/tools/click_point.css',
   'css/layers/structure_popup.css',
-  'css/layers/layers.css'
+  'css/layers/layers.css',
+  'css/layers/legend.css',
+  'css/layers/parcel.css',
+  'css/layers/structure.css',
+  'css/ui/bottom_panel.css'
 ];

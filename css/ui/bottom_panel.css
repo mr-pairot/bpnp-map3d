@@ -1,0 +1,115 @@
+/* css/ui/bottom_panel.css — แผงรายการแปลงด้านล่าง (เดิม css/bottomPanel.css) */
+.bp-bottom-panel {
+    /* --- 1. ป้องกันการเลือกข้อความ (Selection) --- */
+    -webkit-user-select: none; /* Safari / Chrome */
+    -moz-user-select: none;    /* Firefox */
+    -ms-user-select: none;     /* IE / Edge */
+    user-select: none;         /* Standard */
+
+    /* --- 2. ป้องกันเมนู Popup เมื่อกดค้าง (iOS/Android) --- */
+    -webkit-touch-callout: none; 
+
+    /* --- 3. ป้องกันการลาก Element ติดมือ (Drag Ghost) --- */
+    -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
+    user-drag: none;
+
+    /* --- 4. ป้องกันสีไฮไลท์แวบๆ เวลาแตะบนมือถือ --- */
+    -webkit-tap-highlight-color: transparent;
+    
+    position: fixed;
+    bottom: -100%; /* ซ่อนไว้ด้านล่างหน้าจอเริ่มต้น */
+    left: 0;
+    width: 100%;
+    background: #ffffff;
+    box-shadow: 0 -4px 15px rgba(0,0,0,0.15);
+    z-index: 2000;
+    transition: bottom 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    font-family: 'Sarabun', sans-serif;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    display: flex;
+    flex-direction: column;
+}
+.bp-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    position: relative !important; 
+    padding: 10px 15px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    font-weight: 600;
+    font-size: 14px;
+    color: #333;
+}
+
+.bp-bottom-panel.open {
+    bottom: 0;
+}
+
+.bp-close-btn {
+    position: absolute !important; 
+    top: 0px !important;          
+    right: 15px !important;       
+    background: none !important;
+    border: none !important;
+    font-size: 26px !important;    
+    cursor: pointer;
+    color: #adb5bd;
+    line-height: 1;
+    padding: 0;
+    margin: 0;
+    z-index: 10;                   
+    -webkit-user-select: none;
+    user-select: none;
+    outline: none !important; 
+    -webkit-tap-highlight-color: transparent !important; 
+}
+
+.bp-close-btn:hover { 
+    color: #dc3545; 
+}
+
+.bp-close-btn:focus,
+.bp-close-btn:active {
+    outline: none !important;
+    background: none !important; 
+    box-shadow: none !important; 
+}
+
+.bp-table-container {
+    overflow-y: auto;
+    max-height: 200px; 
+    padding: 0;
+}
+
+.bp-data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.bp-data-table th, 
+.bp-data-table td {
+    padding: 8px 15px;
+    border-bottom: 1px solid #f1f3f5;
+    text-align: left;
+}
+
+.bp-data-table th {
+    background: #e9ecef;
+    color: #495057;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.bp-data-table tbody tr:hover {
+    background-color: #e7f5ff;
+    cursor: pointer;
+}

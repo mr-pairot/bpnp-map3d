@@ -84,11 +84,18 @@
       .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
 
+  // ข้อความจากข้อมูลโครงการที่มีแท็กจัดรูปแบบ (เช่น Status "<b>ทำสัญญาแล้ว</b><br>...")
+  // → อนุญาตเฉพาะ b / strong / i / em / u / br ที่ไม่มี attribute ส่วนอื่น escape ทั้งหมด
+  function safeHtml(str) {
+    return escapeHtml(str).replace(/&lt;(\/?)(b|strong|i|em|u|br)\s*\/?&gt;/gi, '<$1$2>');
+  }
+
   window.BPNP = {
     config,
     storage,
     events,
     escapeHtml,
+    safeHtml,
     log: (...a) => { if (config.debug) console.log('[BPNP]', ...a); },
     core:   {},
     boot:   {},

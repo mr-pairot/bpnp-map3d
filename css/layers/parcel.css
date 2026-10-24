@@ -1,0 +1,45 @@
+/* css/layers/parcel.css — ช่องค้นหารหัสแปลง (แทน css/leaflet-search.css) */
+.parcel-search-box {
+  position: fixed;
+  top: calc(var(--safe-top) + (var(--map-btn-size) + var(--map-gap)) * 2);
+  left: calc(var(--safe-left) + var(--map-btn-size) + var(--map-gap));
+  z-index: 1000;
+  width: min(260px, calc(100vw - var(--safe-left) - var(--safe-right) - var(--map-btn-size) - 24px));
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  font-family: 'Sarabun', sans-serif;
+  font-size: 14px;
+  display: none;
+  overflow: hidden;
+}
+.parcel-search-box.open { display: block; }
+.parcel-search-row { display: flex; align-items: center; gap: 4px; padding: 6px; }
+.parcel-search-row input {
+  flex: 1;
+  min-width: 0;
+  height: 34px;
+  padding: 0 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 15px;
+  outline: none;
+}
+.parcel-search-row input:focus { border-color: #1E90FF; }
+.parcel-search-cancel {
+  border: none;
+  background: transparent;
+  color: #666;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  padding: 4px 6px;
+}
+.parcel-search-msg:empty { display: none; }
+.parcel-search-msg { padding: 2px 10px 8px; color: #c0392b; font-size: 13px; }
+.parcel-search-list { list-style: none; margin: 0; padding: 0; max-height: 300px; overflow-y: auto; }
+.parcel-search-list li { padding: 7px 12px; cursor: pointer; border-top: 1px solid #f0f0f0; }
+.parcel-search-list li small { color: #888; }
+.parcel-search-list li.active,
+.parcel-search-list li:hover { background: #e8f2ff; }

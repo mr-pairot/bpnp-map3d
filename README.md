@@ -48,8 +48,9 @@ js/config.js        ค่าตามสภาพแวดล้อม (ไฟ�
 js/boot/            loader, auth (LIFF + session), maintenance, check_update, app_manifest
 js/core/            namespace (BPNP), storage, toast, geo_utils, alignment (Sta/O/S), data_cache
 js/map/             map_core, basemaps, layer_registry, popup, controls
-js/layers/          layers_config, layer_utils, raster_overlays, alignment, railway, road, structure/footing, video_links
-js/ui/              ui_manager, layer_panel, welcome_popup, about_popup
+js/layers/          layers_config, layer_utils, raster_overlays, alignment, railway, road, video_links,
+                    parcel/ (parcel, parcel_legend, parcel_search), structure/ (footing, underpass_box, height_signs)
+js/ui/              ui_manager, layer_panel, bottom_panel, welcome_popup, about_popup
 js/tools/           my_location, click_point
 js/app.js           ประกอบแอป
 css/                โครงเดียวกับ js/
@@ -66,7 +67,7 @@ tools/              build.js, kml2geojson.js, หน้าทดสอบ
 | 0 | โครง repo, config, GAS/Sheet/LIFF ใหม่, ย้ายไฟล์ | ✔ 3.0.00 |
 | 1 | แกน MapLibre, แผนที่ฐาน, registry, แผงชั้นข้อมูล, ตำแหน่งฉัน, ดูพิกัด Sta/O/S | ✔ 3.0.00 |
 | 2 | KML→GeoJSON, เลเยอร์สไตล์ตายตัว | ✔ 3.1.00 |
-| 3 | แปลงเวนคืน, Underpass, Box Culvert, popup | – |
+| 3 | แปลงเวนคืน, Underpass, Box Culvert, popup | ✔ 3.2.00 |
 | 4 | Bridge, หลัก กม., Track Progress, SW-LOC | – |
 | 5 | เครื่องมือวัด, Routing, ค้นหา, แปลง UTM | – |
 | 3D | ภูมิประเทศ, เอียง/หมุน, extrusion | – |

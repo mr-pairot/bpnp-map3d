@@ -1,0 +1,298 @@
+/* css/layers/legend.css — legend แปลงเวนคืน / Underpass, รายการแปลง, รูปแปลง (เดิม css/legend.css) */
+.info.legend {
+  font-family: 'Sarabun', sans-serif;
+  font-size: var(--map-font-size);
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 5px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  padding: 6px 8px;
+  overflow: hidden;
+  transition: all 0.4s ease;
+  max-height: 500px;
+  transform-origin: top right;
+  
+  /* ป้องกัน text selection และ drag */
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  
+  /* ป้องกัน context menu */
+  -webkit-touch-callout: none;
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+  user-drag: none;
+}
+
+.legend-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.legend-header button {
+  font-size: var(--map-font-size);
+  padding: 2px 6px;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  background: #f8f8f8;
+  border-radius: 3px;
+  font-family: 'Sarabun', sans-serif;
+  
+  /* ป้องกัน selection */
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+.legend-header button:hover {
+  background: #e8e8e8;
+  border-color: #999;
+}
+
+.legend-header button:active {
+  background: #d8d8d8;
+  transform: translateY(1px);
+}
+
+/* ===== Icon ===== */
+.info.legend i {
+  width: 15px;
+  height: 15px;
+  display: inline-block;
+  border-radius: 2px;
+  margin-right: 1px;
+  flex-shrink: 0;
+  pointer-events: none; /* ป้องกัน pointer events บน icon */
+}
+
+/* ===== Collapsed Mode ===== */
+.legend-collapsed-items {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  flex-wrap: wrap;
+  padding: 3px 1px 2px;
+  pointer-events: none; /* ป้องกัน pointer events */
+}
+
+.legend-collapsed-items i {
+  width: 12px;
+  height: 12px;
+}
+
+.legend-collapsed-items span {
+  font-size: 9px;
+  color: #555;
+}
+
+/* ===== Animation States ===== */
+.info.legend.collapsing {
+  transition: all 0.4s ease;
+}
+
+.info.legend.collapsed {
+  max-height: 80px;
+  transform: scaleX(1) translateX(10px);
+}
+
+/* ===== Legend Item with Animation ===== */
+.legend-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin-bottom: 6px;
+  opacity: 0;
+  transform: translateY(-10px);
+  animation-fill-mode: forwards;
+  pointer-events: none; /* ป้องกัน pointer events บน legend items */
+}
+
+.legend-item.animate {
+  animation: slideDownFadeIn 0.3s ease forwards;
+}
+
+@keyframes slideDownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.legend-item div {
+  line-height: 1.3;
+}
+
+/* ===== Update Date ===== */
+.legend-date {
+  display: block;
+  font-size: 9px;
+  color: #555;
+  padding: 0px 3px 6px;
+  opacity: 0;
+  animation: fadeIn 0.3s ease forwards;
+  animation-delay: 0.2s;
+  pointer-events: none; /* ป้องกัน pointer events */
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* CSS สำหรับ Land-tooltip */
+.Land-tooltip {
+  background-color: rgba(175, 90, 225, 0.8) !important;
+  border: 1px solid #666 !important;
+  border-radius: 4px !important;
+  color: #ff9 !important;
+  font-size: var(--map-font-size) !important;
+  font-weight: bold !important;
+  padding: 4px 8px !important;
+  white-space: nowrap !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3) !important;
+  opacity: 0 !important;
+  transition: opacity 300ms ease-in-out !important;
+  pointer-events: none !important;
+}
+
+/* แสดง tooltip เมื่อมี class 'show' */
+.Land-tooltip.show {
+  opacity: 1 !important;
+}
+
+/* --- เพิ่มส่วนขยายสำหรับปุ่มดูรายละเอียด ---*/
+/* ปุ่มดูรายละเอียด (ตัวหนังสือเล็กๆ สีน้ำเงิน) */
+.detail-toggle-btn {
+  cursor: pointer;
+  color: #007bff;
+  font-size: 9px;
+  text-decoration: underline;
+  margin-left: 5px;
+  pointer-events: auto !important; /* ต้องเปิดให้คลิกได้ */
+}
+
+.detail-toggle-btn:hover {
+  color: #0056b3;
+  font-weight: bold;
+}
+
+/* กล่องรายการรหัสแปลง (ซ่อนอยู่ default) */
+.detail-list-panel {
+  display: none; /* ซ่อนก่อน */
+  margin-top: 4px;
+  margin-left: 20px; /* ย่อหน้าเข้าไปให้ตรงกับ text */
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  max-height: 92px; /* ความสูงประมาณ 5-6 บรรทัด */
+  overflow-y: auto;  /* ถ้าเกินให้ขึ้น Scrollbar */
+  padding: 2px;
+  pointer-events: auto !important;
+  box-shadow: inset 0 0 3px rgba(0,0,0,0.1);
+}
+
+.detail-list-panel.show {
+  display: block;
+  animation: fadeInList 0.3s ease;
+}
+
+@keyframes fadeInList {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.detail-list-item {
+  display: block;
+  padding: 2px 5px;
+  font-size: var(--map-font-size);
+  color: #333;
+  cursor: pointer;
+  border-bottom: 1px dotted #eee;
+  transition: background 0.2s;
+}
+
+.detail-list-item:last-child {
+  border-bottom: none;
+}
+
+.detail-list-item:hover {
+  background-color: #f0f8ff; /* สีฟ้าอ่อนเมื่อเอาเมาส์ชี้ */
+  color: #000;
+  font-weight: bold;
+}
+
+/* Gallery Container: จัดเรียงรูปเป็น Grid */
+/* 1. จัดเรียงรูป */
+.parcel-gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;           /* ระยะห่างระหว่างรูป */
+  margin-top: 5px;
+  justify-content: flex-start; /* เรียงจากซ้ายไปขวา */
+}
+
+/* 2. กำหนดกรอบของลิ้งค์ให้เป็นสี่เหลี่ยมจัตุรัส */
+.parcel-img-link {
+  display: block;
+  width: 60px;        /* ล็อคความกว้าง 60px */
+  height: 60px;       /* ล็อคความสูง 60px */
+  text-decoration: none;
+}
+
+/* 3. รูปภาพข้างใน */
+.parcel-thumb {
+  width: 100%;        /* ให้กว้างเต็มกรอบ 60px */
+  height: 100%;       /* ให้สูงเต็มกรอบ 60px */
+  object-fit: cover;  /* ตัดส่วนเกินออก ไม่ให้ภาพเบี้ยว */
+  border-radius: 4px; /* มุมมนนิดหน่อย */
+  border: 1px solid #ddd;
+}
+
+.parcel-thumb:hover {
+  transform: scale(1.1); /* ขยายเล็กน้อยเมื่อเอาเมาส์ชี้ */
+  border-color: #007bff;
+}
+
+/* ── ที่วาง legend มุมขวาบน (แทน .leaflet-top.leaflet-right) ── */
+.bpnp-legend-stack {
+  position: fixed;
+  top: calc(var(--safe-top) + 10px);
+  right: calc(var(--safe-right) + 10px);
+  z-index: 800;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+  max-height: calc(100vh - var(--safe-top) - 120px);
+  pointer-events: none;
+}
+.bpnp-legend-stack > * { pointer-events: auto; }
+/* เดสก์ท็อปมีปุ่มเต็มจอที่มุมขวาบน → เลื่อน legend ลงใต้ปุ่ม */
+body.has-fullscreen-btn .bpnp-legend-stack {
+  top: calc(var(--safe-top) + var(--map-btn-size) + var(--map-gap) + 10px);
+}
+
+/* ── ป้ายรหัสแปลงเมื่อชี้เมาส์ (เดิม .Land-tooltip) ── */
+.bpnp-hover-label.land-hover .maplibregl-popup-content {
+  background-color: rgba(175, 90, 225, 0.8);
+  border: 1px solid #666;
+  border-radius: 4px;
+  color: #ff9;
+  font-size: var(--map-font-size);
+  font-weight: bold;
+  padding: 4px 8px;
+  white-space: nowrap;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}

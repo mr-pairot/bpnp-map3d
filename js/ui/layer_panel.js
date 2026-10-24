@@ -20,6 +20,9 @@
 
   // ปุ่ม "Pier" ของ Footing VBxx → เลเยอร์ป้าย pierNameVBxx
   const pierLayerOf = id => id.replace('layoutFooting', 'pierName');
+  // ปุ่ม "ป้าย" (ป้ายความสูง) → กลุ่มใน height_signs.js
+  const HS_GROUP = { layer_underpass: 'underpass', layer_bridge: 'bridge' };
+  const hsAvailable = c => !!(c.hasHeightSignToggle && BPNP.layers.heightSigns && BPNP.layers.heightSigns.has(HS_GROUP[c.id]));
 
   // ── settings ──
   function loadSettings() {
@@ -39,6 +42,7 @@
         opacity:  Math.round(BPNP.map.registry.getOpacity(c.id) * 100)
       };
       if (c.hasPierToggle) overlays[c.id].showPierToggle = BPNP.map.registry.isVisible(pierLayerOf(c.id));
+      if (hsAvailable(c))  overlays[c.id].showHeightSign = BPNP.layers.heightSigns.isEnabled(HS_GROUP[c.id]);
     });
     const order = Array.from(document.querySelectorAll(`#${LISTS.general} .layer-item[data-layer-id]`)).map(el => el.dataset.layerId);
     BPNP.storage.setJSON(SETTINGS_KEY, {
@@ -99,14 +103,18 @@
 
       let html = `<input type="checkbox" id="ov_${c.id}" value="${c.id}" ${supported ? '' : 'disabled'}>` +
                  `<label for="ov_${c.id}">${esc(c.name)}${tag ? ` <span class="layer-phase-tag">${tag}</span>` : ''}</label>`;
-      if (supported && (c.hasOpacityControl || c.hasPierToggle)) {
+      if (supported && (c.hasOpacityControl || c.hasPierToggle || hsAvailable(c))) {
+        // ลำดับเดิม: แถบความทึบ → ปุ่มป้าย → ปุ่ม Pier
         html += `<div style="display:flex;align-items:center;gap:6px;">`;
-        if (c.hasPierToggle) {
-          html += `<label class="hs-toggle-label" title="เปิด/ปิด Pier No."><input type="checkbox" class="hs-toggle-cb pier-toggle-cb" data-layer-id="${c.id}"><span class="hs-toggle-btn">Pier</span></label>`;
-        }
         if (c.hasOpacityControl) {
           html += `<div class="opacity-slider-container" style="width:55px;">` +
                   `<input type="range" min="0" max="100" value="100" class="opacity-slider" data-layer-id="${c.id}"></div>`;
+        }
+        if (hsAvailable(c)) {
+          html += `<label class="hs-toggle-label" title="เปิด/ปิดป้ายความสูง"><input type="checkbox" class="hs-toggle-cb height-toggle-cb" data-layer-id="${c.id}"><span class="hs-toggle-btn">ป้าย</span></label>`;
+        }
+        if (c.hasPierToggle) {
+          html += `<label class="hs-toggle-label" title="เปิด/ปิด Pier No."><input type="checkbox" class="hs-toggle-cb pier-toggle-cb" data-layer-id="${c.id}"><span class="hs-toggle-btn">Pier</span></label>`;
         }
         html += `</div>`;
       }
@@ -116,6 +124,17 @@
       if (!supported) return;
       const cb = item.querySelector('input[type="checkbox"]:not(.hs-toggle-cb)');
       cb.addEventListener('change', () => toggleOverlay(c, cb.checked));
+
+      const hsCb = item.querySelector('.height-toggle-cb');
+      if (hsCb) {
+        hsCb.addEventListener('change', async () => {
+          if (hsCb.checked) BPNP.core.toast.show('กำลังโหลดป้ายความสูง...', true);
+          const ok = await BPNP.layers.heightSigns.setEnabled(HS_GROUP[c.id], hsCb.checked);
+          BPNP.core.toast.hide();
+          if (!ok && hsCb.checked) { hsCb.checked = false; BPNP.ui.showAlert('โหลดป้ายความสูงไม่สำเร็จ'); }
+          saveSettings();
+        });
+      }
 
       const pierCb = item.querySelector('.pier-toggle-cb');
       if (pierCb) {
@@ -145,7 +164,13 @@
     if (visible) {
       BPNP.core.toast.hide();
       if (!ok) {
-        BPNP.ui.showAlert(`โหลด ${c.name} ไม่สำเร็จ`);
+        const err = BPNP.map.registry.lastError(c.id);
+        const msg = err ? String(err.message || err) : '';
+        const noData = /HTTP 404/.test(msg) && /\/data\/geojson\//.test(msg);
+        BPNP.ui.showAlert(noData
+          ? `โหลด ${c.name} ไม่สำเร็จ\nไม่พบไฟล์ข้อมูลบนเซิร์ฟเวอร์ (ขั้นตอนแปลงข้อมูลตอน deploy อาจไม่ได้ทำงาน)\nกรุณาแจ้งผู้ดูแลระบบ`
+          : `โหลด ${c.name} ไม่สำเร็จ${msg ? '\n(' + msg + ')' : ''}`);
+        if (BPNP.auth) BPNP.auth.logUserEvent('App Warning', `เลเยอร์ ${c.id}: ${msg || 'unknown'} | v${window.APP_VERSION}`);
         const cb = document.getElementById('ov_' + c.id);
         if (cb) cb.checked = false;
       } else {
@@ -250,6 +275,11 @@
       if (slider) { slider.value = opacity; syncSliderTrack(slider); }
       BPNP.map.registry.setOpacity(c.id, opacity / 100);
       if (active) queue.push(c);
+      if (hsAvailable(c) && s && s.showHeightSign) {
+        const hsCb = document.querySelector(`.height-toggle-cb[data-layer-id="${c.id}"]`);
+        if (hsCb) hsCb.checked = true;
+        BPNP.layers.heightSigns.setEnabled(HS_GROUP[c.id], true);
+      }
       if (c.hasPierToggle && s && s.showPierToggle) {
         const pierCb = document.querySelector(`.pier-toggle-cb[data-layer-id="${c.id}"]`);
         if (pierCb) pierCb.checked = true;

@@ -42,6 +42,7 @@
 
   function initFullscreenButton() {
     if (isMobile() || !document.documentElement.requestFullscreen) return;
+    document.body.classList.add('has-fullscreen-btn');   // legend มุมขวาบนเลื่อนลงใต้ปุ่ม
     const btn = BPNP.ui.createStandardButton({
       id: 'fullscreenBtn',
       imageSrc: 'assets/ui/fullscreen-enter.svg',
