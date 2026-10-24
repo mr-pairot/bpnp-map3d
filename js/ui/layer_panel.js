@@ -174,7 +174,7 @@
         const cb = document.getElementById('ov_' + c.id);
         if (cb) cb.checked = false;
       } else {
-        BPNP.map.registry.bringToFront(c.id);
+        applyGeneralOrder();
       }
     }
     updateSectionCounts();
@@ -236,10 +236,17 @@
     box.addEventListener('drop', e => e.preventDefault());
   }
 
-  // รายการบนสุดของแผง = ซ้อนบนสุดของแผนที่
+  // ลำดับการทับซ้อน = ลำดับในรายการ (บนสุดของรายการ = วาดบนสุด) เหมือน _updateGeneralZIndex เดิม
+  //   - ชั้นที่ไม่แสดงในรายการ (isControlVisible: false) อยู่ใต้ชั้นในรายการทั้งหมด
+  //   - ใช้กับทุกหมวด (ทั่วไป / โครงสร้าง / Signalling) แต่ละหมวดเรียงภายในกลุ่มของตัวเอง
+  // ข้อจำกัด: หมุด HTML (รายชื่อสถานี) อยู่เหนือแผนที่เสมอ ไม่ร่วมการเรียงนี้
   function applyGeneralOrder() {
-    const ids = Array.from(document.querySelectorAll(`#${LISTS.general} .layer-item[data-layer-id]`)).map(el => el.dataset.layerId);
-    BPNP.map.registry.order(ids.slice().reverse().filter(id => BPNP.map.registry.has(id)));
+    const R = BPNP.map.registry;
+    Object.keys(LISTS).forEach(cat => {
+      const hidden = BPNP.layers.CONFIG.filter(c => c.category === cat && c.isControlVisible === false).map(c => c.id);
+      const listed = Array.from(document.querySelectorAll(`#${LISTS[cat]} .layer-item[data-layer-id]`)).map(el => el.dataset.layerId);
+      R.order(hidden.concat(listed.slice().reverse()).filter(id => R.has(id)));
+    });
   }
 
   // ── เปิด/ปิดแผง ──

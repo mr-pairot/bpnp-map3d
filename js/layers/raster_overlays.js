@@ -28,7 +28,7 @@
     Object.keys(DEFS).forEach(id => {
       const d = DEFS[id];
       BPNP.map.registry.register(id, {
-        slot: 'raster-overlay',
+        slot: 'general',          // เรียงร่วมกับชั้นข้อมูลทั่วไปตามลำดับในรายการ (เหมือนเดิม)
         attribution: d.attribution,
         build: () => ({
           sources: { ['ov-' + id]: { type: 'raster', tiles: d.tiles, tileSize: 256, maxzoom: d.maxzoom } },
