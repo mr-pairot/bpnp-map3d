@@ -3,6 +3,7 @@
  * ─────────────────────────────────────────────────────────────────────────
  * รันอัตโนมัติทุกครั้งที่ Netlify deploy (ดู [build] ใน netlify.toml)
  *
+ *   0) แปลง data/kml → data/geojson (tools/kml2geojson.js — ต้อง npm install ก่อน)
  *   1) dataVersions : hash ของแต่ละไฟล์ใน data/ (รวมโฟลเดอร์ย่อย) → version.json
  *                     คีย์ = path ใต้ data/ ตัวพิมพ์เล็ก เช่น "kml/structure/underpass.kml"
  *                     ไฟล์ไหนเปลี่ยน ผู้ใช้โหลดใหม่เฉพาะไฟล์นั้น (js/core/data_cache.js ใช้คีย์เดียวกัน)
@@ -91,6 +92,9 @@ function buildCodeHash() {
 }
 
 function main() {
+    // 0) KML → GeoJSON (data/kml → data/geojson) ก่อนคำนวณเวอร์ชันข้อมูล
+    require('./kml2geojson.js').run({ quiet: true });
+
     let versionJson = {};
     if (fs.existsSync(VERSION_FILE)) {
         try {
