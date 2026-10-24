@@ -1,11 +1,17 @@
 /* css/layers/layers.css — หมุดและป้ายของเลเยอร์ข้อมูล (MapLibre) */
 
-/* ── หมุดสถานี (HTML marker) ── */
+/* ── หมุดสถานี (HTML marker) ──
+ * ห้ามใส่ position ที่ .station-marker (ราก) เพราะจะทับ position:absolute ของ .maplibregl-marker
+ * แล้วหมุดจะเรียงต่อกันลงมาเหมือนเนื้อหาหน้าเว็บ (ตำแหน่งเพี้ยนสะสม 32 px ต่อสถานี) */
 .station-marker {
-  position: relative;
   width: 32px;
   height: 32px;
   cursor: pointer;
+}
+.station-marker-inner {
+  position: relative;
+  width: 32px;
+  height: 32px;
 }
 .station-marker img {
   display: block;

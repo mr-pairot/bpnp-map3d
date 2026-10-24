@@ -596,3 +596,29 @@ Leaflet วาดด้วย even-odd จึงดูปกติ แต่ Map
 - `js/ui/layer_panel.js` ชั้นที่โมดูลโหลดไม่ได้แสดง "ไม่พร้อมใช้งาน" (กดไม่ได้) และไม่ลบค่าที่บันทึกไว้เดิม
 
 **กติกาเพิ่ม:** เลเยอร์ใหม่ในเฟสถัดไปให้เพิ่มใน `LAYER_SCRIPTS` เสมอ (ไม่ใช่ `APP_SCRIPTS`)
+
+---
+
+## 18. v3.1.03 — "โหลด Alignment Track (red) ไม่สำเร็จ"
+
+สาเหตุ: ไม่มี `data/geojson/alignment/al_track.geojson` บนเซิร์ฟเวอร์ — ไฟล์นี้ไม่อยู่ใน repo แต่ Netlify ต้องสร้างตอน build
+(`npm install` → `node tools/build.js` → `tools/kml2geojson.js`) ถ้าขั้นนี้ไม่ทำงาน ชั้นข้อมูลเฟส 2 ทุกชั้นจะโหลดไม่ได้
+
+ไฟล์ที่ต้องมีใน repo เพื่อให้แปลงได้: `package.json`, `package-lock.json`, `netlify.toml`, `tools/build.js`, `tools/kml2geojson.js`, `data/kml/**`
+ตรวจใน Netlify → Deploys → Deploy log ต้องมีบรรทัด `✔ KML → GeoJSON: 28 ไฟล์`
+
+แก้ในโค้ด:
+- `js/map/layer_registry.js` เก็บ error ล่าสุดของแต่ละชั้น (`registry.lastError(id)`)
+- `js/ui/layer_panel.js` ข้อความแจ้งเตือนบอกสาเหตุ (ไม่พบไฟล์ข้อมูล / ข้อความ error) + บันทึก `App Warning`
+- `js/app.js` ตรวจตอนเปิดแอปว่า version.json มีไฟล์ `geojson/` ไหม ถ้าไม่มีบันทึก `App Warning` "deploy ไม่มี data/geojson"
+- `tools/build.js` หยุด build พร้อมข้อความชัดเจนถ้าไม่พบไฟล์ KML ให้แปลง
+
+---
+
+## 19. v3.1.04 — หมุดสถานีแสดงตำแหน่งผิด
+
+สาเหตุ: `css/layers/layers.css` กำหนด `position: relative` ให้ `.station-marker` ซึ่งเป็น element รากของ maplibregl.Marker
+→ ทับ `position: absolute` ของ MapLibre หมุดจึงเรียงต่อกันลงมาเหมือนเนื้อหาหน้าเว็บ (สถานีที่ n เลื่อนลง 32 × n px)
+แก้: ย้าย `position: relative` ไปที่ `.station-marker-inner` (element ด้านใน) — วัดซ้ำทั้ง 31 สถานี คลาดเคลื่อน 0 px
+
+**กติกาเพิ่ม (เฟส 3–5):** HTML marker ห้ามกำหนด `position` / `transform` / `top` / `left` ที่ element ราก ให้ใช้ element ด้านในเสมอ

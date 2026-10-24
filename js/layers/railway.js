@@ -70,8 +70,10 @@
 
     const el = document.createElement('div');
     el.className = 'station-marker';
-    el.innerHTML = `<div class="station-tooltip station-marker-label">${esc(name)}</div>` +
-                   `<img src="${ICONS[style] || ICONS.default}" width="32" height="32" alt="" draggable="false">`;
+    // ห้ามกำหนด position ให้ el (ราก) — MapLibre ใช้ position:absolute + transform วางหมุด
+    el.innerHTML = `<div class="station-marker-inner">` +
+                   `<div class="station-tooltip station-marker-label">${esc(name)}</div>` +
+                   `<img src="${ICONS[style] || ICONS.default}" width="32" height="32" alt="" draggable="false"></div>`;
     el.addEventListener('click', e => { e.stopPropagation(); openStationPopup(name, km, f.geometry.coordinates); });
 
     return new maplibregl.Marker({ element: el, anchor: 'bottom' }).setLngLat(f.geometry.coordinates);
