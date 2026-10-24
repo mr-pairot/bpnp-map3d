@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document id="root_doc">
+<Schema name="VB88" id="VB88">
+	<SimpleField name="Pier" type="int"></SimpleField>
+</Schema>
+<Folder><name>VB88</name>
+  <Placemark id="VB88.1">
+	<ExtendedData><SchemaData schemaUrl="#VB88">
+		<SimpleData name="Pier">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.49805454758,16.1253036940663</coordinates></Point>
+  </Placemark>
+  <Placemark id="VB88.2">
+	<ExtendedData><SchemaData schemaUrl="#VB88">
+		<SimpleData name="Pier">2</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.498496023264,16.1251551447807</coordinates></Point>
+  </Placemark>
+  <Placemark id="VB88.3">
+	<ExtendedData><SchemaData schemaUrl="#VB88">
+		<SimpleData name="Pier">3</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.498934886641,16.1249995041767</coordinates></Point>
+  </Placemark>
+  <Placemark id="VB88.4">
+	<ExtendedData><SchemaData schemaUrl="#VB88">
+		<SimpleData name="Pier">4</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.499370996432,16.1248368119429</coordinates></Point>
+  </Placemark>
+  <Placemark id="VB88.5">
+	<ExtendedData><SchemaData schemaUrl="#VB88">
+		<SimpleData name="Pier">5</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.499804249772,16.1246671170769</coordinates></Point>
+  </Placemark>
+  <Placemark id="VB88.6">
+	<ExtendedData><SchemaData schemaUrl="#VB88">
+		<SimpleData name="Pier">6</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.499885800126,16.1246342646118</coordinates></Point>
+  </Placemark>
+</Folder>
+</Document></kml>

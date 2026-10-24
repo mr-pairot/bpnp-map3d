@@ -1,0 +1,1185 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document id="root_doc">
+<Schema name="vd118_point" id="vd118_point">
+	<SimpleField name="Pier" type="float"></SimpleField>
+</Schema>
+<Folder><name>vd118_point</name>
+  <Placemark id="vd118_point.1">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">2</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.743841106474,16.1721624586,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.2">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">3</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.744024376555,16.1725782127949,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.3">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">4</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.744113316731,16.1727871823443,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.4">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">5</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.744200452045,16.1729968608653,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.5">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">6</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.744285776444,16.1732072337989,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.6">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">7</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.744369283995,16.1734182865376,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.7">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">8</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.744451064288,16.1736299702486,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.8">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">9</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.744531715723,16.1738420584489,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.9">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">10</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.744611978198,16.1740542845605,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.10">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">11</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.744692226077,16.1742665158613,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.11">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">12</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.744772474112,16.1744787471398,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.12">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">13</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.744852722304,16.174690978396,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.13">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">14</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.744932971426,16.1749032093566,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.14">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">15</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.745013358668,16.1751153915034,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.15">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">16</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.745094329186,16.1753273663399,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.16">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">18</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.745259893162,16.1757500038751,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.17">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">19</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.745327832599,16.1759184238139,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.18">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">20</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.745414155672,16.1761284166211,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.19">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">21</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.745484330405,16.1762959784854,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.20">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">23</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.745664092382,16.1767131637837,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.21">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">24</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.7457562817,16.1769208151251,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.22">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">25</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.745850003664,16.1771278247891,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.23">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">26</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.745945239043,16.1773341884854,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.24">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">27</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.746041706191,16.1775400174849,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.25">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">29</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.746236457147,16.177950876273,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.26">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">30</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.746333996989,16.178156233001,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.27">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">32</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.74652907724,16.178566946354,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.28">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">33</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.746646125753,16.1788133742997,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.29">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">34</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.746841207214,16.1792240874325,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.30">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">35</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.746919240011,16.1793883726471,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.31">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">36</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.747016781176,16.1795937291343,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.32">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">37</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.747114322531,16.1797990855872,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.33">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">38</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.747211864074,16.1800044420057,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.34">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">39</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.747309405807,16.1802097983897,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.35">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">40</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.747406947728,16.1804151547394,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.36">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">41</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.747504489839,16.1806205110546,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.37">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">42</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.747602032139,16.1808258673354,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.38">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">43</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.747699574628,16.1810312235818,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.39">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">44</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.747797117306,16.1812365797938,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.40">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">45</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.747894660174,16.1814419359714,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.41">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">46</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.74799220323,16.1816472921145,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.42">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">47</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.748089746475,16.1818526482232,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.43">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">48</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.74818728991,16.1820580042975,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.44">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">49</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.748284833534,16.1822633603374,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.45">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">50</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.748382377347,16.1824687163428,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.46">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">51</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.748479921349,16.1826740723139,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.47">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">52</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.74857746554,16.1828794282504,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.48">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">53</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.748675034925,16.1830847730574,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.49">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">54</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.748772939963,16.1832899686008,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.50">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">55</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.74887164408,16.1834948062198,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.51">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">56</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.748971611989,16.1836990705252,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.52">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">57</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.749073077707,16.1839026440328,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.53">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">58</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.749176045765,16.1841055119533,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.54">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">59</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.749280510922,16.1843076639502,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.55">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">60</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.74936515736,16.1844688631093,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.56">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">61</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.749472303797,16.1846697004284,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.57">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">62</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.749580932219,16.1848697930177,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.58">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">63</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.749691037088,16.1850691306663,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.59">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">64</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.74980261279,16.1852677032019,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.60">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">65</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.74991561997,16.1854655185471,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.61">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">66</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.750029738228,16.1856627376876,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.62">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">67</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.750144506855,16.1858596043211,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.63">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">68</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.750259492138,16.1860563529797,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.64">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">69</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.750374482043,16.1862530991855,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.65">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">70</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.750489437343,16.1864498643381,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.66">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">71</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.750604039613,16.1866468216805,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.67">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">72</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.750717834176,16.1868442157217,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.68">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">73</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.750830380614,16.1870422766504,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.69">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">74</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.750941464032,16.1872411073908,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.70">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">75</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.751051075128,16.1874406997414,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.71">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">76</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.751180657103,16.1876812015496,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.72">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">77</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.751265858044,16.1878421285098,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.73">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">78</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.751371018899,16.1880439444506,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.74">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">79</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.751474685501,16.1882464810485,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.75">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">80</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.751576852557,16.1884497279721,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.76">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">81</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.751697466311,16.1886945472997,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.77">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">82</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.751776757959,16.1888582703977,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.78">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">83</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.751874977491,16.1890633269215,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.79">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">84</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.751972650304,16.1892686273119,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.80">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">85</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.752070201723,16.1894739816624,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.81">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">86</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.752265303625,16.1898846909266,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.82">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">87</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.752460402445,16.1902954040314,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.83">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">88</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.752557957897,16.1905007545651,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.84">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">89</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.7526555097,16.1907061090422,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.85">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">90</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.752753061692,16.1909114634847,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.86">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">91</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.752850613873,16.1911168178927,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.87">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">92</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.752948166244,16.1913221722662,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.88">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">93</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.753045718804,16.1915275266052,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.89">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">94</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.753143271553,16.1917328809097,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.90">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">95</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.753240824492,16.1919382351797,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.91">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">96</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.75333837762,16.1921435894151,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.92">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">97</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.753435930937,16.192348943616,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.93">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">98</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.753533484444,16.1925542977824,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.94">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">99</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.753631038139,16.1927596519143,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.95">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">100</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.753728592025,16.1929650060117,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.96">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">101</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.753826146099,16.1931703600745,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.97">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">102</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.753923700363,16.1933757141028,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.98">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">103</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.754021254817,16.1935810680965,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.99">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">104</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.754118809459,16.1937864220557,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.100">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">105</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.754216364291,16.1939917759804,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.101">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">106</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.754313919313,16.1941971298705,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.102">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">107</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.754411474524,16.1944024837261,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.103">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">108</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.754509048412,16.1946078293438,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.104">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">109</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.754606917875,16.1948130435671,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.105">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">110</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.75470555068,16.1950179161428,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.106">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">111</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.754805409036,16.1952222334343,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.107">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">112</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.754906761807,16.1954258625115,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.108">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">113</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.75500961742,16.195628786821,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.109">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">114</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.755113970632,16.1958309960077,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.110">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">115</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.755219816122,16.1960324797529,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.111">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">116</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.755327148493,16.196233227775,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.112">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">117</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.755435962273,16.1964332298297,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.113">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">118</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.755546251914,16.196632475711,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.114">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">119</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.755658011792,16.1968309552511,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.115">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">120</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.755771236209,16.1970286583216,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.116">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">121</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.755885919392,16.1972255748336,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.117">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">122</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.756002055492,16.1974216947382,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.118">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">123</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.756119638588,16.1976170080272,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.119">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">124</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.756238662684,16.1978115047336,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.120">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">125</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.756481009522,16.1981980087387,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.121">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">126</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.756604319907,16.1983899963135,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.122">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">127</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.756729046575,16.1985811278587,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.123">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">128</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.756855183165,16.1987713936206,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.124">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">129</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.756982723245,16.1989607838893,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.125">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">130</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.757111660311,16.199149289,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.126">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">131</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.757241987785,16.1993368993326,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.127">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">132</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.757373699023,16.1995236053129,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.128">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">133</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.757506787306,16.1997093974128,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.129">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">134</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.757641245846,16.1998942661507,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.130">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">135</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.757777067786,16.2000782020921,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.131">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">136</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.757914246198,16.2002611958501,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.132">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">137</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.758052774086,16.2004432380861,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.133">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">138</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.758192644384,16.2006243195095,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.134">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">139</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.758333849957,16.2008044308792,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.135">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">140</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.758476383604,16.2009835630033,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.136">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">141</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.758620238054,16.20116170674,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.137">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">142</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.75876540597,16.2013388529977,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.138">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">143</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.758911879946,16.201514992736,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.139">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">144</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.759059652511,16.2016901169655,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.140">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">145</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.759208716128,16.2018642167488,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.141">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">146</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.759359063193,16.2020372832008,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.142">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">147</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.759510686035,16.2022093074889,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.143">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">148</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.759663576922,16.2023802808337,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.144">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">149</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.759817728052,16.2025501945097,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.145">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">150</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.759973131564,16.2027190398451,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.146">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">151</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.760129779529,16.2028868082228,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.147">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">152</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.760287663955,16.2030534910804,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.148">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">153</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.76044677679,16.2032190799113,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.149">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">154</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.760607109915,16.2033835662642,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.150">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">155</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.76076865515,16.2035469417445,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.151">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">156</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.760931404255,16.203709198014,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.152">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">157</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.761095348927,16.2038703267915,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.153">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">158</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.761260480802,16.2040303198537,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.154">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">159</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.761426791455,16.2041891690348,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.155">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">160</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.761594272401,16.2043468662278,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.156">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">161</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.761762915095,16.2045034033841,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.157">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">162</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.761932710934,16.2046587725143,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.158">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">163</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.762103651255,16.204812965689,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.159">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">164</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.762275727336,16.2049659750383,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.160">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">165</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.762448930397,16.2051177927529,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.161">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">166</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.762623251603,16.2052684110843,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.162">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">167</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.762798682058,16.2054178223453,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.163">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">168</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.762975212813,16.20556601891,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.164">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">169</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.763152834859,16.2057129932148,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.165">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">170</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.763331539134,16.2058587377582,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.166">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">171</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.76351131652,16.2060032451016,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.167">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">172</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.763692157845,16.2061465078694,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.168">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">173</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.76387405388,16.2062885187496,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.169">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">174</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.764056993823,16.2064292693313,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.170">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">175</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.764240971761,16.206568755058,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.171">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">176</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.764425976355,16.2067069672986,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.172">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">177</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.764611998164,16.206843899,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.173">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">178</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.764799027695,16.2069795431743,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.174">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">179</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.764987055402,16.2071138928993,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.175">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">180</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.765176073146,16.2072469393744,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.176">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">181</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.765365980685,16.2073787979642,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.177">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">182</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.765556496896,16.2075098347224,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.178">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">183</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.765747314674,16.2076404615253,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.179">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">184</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.765938184287,16.2077710178269,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.180">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">185</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.766129054164,16.2079015739654,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.181">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">186</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.766319924298,16.208032129948,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.182">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">187</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.76670166534,16.2082932414461,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.183">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">188</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.766892536248,16.2084237969616,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.184">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">189</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.767083407413,16.2085543523212,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.185">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">190</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.767274278836,16.2086849075251,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.186">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">191</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.767465150516,16.2088154625732,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.187">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">192</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.767656022455,16.2089460174656,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.188">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">193</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.767846894651,16.2090765722022,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.189">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">194</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.768037767105,16.209207126783,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.190">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">195</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.768228639817,16.209337681208,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.191">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">196</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.768412641355,16.2094635355262,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.192">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">17</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.745176371986,16.1755389516005,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.193">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">22</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.745573440411,16.176504881361,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.194">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">28</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.746138935405,16.1777455115684,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.195">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">31</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.74643153702,16.1783615896947,0</coordinates></Point>
+  </Placemark>
+  <Placemark id="vd118_point.196">
+	<ExtendedData><SchemaData schemaUrl="#vd118_point">
+		<SimpleData name="Pier">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.743750216811,16.1719631323072,0</coordinates></Point>
+  </Placemark>
+</Folder>
+</Document></kml>

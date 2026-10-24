@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document id="root_doc">
+<Schema name="VB109" id="VB109">
+	<SimpleField name="Pier" type="int"></SimpleField>
+</Schema>
+<Folder><name>VB109</name>
+  <Placemark id="VB109.1">
+	<ExtendedData><SchemaData schemaUrl="#VB109">
+		<SimpleData name="Pier">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.681709728058,16.1175347680423</coordinates></Point>
+  </Placemark>
+  <Placemark id="VB109.2">
+	<ExtendedData><SchemaData schemaUrl="#VB109">
+		<SimpleData name="Pier">2</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.68193067858,16.1175775007784</coordinates></Point>
+  </Placemark>
+  <Placemark id="VB109.3">
+	<ExtendedData><SchemaData schemaUrl="#VB109">
+		<SimpleData name="Pier">3</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.682159551134,16.1176233865198</coordinates></Point>
+  </Placemark>
+  <Placemark id="VB109.4">
+	<ExtendedData><SchemaData schemaUrl="#VB109">
+		<SimpleData name="Pier">4</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.682388081485,16.1176708472534</coordinates></Point>
+  </Placemark>
+  <Placemark id="VB109.5">
+	<ExtendedData><SchemaData schemaUrl="#VB109">
+		<SimpleData name="Pier">5</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.68261625091,16.1177198872205</coordinates></Point>
+  </Placemark>
+  <Placemark id="VB109.6">
+	<ExtendedData><SchemaData schemaUrl="#VB109">
+		<SimpleData name="Pier">6</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.682844054793,16.1177704983315</coordinates></Point>
+  </Placemark>
+  <Placemark id="VB109.7">
+	<ExtendedData><SchemaData schemaUrl="#VB109">
+		<SimpleData name="Pier">7</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.683071479103,16.1178226820939</coordinates></Point>
+  </Placemark>
+  <Placemark id="VB109.8">
+	<ExtendedData><SchemaData schemaUrl="#VB109">
+		<SimpleData name="Pier">8</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>103.683290346269,16.1178744748789</coordinates></Point>
+  </Placemark>
+</Folder>
+</Document></kml>
