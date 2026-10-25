@@ -33,7 +33,7 @@ window.BPNP_CONFIG = {
     minZoom:        4,
     maxZoom:        21,
     defaultBasemap: 'osm',
-    allowRotate:    false,            // เปิดในเฟส 3D
+    allowRotate:    true,            // เปิดในเฟส 3D
     vectorStyleUrl: 'https://tiles.openfreemap.org/styles/liberty',
     fallbackGlyphs: 'https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf'
   },
