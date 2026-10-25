@@ -5,6 +5,7 @@
 
 > เวอร์ชัน Leaflet (2.x) อยู่ใน repo เดิม ใช้เป็นต้นแบบอ้างอิงระหว่างย้ายเฟส 2–5
 > แนวทางและแผนเฟสทั้งหมด: [`docs/MIGRATION_GUIDE.md`](docs/MIGRATION_GUIDE.md)
+> ผังการทำงานและความเชื่อมโยงของไฟล์: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
 
 ## เริ่มใช้งานครั้งแรก
 
