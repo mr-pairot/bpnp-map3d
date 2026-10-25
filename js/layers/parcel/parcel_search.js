@@ -1,65 +1,67 @@
 /* js/layers/parcel/parcel_search.js
  * ─────────────────────────────────────────────────────────────────────────
- * ค้นหารหัสแปลง (แทน leaflet-search.js) — แสดงเฉพาะตอนเปิดชั้นแปลงเวนคืน
- *   พิมพ์รหัส → รายการแนะนำ (ขึ้นต้นด้วยข้อความที่พิมพ์ก่อน แล้วจึงที่มีข้อความนั้น)
- *   เลือก / Enter → บินไปที่แปลง (ซูม Leaflet 16) + popup + กะพริบ
- *   ค้นทั้งแปลงในเขตเวนคืนและ Pay Out (แปลงหลักมาก่อน เหมือนเดิม)
+ * ค้นหารหัสแปลง — หน้าตาและตำแหน่งเหมือน leaflet-search ของเวอร์ชันเดิม
+ *   - มุมขวาบน เหนือ legend แปลงเวนคืน (แสดงเฉพาะตอนเปิดชั้นแปลงเวนคืน)
+ *   - ปุ่ม 26×26 รูป assets/ui/search-icon-2.png (sprite 3 สถานะ: ปกติ / ชี้เมาส์ / ยกเลิก)
+ *   - กดปุ่ม → ช่องพิมพ์กว้าง 113 px ขอบน้ำเงิน ทางซ้ายของปุ่ม + รายการแนะนำด้านล่าง
+ *   - เลือก / Enter / กดปุ่มค้นหา → บินไปที่แปลง (ซูม Leaflet 16) + popup + กะพริบ
+ *   - ค้นทั้งแปลงในเขตเวนคืนและ Pay Out (แปลงหลักก่อน เหมือนเดิม)
+ * CSS: css/layers/parcel.css
  * ───────────────────────────────────────────────────────────────────────── */
 (function () {
   'use strict';
   const esc = BPNP.escapeHtml;
-  const MAX_ITEMS = 12;
+  const MAX_TIPS = 50;
 
-  let btn = null, box = null, input = null, list = null, msg = null;
+  let ctl = null, input = null, tips = null, alertEl = null;
   let index = null, active = -1, results = [];
 
   function build() {
-    if (btn) return;
-    btn = BPNP.ui.createStandardButton({
-      id: 'parcelSearchBtn',
-      imageSrc: 'assets/ui/search.png',
-      style: { top: 'calc(var(--safe-top) + (var(--map-btn-size) + var(--map-gap)) * 2)', left: 'var(--safe-left)', display: 'none' },
-      title: 'ค้นหารหัสแปลง',
-      onClick: () => (box.classList.contains('open') ? close() : open())
+    if (ctl) return;
+    ctl = document.createElement('div');
+    ctl.className = 'parcel-search-ctl';
+    ctl.innerHTML = `
+      <input class="ps-input" type="text" placeholder="ค้นหาด้วยรหัสแปลง..." autocomplete="off" aria-label="ค้นหาด้วยรหัสแปลง">
+      <a class="ps-cancel" href="#" title="ยกเลิก"><span>ยกเลิก</span></a>
+      <button class="ps-button" type="button" title="ค้นหา..."></button>
+      <ul class="ps-tips"></ul>
+      <div class="ps-alert"></div>`;
+    input   = ctl.querySelector('.ps-input');
+    tips    = ctl.querySelector('.ps-tips');
+    alertEl = ctl.querySelector('.ps-alert');
+
+    ['mousedown', 'touchstart', 'wheel', 'dblclick'].forEach(ev =>
+      ctl.addEventListener(ev, e => e.stopPropagation(), { passive: true }));
+    ctl.addEventListener('contextmenu', e => e.preventDefault());
+
+    // ปุ่มค้นหา: ยังไม่ขยาย → ขยาย / ขยายแล้วมีข้อความ → ค้นหา / ว่าง → ย่อ
+    ctl.querySelector('.ps-button').addEventListener('click', e => {
+      e.preventDefault(); e.stopPropagation();
+      if (!ctl.classList.contains('open')) { expand(); return; }
+      if (input.value.trim()) choose(results[active >= 0 ? active : 0]);
+      else collapse();
     });
-
-    box = document.createElement('div');
-    box.className = 'parcel-search-box';
-    box.innerHTML = `
-      <div class="parcel-search-row">
-        <input type="search" placeholder="ค้นหาด้วยรหัสแปลง..." autocomplete="off" aria-label="ค้นหาด้วยรหัสแปลง">
-        <button type="button" class="parcel-search-cancel" title="ยกเลิก">ยกเลิก</button>
-      </div>
-      <div class="parcel-search-msg"></div>
-      <ul class="parcel-search-list"></ul>`;
-    document.body.appendChild(box);
-    input = box.querySelector('input');
-    list  = box.querySelector('ul');
-    msg   = box.querySelector('.parcel-search-msg');
-    ['mousedown', 'touchstart', 'wheel', 'dblclick', 'contextmenu', 'click'].forEach(ev =>
-      box.addEventListener(ev, e => e.stopPropagation(), { passive: ev !== 'click' && ev !== 'contextmenu' }));
-
-    box.querySelector('.parcel-search-cancel').addEventListener('click', close);
+    ctl.querySelector('.ps-cancel').addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); collapse(); });
     input.addEventListener('input', update);
     input.addEventListener('keydown', e => {
       if (e.key === 'ArrowDown') { e.preventDefault(); setActive(Math.min(active + 1, results.length - 1)); }
       else if (e.key === 'ArrowUp') { e.preventDefault(); setActive(Math.max(active - 1, 0)); }
       else if (e.key === 'Enter') { e.preventDefault(); choose(results[active >= 0 ? active : 0]); }
-      else if (e.key === 'Escape') { close(); }
+      else if (e.key === 'Escape') { collapse(); }
       e.stopPropagation();   // ไม่ให้ Space/Esc ไปหยุดวงกระเพื่อมของเครื่องมือดูพิกัด
     });
     document.addEventListener('click', e => {
-      if (box.classList.contains('open') && !box.contains(e.target) && !btn.contains(e.target)) close();
+      if (ctl.classList.contains('open') && !ctl.contains(e.target) && !input.value.trim()) collapse();
     });
-    BPNP.ui.leftColumnAdd(btn, 20, top => { btn.style.top = top; box.style.top = top; });
   }
 
   function update() {
     const q = input.value.trim().toLowerCase();
-    list.innerHTML = '';
-    msg.textContent = '';
+    tips.innerHTML = '';
+    alertEl.textContent = '';
     active = -1;
     results = [];
+    ctl.classList.toggle('has-text', !!q);
     if (!q) return;
     if (!index) index = BPNP.layers.parcel.searchIndex();
     const starts = [], contains = [];
@@ -68,46 +70,48 @@
       if (c.indexOf(q) === 0) starts.push(it);
       else if (c.indexOf(q) > 0) contains.push(it);
     });
-    results = starts.concat(contains).slice(0, MAX_ITEMS);
-    if (!results.length) { msg.textContent = 'ไม่พบข้อมูล'; return; }
+    results = starts.concat(contains).slice(0, MAX_TIPS);
+    if (!results.length) { alertEl.textContent = 'ไม่พบข้อมูล'; return; }
     results.forEach((it, i) => {
       const li = document.createElement('li');
-      li.innerHTML = `${esc(it.code)}${it.source === 'payout' ? ' <small>(นอกเขตเวนคืน)</small>' : ''}`;
-      li.addEventListener('click', () => choose(it));
+      li.className = 'ps-tip';
+      li.innerHTML = `${esc(it.code)}${it.source === 'payout' ? ' <small>(นอกเขต)</small>' : ''}`;
+      li.addEventListener('click', e => { e.stopPropagation(); choose(it); });
       li.addEventListener('mouseenter', () => setActive(i));
-      list.appendChild(li);
+      tips.appendChild(li);
     });
   }
 
   function setActive(i) {
     active = i;
-    list.querySelectorAll('li').forEach((li, k) => li.classList.toggle('active', k === i));
+    tips.querySelectorAll('li').forEach((li, k) => li.classList.toggle('ps-tip-select', k === i));
   }
 
   function choose(it) {
-    if (!it) { msg.textContent = 'ไม่พบข้อมูล'; return; }
-    close();
+    if (!it) { alertEl.textContent = 'ไม่พบข้อมูล'; return; }
+    collapse();
     BPNP.layers.parcel.goTo(it.source, it.index, { leafletZoom: 16 });
     BPNP.auth && BPNP.auth.logUserEvent('Search Parcel', it.code);
   }
 
-  function open() {
-    box.classList.add('open');
-    btn.classList.add('active');
+  function expand() {
+    ctl.classList.add('open');
     setTimeout(() => input.focus(), 50);
   }
 
-  function close() {
-    if (!box) return;
-    box.classList.remove('open');
-    btn.classList.remove('active');
+  function collapse() {
+    if (!ctl) return;
+    ctl.classList.remove('open', 'has-text');
     input.value = '';
-    list.innerHTML = '';
-    msg.textContent = '';
+    tips.innerHTML = '';
+    alertEl.textContent = '';
+    input.blur();
   }
 
   BPNP.layers.parcelSearch = {
-    show() { build(); index = null; btn.style.display = ''; BPNP.ui.leftColumnRefresh(); },
-    hide() { if (!btn) return; close(); btn.style.display = 'none'; BPNP.ui.leftColumnRefresh(); }
+    // วางไว้บนสุดของมุมขวาบน (เหนือ legend) เหมือนลำดับใน Leaflet: ปุ่มเต็มจอ → ค้นหา → legend
+    show() { build(); index = null; BPNP.layers.utils.legendStack().prepend(ctl); },
+    hide() { if (!ctl) return; collapse(); ctl.remove(); },
+    get element() { return ctl; }
   };
 })();

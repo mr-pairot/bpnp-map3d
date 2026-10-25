@@ -196,7 +196,11 @@
         onHideList: () => BPNP.ui.bottomPanel.hide()
       });
     }
-    U.legendStack().prepend(legendEl);
+    // ลำดับมุมขวาบนเหมือนเดิม: ช่องค้นหา → legend
+    const stack = U.legendStack();
+    const searchEl = BPNP.layers.parcelSearch && BPNP.layers.parcelSearch.element;
+    if (searchEl && searchEl.parentNode === stack) searchEl.after(legendEl);
+    else stack.prepend(legendEl);
   }
 
   function register(map) {
@@ -251,8 +255,8 @@
         });
       },
       onShow: () => {
-        showLegend();
         if (BPNP.layers.parcelSearch) BPNP.layers.parcelSearch.show();
+        showLegend();
         BPNP.auth && BPNP.auth.logUserEvent('Open Layer', 'เปิดเลเยอร์ ข้อมูลเวนคืน (พร้อม Pay Out)');
       },
       onHide: () => {

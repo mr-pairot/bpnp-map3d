@@ -1,8 +1,8 @@
 {
-  "version": "3.3.03",
+  "version": "3.3.04",
   "build": "",
   "changelog": [
-    "แก้ลายเส้นโครงสร้างขาดหาย (Overpass, Underpass, สะพานเหล็ก, Box Culvert)"
+    "ปุ่มค้นหาแปลงที่ดินกลับเป็นแบบเดิม (มุมขวาบน)"
   ],
   "dataVersions": {}
 }
