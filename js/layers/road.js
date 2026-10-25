@@ -12,6 +12,8 @@
   const SUBMITTED = ['==', ['to-string', ['get', 'Submit']], '1'];
   // รูปที่ติด _fillOnly ใช้วาดพื้นอย่างเดียว เส้นขอบวาดจาก feature _outline (ดู tools/kml2geojson.js)
   const NOT_FILL_ONLY = ['!=', ['get', '_fillOnly'], true];
+  // ชั้น fill ต้องไม่รับ feature เส้น — MapLibre จะปิดเส้นเป็นวงแล้วระบายสี (เกิดลิ่ม/เส้นเกิน)
+  const NOT_OUTLINE = ['!=', ['get', '_outline'], true];
 
   const FILL_BY_TYPE = ['match', ['downcase', ['to-string', ['get', 'Type']]],
     'asphaltic',    '#256718',
@@ -53,7 +55,7 @@
       build: async () => ({
         sources: { 'src-road': { type: 'geojson', data: await U.loadGeoJSON([cfg.source, cfg.source2]) } },
         layers: [
-          { id: 'road-fill', type: 'fill', source: 'src-road', minzoom,
+          { id: 'road-fill', type: 'fill', source: 'src-road', minzoom, filter: NOT_OUTLINE,
             paint: { 'fill-color': FILL_BY_TYPE, 'fill-opacity': 0.9 } },
           { id: 'road-line-submitted', type: 'line', source: 'src-road', minzoom, filter: ['all', SUBMITTED, NOT_FILL_ONLY],
             paint: { 'line-color': 'blue', 'line-width': 1, 'line-opacity': 1 } },

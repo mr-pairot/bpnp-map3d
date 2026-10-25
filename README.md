@@ -49,7 +49,8 @@ js/boot/            loader, auth (LIFF + session), maintenance, check_update, ap
 js/core/            namespace (BPNP), storage, toast, geo_utils, alignment (Sta/O/S), data_cache
 js/map/             map_core, basemaps, layer_registry, popup, controls
 js/layers/          layers_config, layer_utils, raster_overlays, alignment, railway, road, video_links,
-                    parcel/ (parcel, parcel_legend, parcel_search), structure/ (footing, underpass_box, height_signs, bridge, bridge_panel, bridge_alert)
+                    parcel/ (parcel, parcel_legend, parcel_search), structure/ (footing, underpass_box, height_signs, bridge, bridge_panel, bridge_alert),
+                    doh_km, progress/ (track_progress, sw_loc, sw_panel, sw_summary)
 js/ui/              ui_manager, layer_panel, bottom_panel, welcome_popup, about_popup
 js/tools/           my_location, click_point
 js/app.js           ประกอบแอป
@@ -69,6 +70,6 @@ tools/              build.js, kml2geojson.js, หน้าทดสอบ
 | 2 | KML→GeoJSON, เลเยอร์สไตล์ตายตัว | ✔ 3.1.00 |
 | 3 | แปลงเวนคืน, Underpass, Box Culvert, popup | ✔ 3.2.00 |
 | 4A | Bridge (การ์ด, ตาราง, แจ้งเตือนล่าช้า, ป้ายความสูง) | ✔ 3.3.00 |
-| 4B | หลัก กม. กรมทางหลวง, Track Progress, SW-LOC | – |
+| 4B | หลัก กม. กรมทางหลวง, Track Progress, SW-LOC | ✔ 3.4.00 |
 | 5 | เครื่องมือวัด, Routing, ค้นหา, แปลง UTM | – |
 | 3D | ภูมิประเทศ, เอียง/หมุน, extrusion | – |

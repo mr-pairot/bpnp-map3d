@@ -11,6 +11,8 @@
  *   - Polygon หลาย ring → คำนวณ even-odd แบบแม่นยำด้วย XOR (polyclip-ts) ให้ตรงกับที่ Leaflet วาด "พื้น"
  *     และถ้าเส้นขอบเปลี่ยน เก็บเส้นขอบเดิมทุก ring เป็น feature แยก (_outline: true) ท้ายไฟล์
  *     รูปพื้นของรายการนั้นติด _fillOnly: true → ชั้นเส้นต้องกรอง _fillOnly ออก แล้ววาดจาก _outline แทน
+ *   - ตัดเศษบาง (< 5 ซม.) ที่เกิดจาก XOR ของเส้นขอบที่เกือบทับกัน (เฉพาะผลจาก XOR ไม่แตะรูปชั้นเดียวจากต้นฉบับ)
+ *   - จัดทิศทาง ring ทุก polygon ตาม RFC 7946 (ขอบนอกทวนเข็ม / รูตามเข็ม) — MapLibre ใช้ทิศทางแยกขอบนอกกับรู
  *     (CAD มักส่งชิ้นงานแยกเป็น inner ring นอกรูป หรือส่งเส้นขอบซ้ำหลายชุด)
  *   - ตัด property ด้านสไตล์ของ KML ออก (สไตล์กำหนดใน js/layers/ แทน) เหลือ styleUrl ไว้
  *   - ตัดช่องว่างหัว-ท้ายข้อความ (เช่น "\t12\t" → "12")
@@ -103,7 +105,7 @@ function evenOddPolygons(rings) {
 // even-odd แบบแม่นยำ = XOR ของทุก ring (พื้นที่ที่ถูกครอบเป็นจำนวนคี่ครั้ง) — ตรงกับที่ Leaflet/SVG วาด
 // รองรับเส้นขอบที่ CAD ส่งออกซ้ำหลายชุด (เช่น outer 3 ชุด + inner 3 ชุด) ซึ่งวิธีดูความลึกการซ้อนตัดสินผิด
 let polyclip = null;
-const stats = { xor: 0, snapped: 0, fallback: 0, outlines: 0, flatLines: 0 };
+const stats = { xor: 0, snapped: 0, fallback: 0, outlines: 0, flatLines: 0, slivers: 0, sliverOnly: 0, rewound: 0 };
 function xorRings(rings) {
   rings = rings.filter(r => r.length >= 4);
   if (rings.length <= 1) return rings.length ? [rings] : [];
@@ -114,15 +116,50 @@ function xorRings(rings) {
       const input = snap ? rings.map(r => r.map(([x, y]) => [Math.round(x * snap) / snap, Math.round(y * snap) / snap])) : rings;
       const out = polyclip.xor(...input.map(r => [r]));
       if (snap) stats.snapped++; else stats.xor++;
-      return out.map(poly => poly.map(ring => ring.map(([x, y]) => [round(x), round(y)])));
+      return dropSlivers(out.map(poly => poly.map(ring => ring.map(([x, y]) => [round(x), round(y)]))));
     } catch (err) { /* ลองขั้นถัดไป */ }
   }
   stats.fallback++;
   return evenOddPolygons(rings);   // สำรองสุดท้าย: วิธีดูความลึกการซ้อน
 }
 
+// ── เศษบางจาก XOR ──
+// เส้นขอบที่ CAD วาดซ้ำแบบเกือบทับกัน (เช่น ขอบเดียวกันลาก 136 / 173 / 241 จุด) XOR แล้วเหลือแถบบางระดับมิลลิเมตร
+// Leaflet มองไม่เห็น แต่ MapLibre วาดขอบ anti-alias 1 px รอบทุกชิ้น → เป็นเงา/เส้นแปลก ๆ บางระดับซูม
+// → ตัดชิ้นและรูที่ "กว้างเฉลี่ย" (2 × พื้นที่ ÷ เส้นรอบรูป) น้อยกว่า 5 ซม. (ซูมสูงสุด 1 px ≈ 3.6 ซม.)
+const SLIVER_WIDTH_M = 0.05;
+function ringMetrics(r) {
+  const lat = r[0][1] * Math.PI / 180;
+  const sx = 111320 * Math.cos(lat), sy = 110574;
+  let a = 0, p = 0;
+  for (let i = 1; i < r.length; i++) {
+    a += (r[i - 1][0] * r[i][1] - r[i][0] * r[i - 1][1]);
+    p += Math.hypot((r[i][0] - r[i - 1][0]) * sx, (r[i][1] - r[i - 1][1]) * sy);
+  }
+  return { area: Math.abs(a / 2) * sx * sy, perim: p };
+}
+const isSliver = r => { const m = ringMetrics(r); return m.perim > 0 && (2 * m.area / m.perim) < SLIVER_WIDTH_M; };
+let sliverSpare = null;   // เศษชิ้นใหญ่สุดของรูปที่กำลังแปลง (ใช้เมื่อทั้งรูปเหลือแต่เศษ)
+function dropSlivers(polys) {
+  const kept = [];
+  polys.forEach(poly => {
+    if (isSliver(poly[0])) {
+      stats.slivers++;
+      const a = ringMetrics(poly[0]).area;
+      if (!sliverSpare || a > sliverSpare.area) sliverSpare = { area: a, poly };
+      return;
+    }
+    const holes = poly.slice(1).filter(h => { const s = isSliver(h); if (s) stats.slivers++; return !s; });
+    kept.push([poly[0]].concat(holes));
+  });
+  return kept;
+}
+
 function fixPolygon(g) {
-  const list = g.type === 'Polygon' ? xorRings(g.coordinates) : g.coordinates.flatMap(xorRings);
+  sliverSpare = null;
+  let list = g.type === 'Polygon' ? xorRings(g.coordinates) : g.coordinates.flatMap(xorRings);
+  // ทั้งรูปเหลือแต่เศษ → เก็บชิ้นใหญ่สุดไว้ 1 ชิ้น (รายการไม่หายจากจำนวน/การค้นหา) — ตัดสินทั้งรูป ไม่ใช่รายส่วนย่อย
+  if (!list.length && sliverSpare) { list = [sliverSpare.poly]; stats.sliverOnly++; }
   if (!list.length) return null;
   return list.length === 1 ? { type: 'Polygon', coordinates: list[0] } : { type: 'MultiPolygon', coordinates: list };
 }
@@ -131,6 +168,26 @@ const MULTI = { Point: 'MultiPoint', LineString: 'MultiLineString', Polygon: 'Mu
 const BASE  = { MultiPoint: 'Point', MultiLineString: 'LineString', MultiPolygon: 'Polygon' };
 
 // GeometryCollection → [geometry, ...] ที่ MapLibre แสดงได้ตรง ๆ
+// ── ทิศทาง ring (RFC 7946: ขอบนอกทวนเข็ม, รูตามเข็ม) ──
+// MapLibre ไม่ได้ใช้การจัดกลุ่ม polygon ของ GeoJSON หลังตัด tile แต่แยก "ขอบนอก/รู" จากทิศทางการวน ring
+// ถ้าในรายการเดียวมีขอบนอกวนสลับทิศ (CAD วาดคนละทิศ + ผล XOR) ชิ้นที่วนกลับทิศจะถูกอ่านเป็น "รู" ของชิ้นก่อนหน้า
+// → พื้นวาดผิดเป็นลิ่ม/เส้นเกิน และเปลี่ยนตามระดับซูม · Leaflet (even-odd) ไม่สนทิศทางจึงไม่เคยเห็น
+const signedArea = r => { let a = 0; for (let i = 1; i < r.length; i++) a += r[i - 1][0] * r[i][1] - r[i][0] * r[i - 1][1]; return a / 2; };
+function rewindPoly(poly) {
+  return poly.map((ring, k) => {
+    const ccw = signedArea(ring) > 0;
+    const wantCcw = k === 0;
+    if (ccw !== wantCcw) stats.rewound++;
+    return ccw === wantCcw ? ring : ring.slice().reverse();
+  });
+}
+function rewind(g) {
+  if (!g) return g;
+  if (g.type === 'Polygon') return { type: 'Polygon', coordinates: rewindPoly(g.coordinates) };
+  if (g.type === 'MultiPolygon') return { type: 'MultiPolygon', coordinates: g.coordinates.map(rewindPoly) };
+  return g;
+}
+
 // คืน [{ geometry, outline }] — outline = เส้นขอบเดิมทุก ring (MultiLineString) เมื่อ XOR ทำให้เส้นขอบเปลี่ยน
 // เหตุผล: Leaflet วาด "เส้นขอบ" ของทุก ring แต่ "พื้น" ใช้ even-odd → ถ้าใช้รูป XOR อย่างเดียว
 //         เส้นที่ CAD วาดซ้ำเป็นจำนวนคู่จะหายไปพร้อมพื้น (เช่น Overpass หายราว 1 ใน 3)
@@ -138,7 +195,7 @@ function normalizeGeometry(g) {
   const res = [];
   normalizeRaw(g).forEach(x => {
     if (x.type !== 'Polygon' && x.type !== 'MultiPolygon') { res.push({ geometry: x, outline: null }); return; }
-    const fixed = fixPolygon(x);
+    const fixed = rewind(fixPolygon(x));
     // ring ที่ไม่มีพื้นที่ (เช่น เส้นที่ CAD ส่งออกเป็น "polygon" 3 จุด A→B→A) Leaflet ยังวาดเป็นเส้น → ต้องเก็บเป็นเส้นขอบ
     const outline = (!fixed || outlineChanged(x, fixed)) ? ringsAsLines(x) : null;
     if (!fixed && !outline) return;
@@ -286,7 +343,7 @@ function run({ quiet = false } = {}) {
     inTotal += inSize; outTotal += outSize;
     if (!quiet) console.log(`  ${rel.padEnd(34)} ${String(fc.features.length).padStart(5)} features  ${kb(inSize)} → ${kb(outSize)}`);
   });
-  console.log(`✔ KML → GeoJSON: ${files.length} ไฟล์ (${kb(inTotal)} → ${kb(outTotal)}) · polygon even-odd: ${stats.xor + stats.snapped} XOR${stats.snapped ? ` (${stats.snapped} ต้องปัดพิกัดหยาบขึ้น)` : ''}${stats.fallback ? `, ⚠ ${stats.fallback} ใช้วิธีสำรอง` : ''} · เส้นขอบแยก ${stats.outlines} รูป · เส้น 2–3 จุด ${stats.flatLines} เส้น`);
+  console.log(`✔ KML → GeoJSON: ${files.length} ไฟล์ (${kb(inTotal)} → ${kb(outTotal)}) · polygon even-odd: ${stats.xor + stats.snapped} XOR${stats.snapped ? ` (${stats.snapped} ต้องปัดพิกัดหยาบขึ้น)` : ''}${stats.fallback ? `, ⚠ ${stats.fallback} ใช้วิธีสำรอง` : ''} · เส้นขอบแยก ${stats.outlines} รูป · เส้น 2–3 จุด ${stats.flatLines} เส้น · ตัดเศษบาง ${stats.slivers} ชิ้น · กลับทิศ ring ${stats.rewound} วง${stats.sliverOnly ? ` (${stats.sliverOnly} รูปเหลือแต่เศษ เก็บชิ้นใหญ่สุดไว้)` : ''}`);
   return files.length;
 }
 

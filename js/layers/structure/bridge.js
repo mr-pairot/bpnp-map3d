@@ -583,7 +583,7 @@ window.animateBridgeNumbers = function (element) {
           const p = f.properties || {};
           if (p._outline) {
             const steel = source.id === 'steel_bridge' || String(p.Type || source.name).includes('Steel');
-            outlines.push({ type: 'Feature', properties: { _fill: fillColor(source.id, steel) }, geometry: f.geometry });
+            outlines.push({ type: 'Feature', properties: { _fill: fillColor(source.id, steel), _outline: true }, geometry: f.geometry });
             return;
           }
           if (!/Polygon/.test(f.geometry.type)) return;
@@ -669,7 +669,7 @@ window.animateBridgeNumbers = function (element) {
             [SRC_PT]: { type: 'geojson', data: { type: 'FeatureCollection', features: pts } }
           },
           layers: [
-            { id: SRC + '-fill', type: 'fill', source: SRC, minzoom: Z_PATH, paint: { 'fill-color': ['get', '_fill'], 'fill-opacity': 0.3 } },
+            { id: SRC + '-fill', type: 'fill', source: SRC, minzoom: Z_PATH, filter: ['!=', ['get', '_outline'], true], paint: { 'fill-color': ['get', '_fill'], 'fill-opacity': 0.3 } },
             { id: SRC + '-line', type: 'line', source: SRC, minzoom: Z_PATH, filter: ['!=', ['get', '_fillOnly'], true],
               paint: { 'line-color': ['get', '_fill'], 'line-width': 1, 'line-opacity': 1 } },
             { id: SRC_PT + '-circle', type: 'circle', source: SRC_PT, minzoom: Z_POINT,

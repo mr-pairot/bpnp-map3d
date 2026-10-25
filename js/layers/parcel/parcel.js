@@ -31,6 +31,8 @@
   // รูปที่ติด _fillOnly ใช้วาดพื้นอย่างเดียว เส้นขอบวาดจาก feature _outline ท้ายไฟล์ (ดู tools/kml2geojson.js)
   const NOT_FILL_ONLY = ['!=', ['get', '_fillOnly'], true];
   const isOutline = f => !!(f && f.properties && f.properties._outline);
+  // ชั้น fill ต้องไม่รับ feature เส้น — MapLibre จะปิดเส้นเป็นวงแล้วระบายสี (เกิดลิ่ม/เส้นเกิน)
+  const NOT_OUTLINE = ['!=', ['get', '_outline'], true];
 
   const SRC = 'src-parcel', SRC_PAY = 'src-payout', SRC_FLASH = 'src-parcel-flash';
   const MIN_ZOOM = U.z(11);
@@ -226,11 +228,11 @@
             [SRC_FLASH]: { type: 'geojson', data: empty }
           },
           layers: [
-            { id: 'parcel-fill', type: 'fill', source: SRC, minzoom: MIN_ZOOM, paint: { 'fill-color': FILL, 'fill-opacity': 0.5 } },
+            { id: 'parcel-fill', type: 'fill', source: SRC, minzoom: MIN_ZOOM, filter: NOT_OUTLINE, paint: { 'fill-color': FILL, 'fill-opacity': 0.5 } },
             lineLayer('parcel-line-solid', SOLID, LINE, 2, null),
             lineLayer('parcel-line-dash', DASH44, LINE, WIDTH44, [2, 2]),
             lineLayer('parcel-line-default', ['all', ['!', SOLID], ['!', DASH44]], C.default, 1, [2, 4]),
-            { id: 'payout-fill', type: 'fill', source: SRC_PAY, minzoom: MIN_ZOOM, paint: { 'fill-color': '#CCCCCC', 'fill-opacity': 0.5 } },
+            { id: 'payout-fill', type: 'fill', source: SRC_PAY, minzoom: MIN_ZOOM, filter: NOT_OUTLINE, paint: { 'fill-color': '#CCCCCC', 'fill-opacity': 0.5 } },
             { id: 'payout-line', type: 'line', source: SRC_PAY, minzoom: MIN_ZOOM, filter: NOT_FILL_ONLY, paint: { 'line-color': '#FEFDEC', 'line-width': 1, 'line-opacity': 1 } },
             { id: 'parcel-flash-fill', type: 'fill', source: SRC_FLASH, paint: { 'fill-color': '#FF6666', 'fill-opacity': 0.8 } },
             { id: 'parcel-flash-line', type: 'line', source: SRC_FLASH, paint: { 'line-color': '#FF0000', 'line-width': 5, 'line-opacity': 1 } }

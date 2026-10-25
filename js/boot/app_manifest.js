@@ -47,7 +47,12 @@ BPNP.boot.LAYER_SCRIPTS = [
   'js/layers/structure/underpass_box.js',
   'js/layers/structure/bridge.js',
   'js/layers/structure/bridge_panel.js',
-  'js/layers/structure/bridge_alert.js'
+  'js/layers/structure/bridge_alert.js',
+  'js/layers/doh_km.js',
+  'js/layers/progress/track_progress.js',
+  'js/layers/progress/sw_summary.js',
+  'js/layers/progress/sw_panel.js',
+  'js/layers/progress/sw_loc.js'
 ];
 
 // ประกอบแอป — โหลดหลังสุดเสมอ
@@ -70,5 +75,9 @@ BPNP.boot.APP_CSS = [
   'css/layers/structure.css',
   'css/ui/bottom_panel.css',
   'css/layers/bridge.css',
-  'css/layers/bridge_alert.css'
+  'css/layers/bridge_alert.css',
+  'css/layers/doh_km.css',
+  'css/layers/track_progress.css',
+  'css/layers/sw_loc.css',
+  'css/layers/sw_panel.css'
 ];

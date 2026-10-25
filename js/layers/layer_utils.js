@@ -42,20 +42,23 @@
   }
 
   // กล่องมุมมนแบบยืดได้ (ขยายตามความยาวข้อความ มุมไม่เสียรูป)
+  // opts: { radius, stroke, strokeWidth }
   function ensureLabelBox(map, id, fill, opts = {}) {
     if (map.hasImage(id)) return id;
     const pr = 2, size = 16 * pr, r = (opts.radius || 4) * pr;
     const c = document.createElement('canvas');
     c.width = c.height = size;
     const g = c.getContext('2d');
+    const sw = opts.stroke ? (opts.strokeWidth || 1) * pr : 0, h = sw / 2;
     g.fillStyle = fill;
     g.beginPath();
-    g.moveTo(r, 0); g.lineTo(size - r, 0); g.quadraticCurveTo(size, 0, size, r);
-    g.lineTo(size, size - r); g.quadraticCurveTo(size, size, size - r, size);
-    g.lineTo(r, size); g.quadraticCurveTo(0, size, 0, size - r);
-    g.lineTo(0, r); g.quadraticCurveTo(0, 0, r, 0);
+    g.moveTo(r, h); g.lineTo(size - r, h); g.quadraticCurveTo(size - h, h, size - h, r);
+    g.lineTo(size - h, size - r); g.quadraticCurveTo(size - h, size - h, size - r, size - h);
+    g.lineTo(r, size - h); g.quadraticCurveTo(h, size - h, h, size - r);
+    g.lineTo(h, r); g.quadraticCurveTo(h, h, r, h);
     g.closePath();
     g.fill();
+    if (sw) { g.strokeStyle = opts.stroke; g.lineWidth = sw; g.stroke(); }
     const data = g.getImageData(0, 0, size, size);
     map.addImage(id, { width: size, height: size, data: data.data }, {
       pixelRatio: pr,

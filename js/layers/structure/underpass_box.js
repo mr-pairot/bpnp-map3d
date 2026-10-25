@@ -191,7 +191,7 @@
             [srcPt]: { type: 'geojson', data: { type: 'FeatureCollection', features: points } }
           },
           layers: [
-            { id: src + '-fill', type: 'fill', source: src, minzoom: Z_PATH, paint: { 'fill-color': ['get', '_fill'], 'fill-opacity': 0.3 } },
+            { id: src + '-fill', type: 'fill', source: src, minzoom: Z_PATH, filter: ['!=', ['get', '_outline'], true], paint: { 'fill-color': ['get', '_fill'], 'fill-opacity': 0.3 } },
             { id: src + '-line', type: 'line', source: src, minzoom: Z_PATH, filter: ['!=', ['get', '_fillOnly'], true],
               paint: { 'line-color': ['get', '_line'], 'line-width': 2, 'line-opacity': T.lineOpacity } },
             { id: srcPt + '-sq', type: 'symbol', source: srcPt, minzoom: Z_NAME,

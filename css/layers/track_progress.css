@@ -1,0 +1,453 @@
+/* css/layers/track_progress.css — แผงกราฟ Track Progress (เดิม css/track_progress.css) */
+/* track_progress.css 
+ * 100ม. per sub-block | 10 sub-blocks = 1 กม. group
+ * v3.4: สีสะพาน (bridge-prog เหลืองอ่อน / bridge-done เหลืองเข้ม) ใช้กับ layer 1-3
+ *       (Subbase/Subgrade, F/N Subballast, Bottom Ballast) ลบกฎ .bridge สีเทาเดิมแล้ว
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;600&display=swap');
+
+:root {
+    /* ── Layer colors (done) ─────────────────────────────────── */
+    --c-sbs-done: #4C039B; 
+    --c-sub-done: #4A90E2; 
+    --c-bot-done: #708090;
+    --c-slp-done: #38DAFE;
+    --c-ral-done: #942700;
+    --c-fas-done: #2C025A;
+    --c-tmp-done: #090;
+
+    /* ── Layer colors (prog / states) ────────────────────────── */
+    --c-sbs-subg: rgba(76, 3, 155, 0.5); 
+    --c-sbs-emba: rgba(139, 69, 19, 0.35); 
+    
+    --c-bot-prog: rgba(112, 128, 144, 0.35);
+    --c-slp-prog: rgba( 56, 218, 254, 0.35);
+    --c-ral-prog: #FA5700;
+    --c-fas-prog: rgba( 92,  56, 254, 0.35);
+    --c-tmp-prog: rgba( 50, 255,  50, 0.7);
+
+    /* ── Bridge (ใช้กับ layer 1-3) ───────────────────────────── */
+    --c-brg-prog: #FFF59D;   /* กำลังสร้างสะพาน (เหลืองอ่อน) */
+    --c-brg-done: #F9A825;   /* สะพานแล้วเสร็จ (เหลืองเข้ม) */
+
+    /* ── Layout ──────────────────────────────────────────────── */
+    --panel-bg:        rgba(255, 255, 255, 1.0); 
+    --panel-border:    #1E5FA8;
+    --block-h:         68px;  
+    --axis-h:          22px;
+    --sub-min-w:       5px;    
+    --sub-max-w:       25px;   
+    --km-gap:          1px;    
+    --sub-gap:         0px;    
+    --scroll-h:        6px;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   PANEL
+   ════════════════════════════════════════════════════════════════ */
+.progress-panel-container {
+    position: absolute;
+    bottom: calc(var(--safe-bottom, 0px) + 18px);
+    left: 50%;
+    transform: translateX(-50%);
+    width: 98%;
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: 8px;
+    box-shadow: 0 10px 15px rgba(0,0,0,0.3), 0 0 0 1px rgba(41,115,203,0.2);
+    z-index: 10000;
+    padding: 10px 12px 10px;
+    color: #333; /* ปรับสี text โดยรวมให้ตัดกับพื้นหลังสว่าง */
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-family: 'Sarabun', 'IBM Plex Mono', sans-serif;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   HEADER
+   ════════════════════════════════════════════════════════════════ */
+.progress-header {
+    border-bottom: 1px solid rgba(41,115,203,0.4);
+    padding-bottom: 8px;
+}
+
+.progress-track-title-container {
+    position: relative; 
+    display: flex;
+    align-items: flex-start; 
+    justify-content: space-between;
+}
+
+.progress-title-wrapper {
+    display: flex;
+    flex-wrap: wrap;       
+    align-items: baseline; 
+    gap: 4px 15px;         
+    padding-right: 40px;   
+}
+
+#progress-track-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #021f59; /* 1.1 title header สี #021f59 */
+    letter-spacing: 0.3px;
+}
+
+.progress-track-subtitle {
+    font-size: 10.5px;
+    color: #555;
+    font-weight: 400;
+}
+
+.progress-track-title-container .bp-close-btn {
+    top: -12px !important;   
+    right: -2px !important; 
+    color: #333; /* สีปุ่มกากบาทให้เข้ากับโทนสว่าง */
+}
+
+/* ════════════════════════════════════════════════════════════════
+   DUAL TRACK LAYOUT
+   ════════════════════════════════════════════════════════════════ */
+.dual-track-layout {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    align-items: flex-start;
+    gap: 0;
+    height: calc(var(--block-h) * 2 + var(--axis-h) + var(--scroll-h));
+}
+
+/* ── Left labels ────────────────────────────────────────────── */
+.track-labels {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding-right: 8px;
+    border-right: 1px solid rgba(41,115,203,0.35);
+    min-width: 69px;
+    flex-shrink: 0;
+    height: calc(var(--block-h) * 2 + var(--axis-h));
+}
+
+.label-row {
+    height: var(--block-h);
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    font-size: 12px;
+    font-weight: 700;
+    color: #021f59; /* สี Label แถว */
+    letter-spacing: 0.2px;
+    white-space: nowrap;
+}
+
+.label-axis {
+    height: var(--axis-h);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    font-size: 12px;
+    color: #8B4513; /* เปลี่ยนสีหลักแกน กม. ให้ดูชัดเจนขึ้น */
+    font-weight: bold;
+    letter-spacing: 0.3px;
+}
+
+.track-icon { margin-right: 4px; font-size: 13px; }
+
+/* ── Data area ──────────────────────────────────────────────── */
+.track-data-area {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 0 1px;
+    margin: 0 4px;
+    scrollbar-width: thin;
+    scrollbar-color: #2973CB rgba(0,0,0,0.1);
+    height: calc(var(--block-h) * 2 + var(--axis-h) + var(--scroll-h));
+}
+
+.track-data-area::-webkit-scrollbar { height: 5px; }
+.track-data-area::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); border-radius: 3px; }
+.track-data-area::-webkit-scrollbar-thumb { background: #2973CB; border-radius: 3px; }
+
+/* ── Rows ───────────────────────────────────────────────────── */
+.data-row {
+    display: flex;
+    height: var(--block-h);
+    gap: var(--km-gap);
+    align-items: stretch;
+    min-width: 100%;
+    width: max-content;
+}
+
+.axis-row {
+    display: flex;
+    height: var(--axis-h);
+    gap: var(--km-gap);
+    align-items: center;
+    min-width: 100%;
+    width: max-content;
+}
+
+/* ── Message (empty state) ──────────────────────────────────── */
+.chart-message {
+    margin: auto;
+    font-size: 12px;
+    color: #555;
+    width: 100%;
+    text-align: center;
+    padding: 4px 0;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   KM GROUP & PROGRESS BLOCK
+   ════════════════════════════════════════════════════════════════ */
+.km-group {
+    display: flex;
+    gap: var(--sub-gap);
+    flex: 1; 
+    min-width: calc(10 * var(--sub-min-w) + 9 * var(--sub-gap));
+    max-width: calc(10 * var(--sub-max-w) + 9 * var(--sub-gap));
+    position: relative;
+}
+
+.progress-block {
+    flex: 1;
+    min-width: var(--sub-min-w);
+    max-width: var(--sub-max-w);
+    display: flex;
+    flex-direction: column-reverse;
+    background: rgba(0,0,0,0.02);
+    border-radius: 0px;
+    overflow: hidden;
+    transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.progress-block:hover {
+    transform: scaleY(1.04);
+    filter: brightness(1.1);
+    z-index: 5;
+}
+
+/* ── Layers (7 ชั้น) ───────────────────────────────────────── */
+.progress-layer {
+    width: 100%;
+    flex: 1;
+    box-sizing: border-box;
+    transition: filter 0.2s ease-out, box-shadow 0.2s ease-out;
+    cursor: pointer;
+    border-top: 1px solid rgba(0, 0, 0, 0.08); /* ปรับเส้นขอบให้เข้ากับพื้นสว่าง */
+}
+.progress-layer:last-child { border-top: none; }
+
+.layer-incomplete {
+    background-color: transparent;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Layer 1: Subbase & Subgrade */
+.layer-1.done { background-color: var(--c-sbs-done); }
+.layer-1.subgrade { background-color: var(--c-sbs-subg); }
+.layer-1.embankment { background-color: var(--c-sbs-emba); }
+.layer-1.bridge-prog { background-color: var(--c-brg-prog); }
+.layer-1.bridge-done { background-color: var(--c-brg-done); }
+
+/* Layer 2: Subballast */
+.layer-2.done { background-color: var(--c-sub-done); }
+.layer-2.bridge-prog { background-color: var(--c-brg-prog); }
+.layer-2.bridge-done { background-color: var(--c-brg-done); }
+
+/* Layer 3: Bottom Ballast */
+.layer-3.done { background-color: var(--c-bot-done); }
+.layer-3.prog { background-color: var(--c-bot-prog); }
+.layer-3.bridge-prog { background-color: var(--c-brg-prog); }
+.layer-3.bridge-done { background-color: var(--c-brg-done); }
+
+/* Layer 4: Sleeper */
+.layer-4.done { background-color: var(--c-slp-done); }
+.layer-4.prog { background-color: var(--c-slp-prog); }
+
+/* Layer 5: Rail */
+.layer-5.done { background-color: var(--c-ral-done); }
+.layer-5.prog { background-color: var(--c-ral-prog); }
+
+/* Layer 6: Fastener */
+.layer-6.done { background-color: var(--c-fas-done); }
+.layer-6.prog { background-color: var(--c-fas-prog); }
+
+/* Layer 7: Tamping */
+.layer-7.done { background-color: var(--c-tmp-done); }
+.layer-7.prog { background-color: var(--c-tmp-prog); }
+
+.progress-layer.hover-active {
+    filter: brightness(1.2) saturate(1.3);
+    box-shadow: inset 0 0 3px rgba(0,0,0,0.2);
+    position: relative;
+    z-index: 2;
+}
+
+/* Hover บนสีเหลือง: brightness(1.2) จะดันสีเข้าใกล้ขาวจนมองไม่เห็น → ใช้ทำให้เข้มลงแทน
+   (ต้องอยู่หลังกฎ .hover-active ด้านบน และ specificity สูงกว่า) */
+.progress-layer.hover-active.bridge-prog,
+.progress-layer.hover-active.bridge-done {
+    filter: brightness(0.92) saturate(1.3);
+}
+
+/* ════════════════════════════════════════════════════════════════
+   AXIS ROW
+   ════════════════════════════════════════════════════════════════ */
+.axis-km-group {
+    flex: 1;
+    min-width: calc(10 * var(--sub-min-w) + 9 * var(--sub-gap));
+    max-width: calc(10 * var(--sub-max-w) + 9 * var(--sub-gap));
+    position: relative;
+    height: var(--axis-h);
+}
+
+.axis-km-group.km-group-border::before {
+    content: "";
+    position: absolute;
+    left: calc((var(--km-gap) / 2 * -1) - 0.5px); 
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background-color: #ccc;
+    z-index: 1;
+}
+
+.axis-tick {
+    position: absolute;
+    left: 0;
+    right: 0;
+    text-align: center;
+    pointer-events: none;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.tick-km {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #8B4513;
+    font-family: 'IBM Plex Mono', monospace;
+    letter-spacing: -0.3px;
+    background: rgba(255, 255, 255, 0.85);
+    padding: 0 3px;
+    border-radius: 2px;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   RIGHT LEGEND
+   ════════════════════════════════════════════════════════════════ */
+.track-legend-right {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding-left: 6px;
+    border-left: 1px solid rgba(41,115,203,0.35);
+    min-width: 75px;
+    flex-shrink: 0;
+    height: calc(var(--block-h) * 2 + var(--axis-h));
+    box-sizing: border-box;
+}
+
+.legend-tasks-group {
+    height: var(--block-h);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.legend-task-item {
+    flex: 1;
+    font-family: 'IBM Plex Sans Thai', sans-serif; 
+    font-size: 9px; 
+   /* font-size: 8.5px;*/
+    color: #333;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    transition: color 0.15s ease, transform 0.15s ease;
+    cursor: default;
+    padding-left: 4px;
+    letter-spacing: -0.2px;
+    min-height: 0;
+}
+
+.legend-task-item.hover-active {
+    color: #021f59;
+    transform: translateX(-4px);
+}
+
+/* ════════════════════════════════════════════════════════════════
+   CUSTOM POPUP
+   ════════════════════════════════════════════════════════════════ */
+.progress-custom-popup {
+    position: fixed;
+    background: rgba(255, 255, 255, 0.98);
+    color: #021f59;
+    border: 1px solid #ccc;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-family: 'Sarabun', 'IBM Plex Mono', sans-serif;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    z-index: 10001;
+    pointer-events: auto;
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(10px) scale(0.95);
+    visibility: hidden; 
+    transition: opacity 0.25s ease-out, transform 0.25s ease-out, visibility 0.25s;
+    white-space: nowrap;
+}
+
+.progress-custom-popup.show {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    visibility: visible;
+}
+
+.progress-custom-popup::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 6px 6px 0;
+    border-style: solid;
+    border-color: #ccc transparent transparent transparent;
+    display: block;
+    width: 0;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   LEGEND DOTS
+   ════════════════════════════════════════════════════════════════ */
+.legend-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 5px;
+    flex-shrink: 0;
+}
+
+.dot-tamping-prog  { background-color: var(--c-tmp-prog); } 
+.dot-tamping-done  { background-color: var(--c-tmp-done); } 
+.dot-fastener      { background-color: var(--c-fas-done); }
+.dot-rail-prog     { background-color: var(--c-ral-prog); }
+.dot-rail-done     { background-color: var(--c-ral-done); }
+.dot-sleeper       { background-color: var(--c-slp-done); }
+.dot-bottomBallast { background-color: var(--c-bot-done); }
+.dot-subballast    { background-color: var(--c-sub-done); }
+.dot-subbase       { background-color: var(--c-sbs-done); } 
+.dot-subgrade      { background-color: var(--c-sbs-subg); }

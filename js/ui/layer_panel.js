@@ -36,7 +36,8 @@
     const overlays = Object.assign({}, prev.overlays);   // เก็บค่าของเลเยอร์ที่ยังไม่รองรับไว้ด้วย
     BPNP.layers.CONFIG.forEach(c => {
       // ชั้นที่ยังไม่รองรับ/โมดูลโหลดไม่สำเร็จ → คงค่าที่บันทึกไว้เดิม
-      if (!BPNP.layers.isSupported(c) || !BPNP.map.registry.has(c.id)) return;
+      // ชั้นที่ไม่อยู่ในรายการ (เช่น หลัก กม. ทล. ที่เปิดจากปุ่มของตัวเอง) ไม่บันทึกสถานะ — เหมือนเดิม
+      if (!BPNP.layers.isSupported(c) || !BPNP.map.registry.has(c.id) || c.isControlVisible === false) return;
       overlays[c.id] = {
         isActive: BPNP.map.registry.isVisible(c.id),
         opacity:  Math.round(BPNP.map.registry.getOpacity(c.id) * 100)
@@ -343,7 +344,7 @@
   function restoreOverlays(settings) {
     const queue = [];
     BPNP.layers.CONFIG.forEach(c => {
-      if (!BPNP.layers.isSupported(c) || !BPNP.map.registry.has(c.id)) return;
+      if (!BPNP.layers.isSupported(c) || !BPNP.map.registry.has(c.id) || c.isControlVisible === false) return;
       const s = settings && settings.overlays && settings.overlays[c.id];
       const active = s ? !!s.isActive : !!c.isDefault;
       const opacity = s && typeof s.opacity === 'number' ? s.opacity : 100;

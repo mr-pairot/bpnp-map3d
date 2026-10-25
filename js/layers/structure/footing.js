@@ -30,7 +30,7 @@
         build: async () => ({
           sources: { [src]: { type: 'geojson', data: await U.loadGeoJSON(BPNP.layers.byId(layoutId).source) } },
           layers: [
-            { id: src + '-fill', type: 'fill', source: src, minzoom: U.z(13), paint: { 'fill-color': 'darkblue', 'fill-opacity': 0.3 } },
+            { id: src + '-fill', type: 'fill', source: src, minzoom: U.z(13), filter: ['!=', ['get', '_outline'], true], paint: { 'fill-color': 'darkblue', 'fill-opacity': 0.3 } },
             { id: src + '-line', type: 'line', source: src, minzoom: U.z(13), filter: ['!=', ['get', '_fillOnly'], true],
               paint: { 'line-color': 'darkblue', 'line-width': 2, 'line-opacity': 1 } }
           ]
