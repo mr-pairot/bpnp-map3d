@@ -215,6 +215,26 @@
         .height-sign-alert-box.show-alert {
             transform: translate(-50%, 0);
         }
+        /* ปุ่มปิดมุมขวาบน — กล่องเป็น pointer-events: none (ไม่บังแผนที่) จึงเปิดให้กดได้เฉพาะปุ่ม */
+        .height-sign-alert-box .alert-close-btn {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 28px;
+            height: 28px;
+            padding: 0;
+            border: none;
+            border-radius: 50%;
+            background: transparent;
+            color: #cbd5e1;
+            font-size: 20px;
+            line-height: 28px;
+            text-align: center;
+            cursor: pointer;
+            pointer-events: auto;
+        }
+        .height-sign-alert-box .alert-close-btn:hover { color: #ffffff; background: rgba(255, 255, 255, 0.12); }
+        .height-sign-alert-box .alert-header { padding-right: 28px; }
         
         /* สไตล์สำหรับส่วนหัวข้อ */
         .alert-header {
@@ -292,6 +312,7 @@ const HeightSignAlert = {
         alertDiv.id = 'height-sign-alert-container';
         alertDiv.className = 'height-sign-alert-box';
         alertDiv.innerHTML = `
+            <button type="button" class="alert-close-btn" title="ปิด" aria-label="ปิด">&times;</button>
             <div class="alert-header">
                 <span class="height-sign-alert-icon">⚠️</span>
                 <span>ข้อมูลป้ายความสูงช่องลอด</span>
@@ -315,6 +336,15 @@ const HeightSignAlert = {
         `;
         
         document.body.appendChild(alertDiv);
+        const btn = alertDiv.querySelector('.alert-close-btn');
+        ['mousedown', 'touchstart', 'dblclick'].forEach(ev => btn.addEventListener(ev, e => e.stopPropagation(), { passive: true }));
+        btn.addEventListener('click', e => { e.stopPropagation(); this.hide(); });
+    },
+    // ปิดกล่องทันที (ป้ายบนแผนที่ยังแสดงตามเดิม) — กล่องจะแสดงอีกครั้งเมื่อเปิดปุ่ม "ป้าย" ครั้งถัดไป
+    hide: function() {
+        if (this._hideTimeout) { clearTimeout(this._hideTimeout); this._hideTimeout = null; }
+        const alertDiv = document.getElementById('height-sign-alert-container');
+        if (alertDiv) alertDiv.classList.remove('show-alert');
     },
 
     update: function() {
