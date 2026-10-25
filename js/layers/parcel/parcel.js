@@ -28,6 +28,9 @@
   const SOLID   = ['match', SW, ['0', '1', '2'], true, false];
   const DASH44  = ['match', SW, ['4', '81', '82', '91', '92'], true, false];
   const WIDTH44 = ['match', SW, ['81', '82'], 2, 1.5];
+  // รูปที่ติด _fillOnly ใช้วาดพื้นอย่างเดียว เส้นขอบวาดจาก feature _outline ท้ายไฟล์ (ดู tools/kml2geojson.js)
+  const NOT_FILL_ONLY = ['!=', ['get', '_fillOnly'], true];
+  const isOutline = f => !!(f && f.properties && f.properties._outline);
 
   const SRC = 'src-parcel', SRC_PAY = 'src-payout', SRC_FLASH = 'src-parcel-flash';
   const MIN_ZOOM = U.z(11);
@@ -179,14 +182,15 @@
   // ── ดัชนีค้นหา (แปลงหลักก่อน แล้วจึง Pay Out เหมือนเดิม) ──
   function searchIndex() {
     const out = [];
-    mainFeatures.forEach((f, i) => { const c = String((f.properties || {}).Code || '').trim(); if (c) out.push({ code: c, source: 'main', index: i }); });
-    payFeatures.forEach((f, i) => { const p = f.properties || {}; const c = String(p.Code || p.name || '').trim(); if (c) out.push({ code: c, source: 'payout', index: i }); });
+    mainFeatures.forEach((f, i) => { if (isOutline(f)) return; const c = String((f.properties || {}).Code || '').trim(); if (c) out.push({ code: c, source: 'main', index: i }); });
+    payFeatures.forEach((f, i) => { if (isOutline(f)) return; const p = f.properties || {}; const c = String(p.Code || p.name || '').trim(); if (c) out.push({ code: c, source: 'payout', index: i }); });
     return out;
   }
 
   function showLegend() {
     if (!legendEl) {
-      legendEl = BPNP.layers.parcelLegend.create(mainFeatures, {
+      // feature _outline อยู่ท้ายไฟล์เสมอ → ตัดออกแล้ว index ของแปลงยังตรงกับ mainFeatures
+      legendEl = BPNP.layers.parcelLegend.create(mainFeatures.filter(f => !isOutline(f)), {
         onSelect: it => goTo('main', it.index, { leafletZoom: 18 }),
         onShowList: (title, items) => BPNP.ui.bottomPanel.show(title, items, it => goTo('main', it.index, { leafletZoom: 18, mode: 'highlight' })),
         onHideList: () => BPNP.ui.bottomPanel.hide()
@@ -208,7 +212,7 @@
         payFeatures = pay.features || [];
         const empty = { type: 'FeatureCollection', features: [] };
         const lineLayer = (id, filter, color, width, dash) => ({
-          id, type: 'line', source: SRC, minzoom: MIN_ZOOM, filter,
+          id, type: 'line', source: SRC, minzoom: MIN_ZOOM, filter: ['all', filter, NOT_FILL_ONLY],
           paint: Object.assign({ 'line-color': color, 'line-width': width, 'line-opacity': 1 }, dash ? { 'line-dasharray': dash } : {})
         });
         return {
@@ -223,7 +227,7 @@
             lineLayer('parcel-line-dash', DASH44, LINE, WIDTH44, [2, 2]),
             lineLayer('parcel-line-default', ['all', ['!', SOLID], ['!', DASH44]], C.default, 1, [2, 4]),
             { id: 'payout-fill', type: 'fill', source: SRC_PAY, minzoom: MIN_ZOOM, paint: { 'fill-color': '#CCCCCC', 'fill-opacity': 0.5 } },
-            { id: 'payout-line', type: 'line', source: SRC_PAY, minzoom: MIN_ZOOM, paint: { 'line-color': '#FEFDEC', 'line-width': 1, 'line-opacity': 1 } },
+            { id: 'payout-line', type: 'line', source: SRC_PAY, minzoom: MIN_ZOOM, filter: NOT_FILL_ONLY, paint: { 'line-color': '#FEFDEC', 'line-width': 1, 'line-opacity': 1 } },
             { id: 'parcel-flash-fill', type: 'fill', source: SRC_FLASH, paint: { 'fill-color': '#FF6666', 'fill-opacity': 0.8 } },
             { id: 'parcel-flash-line', type: 'line', source: SRC_FLASH, paint: { 'line-color': '#FF0000', 'line-width': 5, 'line-opacity': 1 } }
           ]

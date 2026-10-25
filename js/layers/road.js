@@ -10,6 +10,8 @@
   const esc = BPNP.escapeHtml;
 
   const SUBMITTED = ['==', ['to-string', ['get', 'Submit']], '1'];
+  // รูปที่ติด _fillOnly ใช้วาดพื้นอย่างเดียว เส้นขอบวาดจาก feature _outline (ดู tools/kml2geojson.js)
+  const NOT_FILL_ONLY = ['!=', ['get', '_fillOnly'], true];
 
   const FILL_BY_TYPE = ['match', ['downcase', ['to-string', ['get', 'Type']]],
     'asphaltic',    '#256718',
@@ -53,9 +55,9 @@
         layers: [
           { id: 'road-fill', type: 'fill', source: 'src-road', minzoom,
             paint: { 'fill-color': FILL_BY_TYPE, 'fill-opacity': 0.9 } },
-          { id: 'road-line-submitted', type: 'line', source: 'src-road', minzoom, filter: SUBMITTED,
+          { id: 'road-line-submitted', type: 'line', source: 'src-road', minzoom, filter: ['all', SUBMITTED, NOT_FILL_ONLY],
             paint: { 'line-color': 'blue', 'line-width': 1, 'line-opacity': 1 } },
-          { id: 'road-line-pending', type: 'line', source: 'src-road', minzoom, filter: ['!', SUBMITTED],
+          { id: 'road-line-pending', type: 'line', source: 'src-road', minzoom, filter: ['all', ['!', SUBMITTED], NOT_FILL_ONLY],
             paint: { 'line-color': '#FF4500', 'line-width': 1, 'line-opacity': 1, 'line-dasharray': [3, 3] } }
         ]
       }),

@@ -521,6 +521,7 @@ window.animateBridgeNumbers = function (element) {
   const SRC = 'src-bridge', SRC_PT = 'src-bridge-pt';
 
   const features = [];      // ข้อมูลสะพานทั้งหมด (ใช้ร่วมกับแผงตาราง / แจ้งเตือนล่าช้า / ป้ายความสูง)
+  const outlines = [];      // เส้นขอบแยก (_outline) จากตอน build — วาดเป็นเส้นอย่างเดียว
   let loading = null, labels = null, ytLinks = {};
 
   const normalizeSta   = s => (s ? String(s).replace(/\s+/g, '').toLowerCase().replace(/km\.?/g, '').split('.')[0] : '');
@@ -578,8 +579,14 @@ window.animateBridgeNumbers = function (element) {
         let fc;
         try { fc = await U.loadGeoJSON(source.geojson); } catch (e) { console.warn('[Bridge] โหลดไม่สำเร็จ:', source.geojson, e); continue; }
         (fc.features || []).forEach(f => {
-          if (!f.geometry || !/Polygon/.test(f.geometry.type)) return;
+          if (!f.geometry) return;
           const p = f.properties || {};
+          if (p._outline) {
+            const steel = source.id === 'steel_bridge' || String(p.Type || source.name).includes('Steel');
+            outlines.push({ type: 'Feature', properties: { _fill: fillColor(source.id, steel) }, geometry: f.geometry });
+            return;
+          }
+          if (!/Polygon/.test(f.geometry.type)) return;
           const sta = p['Sta.'] || '-';
           const bridgeType = p.Type || source.name;
           const isSteel = source.id === 'steel_bridge' || String(bridgeType).includes('Steel');
@@ -653,7 +660,8 @@ window.animateBridgeNumbers = function (element) {
           variant: z => (z >= Z_LABEL && z < Z_PATH ? 'label' : null),
           create: it => ({ element: labelElement(it.f), anchor: 'center' })
         });
-        const polys = features.map(f => ({ type: 'Feature', properties: { _idx: f.idx, _fill: f.textColor }, geometry: f.geometry }));
+        const polys = features.map(f => ({ type: 'Feature', properties: { _idx: f.idx, _fill: f.textColor, _fillOnly: !!f.properties._fillOnly }, geometry: f.geometry }))
+          .concat(outlines);
         const pts = features.map(f => ({ type: 'Feature', properties: { _idx: f.idx, _fill: f.textColor, _border: f.border }, geometry: { type: 'Point', coordinates: f.center } }));
         return {
           sources: {
@@ -662,7 +670,8 @@ window.animateBridgeNumbers = function (element) {
           },
           layers: [
             { id: SRC + '-fill', type: 'fill', source: SRC, minzoom: Z_PATH, paint: { 'fill-color': ['get', '_fill'], 'fill-opacity': 0.3 } },
-            { id: SRC + '-line', type: 'line', source: SRC, minzoom: Z_PATH, paint: { 'line-color': ['get', '_fill'], 'line-width': 1, 'line-opacity': 1 } },
+            { id: SRC + '-line', type: 'line', source: SRC, minzoom: Z_PATH, filter: ['!=', ['get', '_fillOnly'], true],
+              paint: { 'line-color': ['get', '_fill'], 'line-width': 1, 'line-opacity': 1 } },
             { id: SRC_PT + '-circle', type: 'circle', source: SRC_PT, minzoom: Z_POINT,
               paint: { 'circle-radius': 7, 'circle-color': ['get', '_fill'], 'circle-opacity': 0.95,
                        'circle-stroke-color': ['get', '_border'], 'circle-stroke-width': 3, 'circle-stroke-opacity': 1 } }

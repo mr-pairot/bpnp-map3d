@@ -148,10 +148,13 @@
         const T = TYPES[id];
         const polys = [], points = [];
         (fc.features || []).forEach(f => {
-          if (!f.geometry || !/Polygon/.test(f.geometry.type)) return;
+          if (!f.geometry) return;
           const p = Object.assign({}, f.properties);
           const c = T.colors(p);
           p._fill = c.fill; p._line = c.line; p._border = T.squareBorder(c);
+          // เส้นขอบแยก (_outline) → วาดเป็นเส้นอย่างเดียว ไม่นับเป็นโครงสร้าง
+          if (p._outline) { polys.push({ type: 'Feature', properties: p, geometry: f.geometry }); return; }
+          if (!/Polygon/.test(f.geometry.type)) return;
           const center = U.bboxCenter(f.geometry);
           polys.push({ type: 'Feature', properties: p, geometry: f.geometry });
           points.push({ type: 'Feature', properties: p, geometry: { type: 'Point', coordinates: center } });
@@ -189,7 +192,8 @@
           },
           layers: [
             { id: src + '-fill', type: 'fill', source: src, minzoom: Z_PATH, paint: { 'fill-color': ['get', '_fill'], 'fill-opacity': 0.3 } },
-            { id: src + '-line', type: 'line', source: src, minzoom: Z_PATH, paint: { 'line-color': ['get', '_line'], 'line-width': 2, 'line-opacity': T.lineOpacity } },
+            { id: src + '-line', type: 'line', source: src, minzoom: Z_PATH, filter: ['!=', ['get', '_fillOnly'], true],
+              paint: { 'line-color': ['get', '_line'], 'line-width': 2, 'line-opacity': T.lineOpacity } },
             { id: srcPt + '-sq', type: 'symbol', source: srcPt, minzoom: Z_NAME,
               layout: { 'icon-image': ['get', '_icon'], 'icon-allow-overlap': true, 'icon-ignore-placement': true } }
           ]

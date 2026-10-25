@@ -8,7 +8,9 @@
  *   - แปลงด้วย @tmcw/togeojson (ตัวแปลงมาตรฐาน) + @xmldom/xmldom
  *   - MultiGeometry ที่ได้เป็น GeometryCollection → รวมเป็น Multi* (ชนิดเดียวกัน) หรือแยกเป็นหลาย feature
  *   - ตัดค่าความสูง (z) และปัดพิกัดเหลือทศนิยม 7 ตำแหน่ง (~1 ซม.) → ไฟล์เล็กลงมาก
- *   - Polygon หลาย ring → คำนวณ even-odd แบบแม่นยำด้วย XOR (polyclip-ts) ให้ตรงกับที่ Leaflet วาด
+ *   - Polygon หลาย ring → คำนวณ even-odd แบบแม่นยำด้วย XOR (polyclip-ts) ให้ตรงกับที่ Leaflet วาด "พื้น"
+ *     และถ้าเส้นขอบเปลี่ยน เก็บเส้นขอบเดิมทุก ring เป็น feature แยก (_outline: true) ท้ายไฟล์
+ *     รูปพื้นของรายการนั้นติด _fillOnly: true → ชั้นเส้นต้องกรอง _fillOnly ออก แล้ววาดจาก _outline แทน
  *     (CAD มักส่งชิ้นงานแยกเป็น inner ring นอกรูป หรือส่งเส้นขอบซ้ำหลายชุด)
  *   - ตัด property ด้านสไตล์ของ KML ออก (สไตล์กำหนดใน js/layers/ แทน) เหลือ styleUrl ไว้
  *   - ตัดช่องว่างหัว-ท้ายข้อความ (เช่น "\t12\t" → "12")
@@ -101,7 +103,7 @@ function evenOddPolygons(rings) {
 // even-odd แบบแม่นยำ = XOR ของทุก ring (พื้นที่ที่ถูกครอบเป็นจำนวนคี่ครั้ง) — ตรงกับที่ Leaflet/SVG วาด
 // รองรับเส้นขอบที่ CAD ส่งออกซ้ำหลายชุด (เช่น outer 3 ชุด + inner 3 ชุด) ซึ่งวิธีดูความลึกการซ้อนตัดสินผิด
 let polyclip = null;
-const stats = { xor: 0, snapped: 0, fallback: 0 };
+const stats = { xor: 0, snapped: 0, fallback: 0, outlines: 0, flatLines: 0 };
 function xorRings(rings) {
   rings = rings.filter(r => r.length >= 4);
   if (rings.length <= 1) return rings.length ? [rings] : [];
@@ -129,9 +131,46 @@ const MULTI = { Point: 'MultiPoint', LineString: 'MultiLineString', Polygon: 'Mu
 const BASE  = { MultiPoint: 'Point', MultiLineString: 'LineString', MultiPolygon: 'Polygon' };
 
 // GeometryCollection → [geometry, ...] ที่ MapLibre แสดงได้ตรง ๆ
+// คืน [{ geometry, outline }] — outline = เส้นขอบเดิมทุก ring (MultiLineString) เมื่อ XOR ทำให้เส้นขอบเปลี่ยน
+// เหตุผล: Leaflet วาด "เส้นขอบ" ของทุก ring แต่ "พื้น" ใช้ even-odd → ถ้าใช้รูป XOR อย่างเดียว
+//         เส้นที่ CAD วาดซ้ำเป็นจำนวนคู่จะหายไปพร้อมพื้น (เช่น Overpass หายราว 1 ใน 3)
 function normalizeGeometry(g) {
-  const out = normalizeRaw(g);
-  return out.map(x => (x.type === 'Polygon' || x.type === 'MultiPolygon') ? fixPolygon(x) : x).filter(Boolean);
+  const res = [];
+  normalizeRaw(g).forEach(x => {
+    if (x.type !== 'Polygon' && x.type !== 'MultiPolygon') { res.push({ geometry: x, outline: null }); return; }
+    const fixed = fixPolygon(x);
+    // ring ที่ไม่มีพื้นที่ (เช่น เส้นที่ CAD ส่งออกเป็น "polygon" 3 จุด A→B→A) Leaflet ยังวาดเป็นเส้น → ต้องเก็บเป็นเส้นขอบ
+    const outline = (!fixed || outlineChanged(x, fixed)) ? ringsAsLines(x) : null;
+    if (!fixed && !outline) return;
+    res.push({ geometry: fixed, outline });
+  });
+  return res;
+}
+
+const ringsOf = g => (g.type === 'Polygon' ? g.coordinates : g.coordinates.flat());
+function ringsLength(rings) {
+  let s = 0;
+  rings.forEach(r => { for (let i = 1; i < r.length; i++) s += Math.hypot(r[i][0] - r[i - 1][0], r[i][1] - r[i - 1][1]); });
+  return s;
+}
+// เส้นขอบหลัง XOR สั้นลงเกิน 0.5% หรือจำนวน ring ต่างไป → ต้องเก็บเส้นขอบเดิมไว้วาดแยก
+function outlineChanged(before, after) {
+  const rb = ringsOf(before).filter(r => r.length >= 2), ra = ringsOf(after);
+  if (rb.length !== ra.length) return true;
+  const lb = ringsLength(rb), la = ringsLength(ra);
+  return lb > 0 && Math.abs(lb - la) / lb > 0.005;
+}
+// ring เดิมทั้งหมดเป็นเส้น (ตัด ring ที่ซ้ำกันทุกจุดออก — ไม่มีผลต่อภาพ ช่วยลดขนาดไฟล์)
+function ringsAsLines(g) {
+  const seen = new Set(), lines = [];
+  ringsOf(g).forEach(r => {
+    if (r.length < 2) return;
+    const key = JSON.stringify(r), rev = JSON.stringify(r.slice().reverse());
+    if (seen.has(key) || seen.has(rev)) return;
+    seen.add(key);
+    lines.push(r);
+  });
+  return lines.length ? { type: 'MultiLineString', coordinates: lines } : null;
 }
 
 function normalizeRaw(g) {
@@ -164,16 +203,39 @@ function cleanProps(props) {
   return out;
 }
 
+// ring ที่มีแค่ 2–3 จุด (เส้นที่ CAD ส่งออกเป็น polygon เช่น A→B→A) — togeojson ทิ้งไป แต่ Leaflet วาดเป็นเส้น
+function flatRings(placemark) {
+  const out = [];
+  const polys = placemark.getElementsByTagName('Polygon');
+  for (let i = 0; i < polys.length; i++) {
+    const cs = polys[i].getElementsByTagName('coordinates');
+    for (let j = 0; j < cs.length; j++) {
+      const pts = String(cs[j].textContent || '').trim().split(/\s+/).map(t => t.split(',').map(Number)).filter(p => p.length >= 2 && isFinite(p[0]) && isFinite(p[1]));
+      if (pts.length >= 2 && pts.length < 4) out.push(cleanCoords(pts.map(p => [p[0], p[1]])));
+    }
+  }
+  return out;
+}
+
 function convertFile(file, deps) {
   const xml = fs.readFileSync(file, 'utf8');
   const doc = new deps.DOMParser().parseFromString(xml, 'text/xml');
   const fc  = deps.togeojson.kml(doc);
+  const pms = doc.getElementsByTagName('Placemark');
+  const sameOrder = pms.length === fc.features.length;   // togeojson: 1 Placemark → 1 feature ตามลำดับ
+  if (!sameOrder) console.warn(`  ⚠ ${path.basename(file)}: จำนวน Placemark ไม่ตรงกับผลแปลง — ข้ามการเก็บเส้น 2–3 จุด`);
 
   const features = [];
+  const outlines = [];      // ต่อท้ายไฟล์ → ลำดับ (index) ของรูปทรงหลักไม่เปลี่ยน
   let skipped = 0;
-  fc.features.forEach(f => {
+  fc.features.forEach((f, fi) => {
     const props = cleanProps(f.properties);
     const fb0 = stats.fallback;
+    const flat = sameOrder ? flatRings(pms[fi]) : [];
+    if (flat.length) {
+      outlines.push({ type: 'Feature', properties: Object.assign({}, props, { _outline: true }), geometry: { type: 'MultiLineString', coordinates: flat } });
+      stats.flatLines += flat.length;
+    }
     let geoms = normalizeGeometry(f.geometry);
     if (stats.fallback > fb0) {
       console.warn(`  ⚠ ${path.basename(file)} รายการที่ ${fc.features.indexOf(f)} (${props.name || props['Sta.'] || '-'}): คำนวณ even-odd แบบแม่นยำไม่ได้ ใช้วิธีสำรอง — ตรวจการแสดงผลจุดนี้`);
@@ -182,13 +244,28 @@ function convertFile(file, deps) {
     if (!geoms.length) {
       const lat = parseFloat(props.Latitude ?? props.latitude ?? props.lat);
       const lng = parseFloat(props.Longitude ?? props.longitude ?? props.lng ?? props.lon);
-      if (isFinite(lat) && isFinite(lng)) geoms = [{ type: 'Point', coordinates: [round(lng), round(lat)] }];
+      if (isFinite(lat) && isFinite(lng)) geoms = [{ geometry: { type: 'Point', coordinates: [round(lng), round(lat)] }, outline: null }];
     }
     if (!geoms.length) { skipped++; return; }
-    geoms.forEach(geometry => features.push({ type: 'Feature', properties: props, geometry }));
+    geoms.forEach(({ geometry, outline }) => {
+      if (!geometry) {
+        // ไม่มีพื้นที่ให้ระบาย มีแต่เส้น
+        outlines.push({ type: 'Feature', properties: Object.assign({}, props, { _outline: true }), geometry: outline });
+        stats.outlines++;
+        return;
+      }
+      if (outline) {
+        // รูปทรงนี้ใช้วาด "พื้น" อย่างเดียว · เส้นขอบวาดจาก feature _outline ท้ายไฟล์
+        features.push({ type: 'Feature', properties: Object.assign({}, props, { _fillOnly: true }), geometry });
+        outlines.push({ type: 'Feature', properties: Object.assign({}, props, { _outline: true }), geometry: outline });
+        stats.outlines++;
+      } else {
+        features.push({ type: 'Feature', properties: props, geometry });
+      }
+    });
   });
   if (skipped) console.warn(`  ⚠ ${path.basename(file)}: ข้าม ${skipped} รายการที่ไม่มีพิกัด`);
-  return { type: 'FeatureCollection', features };
+  return { type: 'FeatureCollection', features: features.concat(outlines) };
 }
 
 function run({ quiet = false } = {}) {
@@ -209,7 +286,7 @@ function run({ quiet = false } = {}) {
     inTotal += inSize; outTotal += outSize;
     if (!quiet) console.log(`  ${rel.padEnd(34)} ${String(fc.features.length).padStart(5)} features  ${kb(inSize)} → ${kb(outSize)}`);
   });
-  console.log(`✔ KML → GeoJSON: ${files.length} ไฟล์ (${kb(inTotal)} → ${kb(outTotal)}) · polygon even-odd: ${stats.xor + stats.snapped} XOR${stats.snapped ? ` (${stats.snapped} ต้องปัดพิกัดหยาบขึ้น)` : ''}${stats.fallback ? `, ⚠ ${stats.fallback} ใช้วิธีสำรอง` : ''}`);
+  console.log(`✔ KML → GeoJSON: ${files.length} ไฟล์ (${kb(inTotal)} → ${kb(outTotal)}) · polygon even-odd: ${stats.xor + stats.snapped} XOR${stats.snapped ? ` (${stats.snapped} ต้องปัดพิกัดหยาบขึ้น)` : ''}${stats.fallback ? `, ⚠ ${stats.fallback} ใช้วิธีสำรอง` : ''} · เส้นขอบแยก ${stats.outlines} รูป · เส้น 2–3 จุด ${stats.flatLines} เส้น`);
   return files.length;
 }
 

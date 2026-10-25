@@ -637,8 +637,8 @@ input[type="range"].opacity-slider::-moz-range-progress {
 }
 .layer-grip {
   flex: 0 0 auto;
-  width: 8px;
-  margin-left: -8px;       /* ดึงชิดซ้าย: ห่างขอบ panel 6 px (ชิดกรอบหมวดด้านใน) */
+  width: 8px;              /* พอดีกับสัญลักษณ์ ⋮ (จุดแถวเดียว) */
+  margin-left: -8px;       /* ชิดซ้าย: ห่างขอบ panel 6 px (ชิดกรอบหมวดด้านใน) */
   margin-right: 4px;
   color: #9ca3af;
   font-size: 13px;
@@ -646,7 +646,7 @@ input[type="range"].opacity-slider::-moz-range-progress {
   letter-spacing: 0px;
   text-align: center;
   cursor: grab;
-  touch-action: none;          /* แตะที่จับ = ลากทันที ไม่เลื่อนหน้า */
+  touch-action: none;      /* แตะที่จับ = ลากทันที ไม่เลื่อนหน้า */
 }
 .layer-grip:hover { color: #4b5563; }
 .layer-item.touch-dragging .layer-grip { cursor: grabbing; color: #1E90FF; }
