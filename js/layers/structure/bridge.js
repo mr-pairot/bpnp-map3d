@@ -711,6 +711,25 @@ window.animateBridgeNumbers = function (element) {
         await loadAll();
         return features.filter(f => f.heightLimit).map(f => ({ lngLat: f.center, size: String(f.heightLimit) }));
       }, { anchorY: -(7 + 4) });
+
+      // ป้ายความสูงภาคสนาม (เดิม mark_Sign.js → SignLayerManager) — data/json/height_signs.json 64 ป้าย
+      // วางตาม STA + offset · offset < 0 ป้ายอยู่เหนือจุด (anchorY 44) / อื่น ๆ ใต้จุด (−10) · status 0 = ตัวเลขแดง
+      BPNP.layers.heightSigns.registerGroup('field', async () => {
+        await BPNP.alignment.load();
+        const list = await BPNP.core.dataCache.getJSON('data/json/height_signs.json');
+        const esc = BPNP.escapeHtml;
+        return (list || []).map(sg => {
+          const p = BPNP.alignment.pointAt(Number(sg.sta), Number(sg.offset) || 0);
+          if (!p) { console.warn('[FieldSigns] ไม่พบ STA ในแนวทาง:', sg.sta); return null; }
+          const below = !(Number(sg.offset) < 0);
+          return {
+            lngLat: [p.lng, p.lat], size: sg.height, status: sg.status,
+            anchorY: below ? -10 : 44,
+            title: sg.description ? `<b>STA:</b> ${esc(sg.sta)}<br><b>Offset:</b> ${esc(sg.offset)} ม.<br>${BPNP.safeHtml(sg.description)}` : null,
+            titleBelow: below
+          };
+        }).filter(Boolean);
+      });
     }
   }
 

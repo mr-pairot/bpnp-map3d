@@ -21,8 +21,12 @@
   // ปุ่ม "Pier" ของ Footing VBxx → เลเยอร์ป้าย pierNameVBxx
   const pierLayerOf = id => id.replace('layoutFooting', 'pierName');
   // ปุ่ม "ป้าย" (ป้ายความสูง) → กลุ่มใน height_signs.js
-  const HS_GROUP = { layer_underpass: 'underpass', layer_bridge: 'bridge' };
-  const hsAvailable = c => !!(c.hasHeightSignToggle && BPNP.layers.heightSigns && BPNP.layers.heightSigns.has(HS_GROUP[c.id]));
+  // สะพาน: ปุ่มเดียวเปิดทั้งป้ายสะพาน (bridge_progress) และป้ายภาคสนาม (height_signs.json) — เหมือนเดิม
+  const HS_GROUP = { layer_underpass: ['underpass'], layer_bridge: ['bridge', 'field'] };
+  const hsGroups = c => (HS_GROUP[c.id] || []).filter(g => BPNP.layers.heightSigns && BPNP.layers.heightSigns.has(g));
+  const hsAvailable = c => !!(c.hasHeightSignToggle && hsGroups(c).length);
+  const hsEnabled = c => hsGroups(c).some(g => BPNP.layers.heightSigns.isEnabled(g));
+  const hsSet = async (c, on) => (await Promise.all(hsGroups(c).map(g => BPNP.layers.heightSigns.setEnabled(g, on)))).some(Boolean);
 
   // ── settings ──
   function loadSettings() {
@@ -43,7 +47,7 @@
         opacity:  Math.round(BPNP.map.registry.getOpacity(c.id) * 100)
       };
       if (c.hasPierToggle) overlays[c.id].showPierToggle = BPNP.map.registry.isVisible(pierLayerOf(c.id));
-      if (hsAvailable(c))  overlays[c.id].showHeightSign = BPNP.layers.heightSigns.isEnabled(HS_GROUP[c.id]);
+      if (hsAvailable(c))  overlays[c.id].showHeightSign = hsEnabled(c);
     });
     const order = Array.from(document.querySelectorAll(`#${LISTS.general} .layer-item[data-layer-id]`)).map(el => el.dataset.layerId);
     BPNP.storage.setJSON(SETTINGS_KEY, {
@@ -130,7 +134,7 @@
       if (hsCb) {
         hsCb.addEventListener('change', async () => {
           if (hsCb.checked) BPNP.core.toast.show('กำลังโหลดป้ายความสูง...', true);
-          const ok = await BPNP.layers.heightSigns.setEnabled(HS_GROUP[c.id], hsCb.checked);
+          const ok = await hsSet(c, hsCb.checked);
           BPNP.core.toast.hide();
           if (!ok && hsCb.checked) { hsCb.checked = false; BPNP.ui.showAlert('โหลดป้ายความสูงไม่สำเร็จ'); }
           saveSettings();
@@ -355,7 +359,7 @@
       if (hsAvailable(c) && s && s.showHeightSign) {
         const hsCb = document.querySelector(`.height-toggle-cb[data-layer-id="${c.id}"]`);
         if (hsCb) hsCb.checked = true;
-        BPNP.layers.heightSigns.setEnabled(HS_GROUP[c.id], true);
+        hsSet(c, true);
       }
       if (c.hasPierToggle && s && s.showPierToggle) {
         const pierCb = document.querySelector(`.pier-toggle-cb[data-layer-id="${c.id}"]`);

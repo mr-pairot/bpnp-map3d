@@ -1,6 +1,6 @@
 # BPNP Map 3D — ผังการทำงานและความเชื่อมโยงของไฟล์
 
-> สถานะ: v3.4.00 · ชั้นข้อมูลครบทุกชั้น (เฟส 0–4) · งานที่เหลือ: เก็บตก 4A, เฟส 5 เครื่องมือ, เฟส 3D
+> สถานะ: v3.4.01 · ชั้นข้อมูลครบทุกชั้น (เฟส 0–4) · งานที่เหลือ: เฟส 5 เครื่องมือ, เฟส 3D
 > แผนภาพด้านล่างเป็น Mermaid — GitHub วาดให้อัตโนมัติเมื่อเปิดไฟล์นี้บนเว็บ
 
 ---
@@ -98,7 +98,7 @@ flowchart TB
 | `ui/bottom_panel.js` | ตารางรายการแปลง | — | bottomPanel.js |
 | `layers/structure/footing.js` | Footing VB45–VB118 + Pier | `kml/footing/*` | main.js |
 | `layers/structure/underpass_box.js` | Underpass + Box Culvert + legend | `kml/structure/underpass`, `box_culvert` | main.js, setUnderpassLegend.js |
-| `layers/structure/height_signs.js` | ป้ายความสูง (กลุ่ม underpass, bridge) + กล่องอธิบาย | — | HeightSignManager.js, HeightSignAlert.js |
+| `layers/structure/height_signs.js` | ป้ายความสูง (กลุ่ม underpass, bridge, field) + กล่องอธิบาย | `json/height_signs.json` (กลุ่ม field) | HeightSignManager.js, HeightSignAlert.js, mark_Sign.js |
 | `layers/structure/bridge.js` | สะพานเหล็ก/คอนกรีต/Overpass + การ์ดความคืบหน้า | `kml/structure/bridge_sb`, `bridge_cb`, `overpass`, `json/bridge_progress.json` | BridgeLayerManager3.js |
 | `layers/structure/bridge_panel.js` | ตารางความก้าวหน้างานสะพาน | — | BridgeBottomPanel.js |
 | `layers/structure/bridge_alert.js` | แจ้งเตือนงานล่าช้า | — | Critical_Alert_Str.js |
@@ -112,9 +112,6 @@ flowchart TB
 
 ```mermaid
 flowchart TB
-    subgraph A4["เก็บตกเฟส 4A"]
-        x1["structure/height_signs.js (เพิ่มกลุ่ม signs)<br/>เดิม mark_Sign.js · ป้ายภาคสนาม 64 ป้ายจาก json/height_signs.json"]
-    end
     subgraph P5["เฟส 5 เครื่องมือ (js/tools/)"]
         t1["search_km.js<br/>เดิม search_sta.js · ปุ่ม assets/ui/search.png คอลัมน์ซ้ายแถวบนสุด"]
         t2["measure/<br/>เดิม mp.js · mpex.js · mpem.js (วัด + บ่อขุด/ดินถม)"]
@@ -127,12 +124,11 @@ flowchart TB
         d2["ยกความสูงโครงสร้าง<br/>สะพาน · ตอม่อ · Underpass (fill-extrusion)"]
     end
     U["ใช้โมดูลที่มี: core/geo_utils · core/alignment · map/layer_registry (slot tools) · ui/ui_manager (ปุ่ม/คอลัมน์ซ้าย)"]
-    A4 -.-> U
     P5 -.-> U
     D3 -.-> U
 ```
 
-**เก็บตก 4A (พบตอนทำผังนี้):** `mark_Sign.js` เดิมมี `SignLayerManager` ซึ่งวาดป้ายความสูงเพิ่มจาก `signs.json` (64 ป้าย วางตาม STA + offset, ตัวเลขแดง/ดำตาม status, tooltip คำอธิบาย) เมื่อเปิดปุ่ม "ป้าย" ของ Bridge — v3.3.00 ย้ายเฉพาะป้ายจาก `bridge_progress.json` ยังไม่ได้ย้ายส่วนนี้
+**เก็บตก 4A — เสร็จใน v3.4.01:** ป้ายความสูงภาคสนามจาก `mark_Sign.js` (`SignLayerManager`) ย้ายเป็นกลุ่ม `field` ใน `height_signs.js` ลงทะเบียนใน `bridge.js` · ตำแหน่งจาก `core/alignment.js → pointAt(sta, offset)` · ปุ่ม "ป้าย" ของ Bridge เปิดทั้งกลุ่ม `bridge` และ `field`
 
 ---
 

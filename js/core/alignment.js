@@ -6,6 +6,7 @@
  *   BPNP.alignment.load()                       → Promise<points[]>  (โหลดครั้งเดียว)
  *   BPNP.alignment.findStationOffset(pt, opts)  → { station, offset } | null
  *   BPNP.alignment.formatStation(m)             → "245+500"
+ *   BPNP.alignment.pointAt(sta, offset)         → { lat, lng, heading } (ต้อง load() ก่อน)
  *   BPNP.alignment.isLoaded / .points
  *
  * pt รับได้ทั้ง {lat, lng} และ [lng, lat]
@@ -117,8 +118,42 @@
     return best;
   }
 
+  // ── ตำแหน่งจาก STA + ระยะตั้งฉาก (offset > 0 = ขวาของทิศทางเดินรถ, < 0 = ซ้าย) ──
+  // สูตรเดียวกับ mark_Sign.js / sw_loc_manager.js เดิม: เทียบสัดส่วนระหว่างจุด 20 ม. + bearing + ระยะบนทรงกลม
+  function pointAt(sta, offset = 0) {
+    const data = state.points;
+    let lower = null, upper = null;
+    for (let i = 0; i < data.length; i++) {
+      if (data[i].station === sta) { lower = data[i]; upper = data[i + 1] || data[i]; break; }
+      if (data[i].station < sta) lower = data[i];
+      else if (data[i].station > sta) { upper = data[i]; break; }
+    }
+    if (!lower || !upper) return null;
+    let lat = lower.lat, lng = lower.lng, heading = 0;
+    if (lower.station !== upper.station) {
+      const ratio = (sta - lower.station) / (upper.station - lower.station);
+      lat = lower.lat + ratio * (upper.lat - lower.lat);
+      lng = lower.lng + ratio * (upper.lng - lower.lng);
+      heading = bearing(lower.lat, lower.lng, upper.lat, upper.lng);
+    }
+    if (!offset) return { lat, lng, heading };
+    const R = 6378137, toRad = d => d * Math.PI / 180, toDeg = r => r * 180 / Math.PI;
+    const brng = toRad((heading + (offset > 0 ? 90 : -90)) % 360);
+    const la = toRad(lat), lo = toRad(lng), ad = Math.abs(offset) / R;
+    const nla = Math.asin(Math.sin(la) * Math.cos(ad) + Math.cos(la) * Math.sin(ad) * Math.cos(brng));
+    const nlo = lo + Math.atan2(Math.sin(brng) * Math.sin(ad) * Math.cos(la), Math.cos(ad) - Math.sin(la) * Math.sin(nla));
+    return { lat: toDeg(nla), lng: toDeg(nlo), heading };
+  }
+  function bearing(lat1, lng1, lat2, lng2) {
+    const toRad = d => d * Math.PI / 180, toDeg = r => r * 180 / Math.PI;
+    const dLng = toRad(lng2 - lng1);
+    const y = Math.sin(dLng) * Math.cos(toRad(lat2));
+    const x = Math.cos(toRad(lat1)) * Math.sin(toRad(lat2)) - Math.sin(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.cos(dLng);
+    return (toDeg(Math.atan2(y, x)) + 360) % 360;
+  }
+
   BPNP.alignment = {
-    LIMIT_OFFSET, SEG_MAX_LEN, load, findStationOffset, formatStation,
+    LIMIT_OFFSET, SEG_MAX_LEN, load, findStationOffset, formatStation, pointAt,
     get isLoaded() { return state.loaded; },
     get points()   { return state.points; }
   };

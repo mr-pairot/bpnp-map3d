@@ -6,7 +6,8 @@
  *   - เปิดแล้วแสดงกล่องอธิบายความหมายสีตัวเลข 20 วินาที
  *   - ใช้ซ้ำกับสะพานในเฟส 4 (กลุ่ม 'bridge')
  *
- *   BPNP.layers.heightSigns.registerGroup(name, loadItems, { anchorY })   loadItems() → Promise<[{ lngLat, size, status }]>
+ *   BPNP.layers.heightSigns.registerGroup(name, loadItems, { anchorY })
+ *     loadItems() → Promise<[{ lngLat, size, status, anchorY?, title?, titleBelow? }]>
  *   BPNP.layers.heightSigns.setEnabled(name, bool) / isEnabled(name)
  *
  * HTML marker: ห้ามกำหนด position ที่ element ราก (.height-limit-sign ใช้ ::before/::after อิงกับรากที่ MapLibre วางแบบ absolute)
@@ -95,6 +96,21 @@
     return isNaN(h) ? null : h;
   }
 
+  // ป้ายที่มีคำอธิบาย (ป้ายภาคสนาม): ชี้เมาส์แล้วแสดง STA / Offset / คำอธิบาย (เดิม bindTooltip ของ mark_Sign.js)
+  let tip = null;
+  function attachTooltip(el, it) {
+    if (!it.title) return;
+    el.style.cursor = 'pointer';
+    el.addEventListener('mouseenter', () => {
+      const map = BPNP.map.instance;
+      if (tip) tip.remove();
+      tip = new maplibregl.Popup({ closeButton: false, closeOnClick: false, className: 'bpnp-hover-label sign-tooltip',
+        anchor: it.titleBelow ? 'top' : 'bottom', offset: it.titleBelow ? [0, 30] : [0, -30] })
+        .setLngLat(it.lngLat).setHTML(it.title).addTo(map);
+    });
+    el.addEventListener('mouseleave', () => { if (tip) { tip.remove(); tip = null; } });
+  }
+
   function element(value, status) {
     const el = document.createElement('div');
     if (value === 'NO_ENTRY') {
@@ -122,16 +138,17 @@
           const key = it.lngLat[0].toFixed(5) + ',' + it.lngLat[1].toFixed(5);
           const slot = used[key] || 0;            // ป้ายซ้อนตำแหน่งเดียวกัน → เรียงไปทางซ้าย (เหมือนเดิม)
           used[key] = slot + 1;
-          items.push({ lngLat: it.lngLat, value, status: it.status, slot });
+          items.push({ lngLat: it.lngLat, value, status: it.status, slot, anchorY: it.anchorY, title: it.title, titleBelow: it.titleBelow });
         });
         g.set = BPNP.layers.utils.htmlMarkerSet(BPNP.map.instance, {
           items,
           variant: z => (z >= MIN_ZOOM ? 'sign' : null),
-          create: it => ({
-            element: element(it.value, it.status),
-            anchor: 'center',
-            offset: [-(it.slot * (SIGN_SIZE + SIGN_GAP)), -(g.anchorY - SIGN_SIZE / 2)]
-          })
+          create: it => {
+            const el = element(it.value, it.status);
+            attachTooltip(el, it);
+            const ay = it.anchorY ?? g.anchorY;   // จุดยึดรายป้าย (ป้ายภาคสนาม) หรือของกลุ่ม
+            return { element: el, anchor: 'center', offset: [-(it.slot * (SIGN_SIZE + SIGN_GAP)), -(ay - SIGN_SIZE / 2)] };
+          }
         });
         return g.set;
       })().catch(err => { g.loading = null; throw err; });
