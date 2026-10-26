@@ -4,7 +4,7 @@
  *   - ปุ่ม "3D" (มุมขวาล่าง เหนือปุ่มตำแหน่งฉัน): เปิด = ภูมิประเทศ + เงาเนินเขา + เอียง 60° + ท่าทางเอียง/หมุน
  *                                               ปิด = กลับเป็นมุมมองตรง ทิศเหนือขึ้น และปิดท่าทางเอียง/หมุน (เหมือนเดิม)
  *   - ท่าทาง: เดสก์ท็อป คลิกขวาลาก / Ctrl+ลาก · จอสัมผัส สองนิ้วหมุน / สองนิ้วลากขึ้นลงเพื่อเอียง
- *   - ปุ่มเข็มทิศ (เหนือปุ่ม 3D): แสดงเมื่อแผนที่หมุนหรือเอียง หัวลูกศรชี้ทิศเหนือ · กด = ทิศเหนือขึ้น + มองตรง
+ *   - ปุ่มเข็มทิศ (เหนือปุ่ม 3D): แสดงตลอดในโหมด 3D หัวลูกศรชี้ทิศเหนือ · กด = ทิศเหนือขึ้น (คงมุมเอียง 3D)
  *   - จำโหมด 3D ไว้ในเครื่อง · ข้อมูลความสูง: AWS Terrain Tiles (config.map.terrain)
  *   - เงาเนินเขาอยู่เหนือแผนที่พื้นหลัง ใต้ชั้นข้อมูลทั้งหมด
  * ───────────────────────────────────────────────────────────────────────── */
@@ -60,17 +60,22 @@
       setGestures(false);
       m.easeTo({ pitch: 0, bearing: 0, duration: opts.animate === false ? 0 : 700 });
     }
-    if (btn3d) btn3d.classList.toggle('active', on);
+    if (btn3d) {
+      btn3d.classList.toggle('active', on);
+      btn3d.title = on ? 'มุมมอง 3D (กดเพื่อกลับเป็น 2D)' : 'มุมมอง 2D (กดเพื่อเปิด 3D: ภูมิประเทศ + เอียง/หมุนแผนที่)';
+    }
+    if (!opts.silent && BPNP.core.toast) BPNP.core.toast.show(on ? 'มุมมอง 3D' : 'มุมมอง 2D', false, 1500);
     BPNP.storage.set(STORE_KEY, on ? '1' : '0');
     updateCompass();
     if (!opts.silent && BPNP.auth) BPNP.auth.logUserEvent('Map 3D', on ? 'เปิด 3D' : 'ปิด 3D');
   }
 
+  // เข็มทิศแสดงตลอดที่อยู่ในโหมด 3D (ซ่อนเฉพาะโหมด 2D) — เดิมแสดงเฉพาะตอนหมุน/เอียง
+  // ทำให้กดเข็มทิศแล้วเข็มทิศหาย ทั้งที่ยังอยู่ในโหมด 3D (ปุ่ม 3D ยังเป็นสีน้ำเงินเข้ม)
   function updateCompass() {
     if (!compass) return;
     const m = map(), bearing = m.getBearing(), pitch = m.getPitch();
-    const show = Math.abs(bearing) > 0.5 || pitch > 0.5;
-    compass.style.display = show ? '' : 'none';
+    compass.style.display = on ? '' : 'none';
     const arrow = compass.querySelector('.compass-needle');
     if (arrow) arrow.style.transform = `rotateX(${Math.min(pitch, 60)}deg) rotate(${-bearing}deg)`;
   }
@@ -92,8 +97,12 @@
                <polygon points="12,22 16,12 12,13.5 8,12" fill="#90a4ae"/>
              </svg>`,
       style: { bottom: row(2), right, display: 'none' },
-      title: 'หันทิศเหนือขึ้น และมองตรง',
-      onClick: () => map().easeTo({ bearing: 0, pitch: 0, duration: 600 })
+      title: 'หันทิศเหนือขึ้น (คงมุมมอง 3D)',
+      // หันทิศเหนือขึ้นโดยคงมุมเอียงไว้ (ถ้ามองตรงอยู่ จะกลับไปเอียงมุม 3D) — ยังอยู่ในโหมด 3D ชัดเจน
+      onClick: () => {
+        const m = map(), pitch = m.getPitch();
+        m.easeTo({ bearing: 0, pitch: pitch < 5 ? cfg().pitch : pitch, duration: 600 });
+      }
     });
     map().on('rotate', updateCompass);
     map().on('pitch', updateCompass);
