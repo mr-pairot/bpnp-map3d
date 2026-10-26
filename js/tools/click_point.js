@@ -69,6 +69,26 @@
   }
 
   // ── popup พิกัด ──
+  // กดค้างแล้วยกนิ้ว: บางเบราว์เซอร์ส่ง click ตามมา → อย่าให้ปิด popup ทันที
+  const POPUP_OPTS = { ignoreClicksMs: 800 };
+
+  // บรรทัดความสูง: แสดงเฉพาะโหมด 3D + เปิดภูมิประเทศ (v3.8.04) · ต่อท้ายคำเตือน (ถ้ามี) ก่อนปุ่ม
+  function elevationLine() {
+    const T = BPNP.map.terrain;
+    if (!T || !T.isTerrainOn || !T.isTerrainOn()) return '';
+    return `<div class="cp-elev" style="margin-top:4px"><span style="color:#888780">ความสูง: กำลังอ่านค่า…</span></div>`;
+  }
+  function fillElevation(popup, lng, lat) {
+    const T = BPNP.map.terrain;
+    if (!popup || !T || !T.isTerrainOn || !T.isTerrainOn()) return;
+    const set = html => { const el = popup.getElement && popup.getElement(); const box = el && el.querySelector('.cp-elev'); if (box) box.innerHTML = html; };
+    T.elevationAt(lng, lat)
+      .then(v => set(v === null
+        ? '<span style="color:#888780">ความสูง: ไม่มีข้อมูล</span>'
+        : `<span style="color:#0f6e56;font-weight:600">ความสูง: ≈ ${Math.round(v).toLocaleString('en-US')} ม. รทก.</span><br><span style="font-size:11px;color:#5f5e5a">โดยประมาณจาก DEM (±หลายเมตร)</span>`))
+      .catch(() => set('<span style="color:#888780">ความสูง: ไม่มีข้อมูล</span>'));
+  }
+
   function showPopup(lngLat) {
     const [lng, lat] = BPNP.geo.toLngLat(lngLat);
     const latS = lat.toFixed(6), lngS = lng.toFixed(6);
@@ -79,11 +99,12 @@
 
     const A = BPNP.alignment;
     if (!A.isLoaded || !A.points.length) {
-      BPNP.map.popup.open([lng, lat], `
+      const p0 = BPNP.map.popup.open([lng, lat], `
         <div class="point-popup-content">
           <strong>พิกัด:</strong> ${latS}, ${lngS}<br><br>
-          <div style="color:orange;">กำลังโหลด alignment...</div><br>${btns}
-        </div>`);
+          <div style="color:orange;">กำลังโหลด alignment...</div>${elevationLine()}<br>${btns}
+        </div>`, POPUP_OPTS);
+      fillElevation(p0, lng, lat);
       A.load().catch(() => {});
       return;
     }
@@ -94,13 +115,14 @@
     else if (Math.abs(res.offset) > A.LIMIT_OFFSET) warn = '<div style="color:red;font-weight:bold">ตำแหน่งค้นหาอยู่ห่างเกินไป</div>';
     else { sta = A.formatStation(res.station); os = res.offset.toFixed(2); }
 
-    BPNP.map.popup.open([lng, lat], `
+    const p1 = BPNP.map.popup.open([lng, lat], `
       <div class="point-popup-content">
         <strong>พิกัด:</strong> ${latS}, ${lngS}<br>
         <span style="color:#000080"><strong>Sta:</strong> ${sta}</span><br>
         <span style="color:#000080"><strong>O/S:</strong> ${os} m.</span><br>
-        ${warn}<br>${btns}
-      </div>`);
+        ${warn}${elevationLine()}<br>${btns}
+      </div>`, POPUP_OPTS);
+    fillElevation(p1, lng, lat);
   }
 
   // ── เงื่อนไขไม่ทำงาน ──
@@ -145,18 +167,21 @@
       showPopup([e.lngLat.lng, e.lngLat.lat]);
     });
 
-    // เมาส์ (ปุ่มซ้าย)
-    map.on('mousedown', e => { if (e.originalEvent.button === 0) beginHold(e); });
+    // เมาส์ (ปุ่มซ้าย) — ข้ามเหตุการณ์เมาส์จำลองที่เบราว์เซอร์สร้างตามหลังการแตะ
+    let lastTouchAt = 0;
+    const fromTouch = () => Date.now() - lastTouchAt < 800;
+    map.on('mousedown', e => { if (e.originalEvent.button === 0 && !fromTouch()) beginHold(e); });
     map.on('mousemove', moveHold);
     map.on('mouseup', clearHold);
 
     // หน้าจอสัมผัส (นิ้วเดียวเท่านั้น — สองนิ้ว = ซูม)
     map.on('touchstart', e => {
+      lastTouchAt = Date.now();
       if (e.originalEvent.touches && e.originalEvent.touches.length === 1) beginHold(e);
       else clearHold();
     });
     map.on('touchmove', moveHold);
-    map.on('touchend', clearHold);
+    map.on('touchend', () => { lastTouchAt = Date.now(); clearHold(); });
     map.on('touchcancel', clearHold);
 
     map.on('movestart', e => { if (e.originalEvent) clearHold(); });
