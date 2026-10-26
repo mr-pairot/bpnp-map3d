@@ -60,13 +60,31 @@
     });
   }
 
+  // จับคู่ตามรูปแบบ กม.: ส่วนหน้า '+' = กม. (ต้องตรงทั้งตัว) · ส่วนหลัง '+' = เมตรที่ขึ้นต้นด้วยค่าที่พิมพ์
+  //   "121+"   → 121+000 … 121+980        "121+5" → 121+500 … 121+580        "10+500" → 10+500
+  //   "121"    → กม. ที่ขึ้นต้นด้วย 121 (121+…, 1210+… ถ้ามี) เรียงตาม กม.
+  // (เดิมตัด '+' ทิ้งแล้วเทียบตัวเลขล้วน "121+" จึงได้ 12+1xx ปนมาด้วย)
+  function matchStations(points, val) {
+    const v = val.replace(/\s+/g, '');
+    let test;
+    if (v.includes('+')) {
+      const [k, m = ''] = v.split('+');
+      if (!/^\d+$/.test(k) || !/^\d*$/.test(m)) return [];
+      const km = Number(k);
+      test = st => Math.floor(st / 1000) === km && String(st % 1000).padStart(3, '0').startsWith(m);
+    } else {
+      if (!/^\d+$/.test(v)) return [];
+      test = st => String(Math.floor(st / 1000)).startsWith(v);
+    }
+    return points.filter(p => test(Number(p.station))).sort((a, b) => a.station - b.station).slice(0, 20);
+  }
+
   async function onInput() {
     const val = input.value.trim();
     if (!val) { suggest.style.display = 'none'; return; }
     const points = await BPNP.alignment.load().catch(() => []);
     if (!points.length) return;
-    const clean = val.replace('+', '');
-    const matches = points.filter(p => formatSta(p.station).includes(val) || String(p.station).startsWith(clean)).slice(0, 20);
+    const matches = matchStations(points, val);
     suggest.innerHTML = '';
     if (!matches.length) { suggest.style.display = 'none'; return; }
     matches.forEach(p => {

@@ -1,24 +1,10 @@
-# ไฟล์ที่เปลี่ยน: 3.6.00 → 3.7.00 (เฟส 5C)
+# ไฟล์ที่เปลี่ยน: 3.7.00 → 3.7.01
 
 วิธีใช้: แตกไฟล์แล้ววางทับใน repo ตาม path เดิม จากนั้น commit + push
-ไม่มีไฟล์ที่ต้องลบ · **มีโฟลเดอร์ใหม่ `js/tools/measure/`** — ตรวจว่าขึ้น GitHub ครบ 5 ไฟล์
-
-## ไฟล์ใหม่ (6)
-
-| ไฟล์ | หน้าที่ |
-|---|---|
-| `js/tools/measure/lcompat.js` | Leaflet ชุดย่อยบน MapLibre สำหรับเครื่องมือวัด |
-| `js/tools/measure/measure_plus.js` | วัดระยะ/พื้นที่/วงกลม (เดิม mp.js) |
-| `js/tools/measure/excavate.js` | ปริมาตรบ่อขุด (เดิม mpex.js) |
-| `js/tools/measure/embankment.js` | ปริมาตรดินถม (เดิม mpem.js) |
-| `js/tools/measure/index.js` | สร้างเครื่องมือ + ปุ่ม |
-| `css/tools/measure.css` | สไตล์เครื่องมือวัด (เดิม mp.css) |
-
-## ไฟล์ที่แก้ (6)
+ไม่มีไฟล์ใหม่ / ไม่มีไฟล์ที่ต้องลบ
 
 | ไฟล์ | สิ่งที่แก้ |
 |---|---|
-| `js/boot/app_manifest.js` | เพิ่มเครื่องมือวัด |
-| `version.json`, `history.json` | 3.7.00 |
-| `README.md` | ตารางเฟส |
-| `docs/MIGRATION_GUIDE.md`, `docs/ARCHITECTURE.md` | หัวข้อ 35 + ผัง |
+| `js/tools/search_km.js` | รายการแนะนำตรงตามที่พิมพ์ (กม. ก่อน '+' ต้องตรงทั้งตัว) |
+| `version.json`, `history.json` | 3.7.01 |
+| `docs/MIGRATION_GUIDE.md` | หัวข้อ 36 |
