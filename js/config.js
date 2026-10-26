@@ -33,7 +33,7 @@ window.BPNP_CONFIG = {
     minZoom:        4,
     maxZoom:        21,
     defaultBasemap: 'osm',
-    allowRotate:    false,            // 2D เริ่มต้น — ปุ่ม 3D เปิดการเอียง/หมุนเอง (js/map/terrain.js)
+    allowRotate:    true,            // 2D เริ่มต้น — ปุ่ม 3D เปิดการเอียง/หมุนเอง (js/map/terrain.js)
     // เฟส 3D: ภูมิประเทศจาก AWS Terrain Tiles (ฟรี ไม่ต้องใช้คีย์, Terrarium encoding)
     terrain: {
       tiles:        'https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png',
