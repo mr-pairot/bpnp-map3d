@@ -10,6 +10,7 @@
  *     ค่าเริ่มต้นปิด (พื้นเทา ไอคอนเทาเข้ม) · เปิด = พื้นน้ำเงินเข้ม ไอคอนขาว · จำค่าที่เลือกล่าสุด
  *   ปุ่มเข็มทิศ (กลม เหนือปุ่ม 3D · เฉพาะโหมด 3D): เข็มหมุนตามทิศเท่านั้น · กด = ทิศเหนือขึ้น คงมุมเอียง
  *   จำโหมด 3D และภูมิประเทศแยกกัน · ข้อมูลความสูง: config.map.terrain (AWS Terrain Tiles)
+ *   elevationAt(lng, lat): ความสูงโดยประมาณ (ม.) — popup ดูพิกัดแสดงเฉพาะเมื่อโหมด 3D + เปิดภูมิประเทศ (v3.8.04)
  * ───────────────────────────────────────────────────────────────────────── */
 (function () {
   'use strict';
@@ -157,5 +158,44 @@
     applyTerrain();
   });
 
-  BPNP.map.terrain = { setMode, setTerrain, isOn: () => on, isTerrainOn: () => on && terrainPref };
+  // ── ความสูงที่จุด (ม. เหนือระดับทะเลปานกลาง โดยประมาณ) ──
+  // อ่านค่าจากภาพความสูงแบบ Terrarium โดยตรง (ไม่ใช่ queryTerrainElevation ซึ่งรวมการขยายความสูง 1.5 เท่า)
+  // height = R·256 + G + B/256 − 32768 · ประมาณค่าแบบ bilinear 4 พิกเซล · เก็บภาพไว้ 24 แผ่นล่าสุด
+  const tileCache = new Map();
+  const ELEV_ZOOM = 14;   // ~9.5 ม./พิกเซล ที่ละติจูดไทย ละเอียดกว่าข้อมูลต้นทาง (~30 ม.)
+  function loadTile(z, x, y) {
+    const key = `${z}/${x}/${y}`;
+    if (tileCache.has(key)) return tileCache.get(key);
+    const url = cfg().tiles.replace('{z}', z).replace('{x}', x).replace('{y}', y);
+    const p = fetch(url, { mode: 'cors' })
+      .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.blob(); })
+      .then(b => createImageBitmap(b))
+      .then(bmp => {
+        const c = document.createElement('canvas'); c.width = bmp.width; c.height = bmp.height;
+        const g = c.getContext('2d', { willReadFrequently: true }); g.drawImage(bmp, 0, 0);
+        return g.getImageData(0, 0, bmp.width, bmp.height);
+      })
+      .catch(err => { tileCache.delete(key); throw err; });
+    tileCache.set(key, p);
+    if (tileCache.size > 24) tileCache.delete(tileCache.keys().next().value);
+    return p;
+  }
+  async function elevationAt(lng, lat) {
+    const z = Math.min(ELEV_ZOOM, cfg().maxzoom || ELEV_ZOOM), n = Math.pow(2, z);
+    const xf = (lng + 180) / 360 * n;
+    const s = Math.sin(lat * Math.PI / 180);
+    const yf = (0.5 - Math.log((1 + s) / (1 - s)) / (4 * Math.PI)) * n;
+    const tx = Math.floor(xf), ty = Math.floor(yf);
+    const img = await loadTile(z, tx, ty);
+    const W = img.width, H = img.height;
+    const px = (xf - tx) * W - 0.5, py = (yf - ty) * H - 0.5;
+    const x0 = Math.max(0, Math.min(W - 1, Math.floor(px))), y0 = Math.max(0, Math.min(H - 1, Math.floor(py)));
+    const x1 = Math.min(W - 1, x0 + 1), y1 = Math.min(H - 1, y0 + 1);
+    const fx = Math.max(0, Math.min(1, px - x0)), fy = Math.max(0, Math.min(1, py - y0));
+    const h = (x, y) => { const i = (y * W + x) * 4, d = img.data; return d[i] * 256 + d[i + 1] + d[i + 2] / 256 - 32768; };
+    const v = h(x0, y0) * (1 - fx) * (1 - fy) + h(x1, y0) * fx * (1 - fy) + h(x0, y1) * (1 - fx) * fy + h(x1, y1) * fx * fy;
+    return isFinite(v) && v > -500 ? v : null;
+  }
+
+  BPNP.map.terrain = { setMode, setTerrain, elevationAt, isOn: () => on, isTerrainOn: () => on && terrainPref };
 })();
