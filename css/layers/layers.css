@@ -14,6 +14,8 @@
   height: 32px;
 }
 .station-marker img {
+  position: relative;         /* ไอคอนวาดทับกล่องป้ายชื่อ (ตำแหน่งเดิม) — v3.8.03 */
+  z-index: 1;
   display: block;
   width: 32px;
   height: 32px;
@@ -22,6 +24,7 @@
 }
 .station-marker-label {
   position: absolute;
+  z-index: 0;                 /* กล่องป้ายชื่ออยู่ใต้ไอคอน */
   bottom: 27px;               /* = offset [0,-25] ของ tooltip เดิม */
   left: 50%;
   transform: translateX(-50%);
