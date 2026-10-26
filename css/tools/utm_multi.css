@@ -1,0 +1,241 @@
+/* css/tools/utm_multi.css — แปลง UTM หลายแถว (เดิม css/convertUTM_MultiRow.css) */
+/* convertUTM_MultiRow.css */
+/* * {
+    font-family: 'Sarabun', sans-serif;
+    font-size: 12px;
+    box-sizing: border-box;
+} */
+
+.multi-convert-panel {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    width: 450px;
+    max-width: 95vw;
+    background: #ffffff;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    z-index: 2000;
+    overflow: hidden;
+}
+
+.multi-convert-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #2c5282; /* โทนสีน้ำเงินเข้มเหมือนเดิม */
+    color: white;
+    padding: 6px 12px;
+    font-size: 14px;
+}
+
+.multi-convert-header h3 {
+    margin: 0;
+    font-weight: 400;
+}
+
+#multiCloseBtn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 3px;
+    transition: background-color 0.2s;
+}
+
+#multiCloseBtn:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+.multi-convert-tabs {
+    display: flex;
+    background: #f7fafc;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.multi-tab-btn {
+    flex: 1;
+    padding: 8px 6px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    color: #4a5568;
+    transition: all 0.2s;
+}
+
+.multi-tab-btn.active {
+    background: white;
+    color: #0b0b0b;
+    border-bottom: 2px solid #2c5282;
+    font-size: small;
+}
+
+.multi-tab-btn:hover:not(.active) {
+    background: #edf2f7;
+}
+
+.multi-convert-body {
+    padding: 8px 10px;
+}
+
+.multi-tab-content {
+    display: none;
+}
+
+.multi-tab-content.active {
+    display: block;
+}
+
+.multi-convert-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin-top: 4px;
+}
+
+/* ====== ตารางใน Tab Lat/Lng → UTM ====== */
+#multi-latlng .multi-convert-table {
+    table-layout: fixed;
+    width: 100%;
+}
+
+#multi-latlng .multi-convert-table th:nth-child(1),
+#multi-latlng .multi-convert-table td:nth-child(1) {
+    width: 25px;
+}
+#multi-latlng .multi-convert-table th:nth-child(2),
+#multi-latlng .multi-convert-table td:nth-child(2) {
+    width: 165px;
+}
+/* col3–4 ใช้ auto → แบ่งที่เหลือเท่าๆกัน */
+#multi-latlng .multi-convert-table th:nth-child(3),
+#multi-latlng .multi-convert-table td:nth-child(3),
+#multi-latlng .multi-convert-table th:nth-child(4),
+#multi-latlng .multi-convert-table td:nth-child(4) {
+    width: calc((100% - 190px) / 2);
+}
+
+/* ====== ตารางใน Tab UTM → Lat/Lng ====== */
+#multi-utm .multi-convert-table {
+    table-layout: fixed;
+    width: 100%;
+}
+
+#multi-utm .multi-convert-table th:nth-child(1),
+#multi-utm .multi-convert-table td:nth-child(1) {
+    width: 25px;
+}
+#multi-utm .multi-convert-table th:nth-child(2),
+#multi-utm .multi-convert-table td:nth-child(2),
+#multi-utm .multi-convert-table th:nth-child(3),
+#multi-utm .multi-convert-table td:nth-child(3) {
+    width: 115px;
+}
+/* col4 (Lat,Lng) ใช้เต็มที่เหลือ */
+#multi-utm .multi-convert-table th:nth-child(4),
+#multi-utm .multi-convert-table td:nth-child(4) {
+    width: auto;
+}
+/*-------------------------------*/
+
+.multi-convert-table th, 
+.multi-convert-table td {
+    border: 1px solid #e2e8f0;
+    padding: 6px;
+    text-align: center;
+}
+
+.multi-convert-table th {
+    background: #f7fafc;
+    font-weight: 500;
+}
+
+.multi-convert-table input {
+    width: 95%;
+    padding: 4px 6px;
+    font-size: 12px;
+    border: 1px solid #cbd5e0;
+    border-radius: 4px;
+}
+
+.multi-convert-table input:focus {
+    outline: none;
+    border-color: #3182ce;
+    box-shadow: 0 0 0 2px rgba(49,130,206,0.2);
+}
+
+.multi-btn-row {
+    margin-top: 8px;
+    display: flex;
+    gap: 8px;
+}
+
+.multi-btn-row button {
+    flex: 1;
+    padding: 6px;
+    border-radius: 4px;
+    border: none;
+    font-weight: 500;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+#multiConvertToUTMBtn,
+#multiConvertToLatLngBtn {
+    background: #3182ce;
+    color: white;
+}
+
+#multiConvertToUTMBtn:hover,
+#multiConvertToLatLngBtn:hover {
+    background: #2c5282;
+}
+
+#multiResetLatLngBtn,
+#multiResetUTMBtn {
+    background: #e2e8f0;
+    color: #4a5568;
+}
+
+#multiResetLatLngBtn:hover,
+#multiResetUTMBtn:hover {
+    background: #cbd5e0;
+}
+
+.multi-tab-content .multi-radio-group {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    font-size: 12px;
+    margin-top: 6px;
+}
+
+.multi-radio-group label {
+    display: flex;
+    gap: 3px;
+    font-weight: 400;
+    color: #4a5568;
+    cursor: pointer;
+}
+
+.multi-radio-group input[type="radio"] {
+    cursor: pointer;
+}
+
+.cell-error {
+    color: red;
+    font-weight: bold;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .multi-convert-panel {
+        width: calc(100vw - 10px);
+        right: 5px;
+    }
+}

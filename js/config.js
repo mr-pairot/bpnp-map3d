@@ -33,7 +33,7 @@ window.BPNP_CONFIG = {
     minZoom:        4,
     maxZoom:        21,
     defaultBasemap: 'osm',
-    allowRotate:    true,            // เปิดในเฟส 3D
+    allowRotate:    false,            // เปิดในเฟส 3D
     vectorStyleUrl: 'https://tiles.openfreemap.org/styles/liberty',
     fallbackGlyphs: 'https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf'
   },
@@ -42,7 +42,9 @@ window.BPNP_CONFIG = {
   keys: {
     tracestrack: 'd576a80f46520757074dce91f3ee2130',
     longdo:      '',
-    tomtom:      ''
+    tomtom:      '',
+    // Longdo API (ค้นหาที่อยู่ ↔ พิกัด) — ค่าเดิมจาก routing_main.js / search_address.js
+    longdoServices: '033be319382d52bd656448efcbafc8ab'
   },
 
   data: {

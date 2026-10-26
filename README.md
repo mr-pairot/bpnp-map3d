@@ -53,7 +53,8 @@ js/layers/          layers_config, layer_utils, raster_overlays, alignment, rail
                     parcel/ (parcel, parcel_legend, parcel_search), structure/ (footing, underpass_box, height_signs, bridge, bridge_panel, bridge_alert),
                     doh_km, progress/ (track_progress, sw_loc, sw_panel, sw_summary)
 js/ui/              ui_manager, layer_panel, bottom_panel, welcome_popup, about_popup
-js/tools/           my_location, click_point
+js/tools/           my_location, click_point, tool_utils, search_km,
+                    search/ (hub, address, utm_convert, utm_multi)
 js/app.js           ประกอบแอป
 css/                โครงเดียวกับ js/
 data/kml|json/      ข้อมูลเลเยอร์ (data/geojson/ สร้างอัตโนมัติ ไม่ต้อง commit)
@@ -72,5 +73,7 @@ tools/              build.js, kml2geojson.js, หน้าทดสอบ
 | 3 | แปลงเวนคืน, Underpass, Box Culvert, popup | ✔ 3.2.00 |
 | 4A | Bridge (การ์ด, ตาราง, แจ้งเตือนล่าช้า, ป้ายความสูง) | ✔ 3.3.00 |
 | 4B | หลัก กม. กรมทางหลวง, Track Progress, SW-LOC | ✔ 3.4.00 |
-| 5 | เครื่องมือวัด, Routing, ค้นหา, แปลง UTM | – |
+| 5A | ค้นหา กม. | ✔ 3.5.00 |
+| 5B | แผงค้นหา/พิกัด: เส้นทาง, หาตำแหน่ง, ที่อยู่, แปลง UTM | ✔ 3.6.00 |
+| 5C | วัดระยะ/พื้นที่ + ปริมาตรบ่อขุด/ดินถม | – |
 | 3D | ภูมิประเทศ, เอียง/หมุน, extrusion | – |

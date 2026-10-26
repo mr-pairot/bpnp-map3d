@@ -1,6 +1,6 @@
 # BPNP Map 3D — ผังการทำงานและความเชื่อมโยงของไฟล์
 
-> สถานะ: v3.4.01 · ชั้นข้อมูลครบทุกชั้น (เฟส 0–4) · งานที่เหลือ: เฟส 5 เครื่องมือ, เฟส 3D
+> สถานะ: v3.6.00 · ชั้นข้อมูลครบทุกชั้น (เฟส 0–4) · เฟส 5A, 5B เสร็จ · งานที่เหลือ: เฟส 5C, เฟส 3D
 > แผนภาพด้านล่างเป็น Mermaid — GitHub วาดให้อัตโนมัติเมื่อเปิดไฟล์นี้บนเว็บ
 
 ---
@@ -105,6 +105,12 @@ flowchart TB
 | `layers/progress/track_progress.js` | กราฟความคืบหน้างานวางราง | `json/km_data.json`, `track_progress.json` | tw_ProgressManager.js, tw_progress.js |
 | `layers/progress/sw_loc.js` | ตู้ LOC 216 ตู้ | `json/sw_loc.json` | sw_loc_manager.js |
 | `layers/progress/sw_panel.js` · `sw_summary.js` | ตาราง + แผงสรุป SW-LOC | — | sw_LocBottomPanel.js, sw_summary_panel.js |
+| `tools/tool_utils.js` | ตัวช่วยร่วมของเครื่องมือ (หมุด, บิน, ซูมพอดี, วงกระเพื่อม, popup, ดาวน์โหลด, กันคลิกทะลุ) | — | (แทนคำสั่ง Leaflet) |
+| `tools/search_km.js` | ค้นหา กม. + หมุด + วงกระเพื่อม | alignment 20 ม. | search_sta.js |
+| `tools/search/hub.js` | แผงค้นหา/พิกัด 5 โหมด + เส้นทาง OSRM + ที่อยู่จากพิกัด | OSRM, Longdo | routing_main.js, routing_ui.js |
+| `tools/search/address.js` | ค้นหาพิกัดจากที่อยู่ | kongvut/thai-province-data, Longdo | search_address.js |
+| `tools/search/utm_convert.js` | แปลง UTM ↔ Lat/Lng ทีละจุด | core/geo_utils | convertUTM.js |
+| `tools/search/utm_multi.js` | แปลงหลายแถว + วางจาก Excel + หมุดเลขแถว | core/geo_utils | convertUTM_MultiRow.js |
 
 ---
 
@@ -113,11 +119,9 @@ flowchart TB
 ```mermaid
 flowchart TB
     subgraph P5["เฟส 5 เครื่องมือ (js/tools/)"]
-        t1["search_km.js<br/>เดิม search_sta.js · ปุ่ม assets/ui/search.png คอลัมน์ซ้ายแถวบนสุด"]
-        t2["measure/<br/>เดิม mp.js · mpex.js · mpem.js (วัด + บ่อขุด/ดินถม)"]
-        t3["routing/<br/>เดิม routing_main.js · routing_ui.js (OSRM)"]
-        t4["search_address.js<br/>เดิม search_address.js"]
-        t5["utm/<br/>เดิม convertUTM.js · convertUTM_MultiRow.js"]
+        t1["✔ 5A search_km.js + tool_utils.js<br/>เดิม search_sta.js · ปุ่ม search.png คอลัมน์ซ้ายแถวบนสุด"]
+        t3["✔ 5B search/ (hub, address, utm_convert, utm_multi)<br/>เส้นทาง OSRM · หาตำแหน่งจากพิกัด · ที่อยู่ · UTM · UTM หลายแถว<br/>เดิม routing_main · routing_ui · search_address · convertUTM × 2"]
+        t2["5C measure/<br/>เดิม mp.js · mpex.js · mpem.js (วัด + บ่อขุด/ดินถม)"]
     end
     subgraph D3["เฟส 3D"]
         d1["map/terrain.js<br/>ภูมิประเทศ · เอียง/หมุน · เข็มทิศ"]

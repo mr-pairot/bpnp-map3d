@@ -52,7 +52,15 @@ BPNP.boot.LAYER_SCRIPTS = [
   'js/layers/progress/track_progress.js',
   'js/layers/progress/sw_summary.js',
   'js/layers/progress/sw_panel.js',
-  'js/layers/progress/sw_loc.js'
+  'js/layers/progress/sw_loc.js',
+
+  // ── เครื่องมือเฟส 5 (ขาดได้เช่นกัน) ──
+  'js/tools/tool_utils.js',
+  'js/tools/search_km.js',
+  'js/tools/search/hub.js',
+  'js/tools/search/address.js',
+  'js/tools/search/utm_convert.js',
+  'js/tools/search/utm_multi.js'
 ];
 
 // ประกอบแอป — โหลดหลังสุดเสมอ
@@ -79,5 +87,10 @@ BPNP.boot.APP_CSS = [
   'css/layers/doh_km.css',
   'css/layers/track_progress.css',
   'css/layers/sw_loc.css',
-  'css/layers/sw_panel.css'
+  'css/layers/sw_panel.css',
+  'css/tools/search_km.css',
+  'css/tools/search_hub.css',
+  'css/tools/search_address.css',
+  'css/tools/utm_convert.css',
+  'css/tools/utm_multi.css'
 ];

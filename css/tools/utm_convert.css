@@ -1,0 +1,194 @@
+/* css/tools/utm_convert.css — แปลง UTM (เดิม css/convertUTM.css) */
+/* convertUTM.css */
+/* * {
+    font-family: 'Sarabun', sans-serif;
+    font-size: 12px;
+    box-sizing: border-box;
+} */
+
+.convert-panel {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    width: 320px;
+    background: #ffffff;
+    border-radius: 5px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    z-index: 1000;
+    overflow: hidden;
+}
+
+.convert-header {
+    background: #2c5282;
+    color: white;
+    padding: 6px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.convert-header h3 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 400;
+}
+
+#closeConvertBtn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 3px;
+    transition: background-color 0.2s;
+}
+
+#closeConvertBtn:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+.convert-tabs {
+    display: flex;
+    background: #f7fafc;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 8px 6px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    color: #4a5568;
+    transition: all 0.2s;
+}
+
+.tab-btn.active {
+    background: white;
+    color: #0b0b0b;
+    border-bottom: 2px solid #2c5282;
+    font-size: small;
+}
+
+.tab-btn:hover:not(.active) {
+    background: #edf2f7;
+}
+
+.convert-body {
+    padding: 8px 10px;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.tab-content label {
+    display: block;
+    margin-bottom: 2px;
+    font-weight: 500;
+    color: #2d3748;
+}
+
+.tab-content input[type="text"] {
+    width: 100%;
+    padding: 4px 8px;
+    margin-bottom: 6px;
+    border: 1px solid #cbd5e0;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.tab-content input[type="text"]:focus {
+    outline: none;
+    border-color: #3182ce;
+    box-shadow: 0 0 0 2px rgba(49, 130, 206, 0.2);
+}
+
+.tab-content .convert-result {
+    background: #f7fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    padding: 6px 8px;
+    min-height: 36px;
+    font-size: 11px;
+    color: #2d3748;
+    line-height: 1.4;
+    margin-top: 4px;
+}
+
+.tab-content .convert-result strong {
+    color: #2c5282;
+}
+
+.tab-content div {
+    padding: 4px 2px 3px 2px;
+}
+
+.tab-content .radio-group {
+    display: flex;
+    justify-content: center; 
+    gap: 12px; 
+    flex-wrap: nowrap; 
+}
+
+.tab-content .radio-group label {
+    display: flex;
+    gap: 3px;
+    font-weight: 400;
+    color: #4a5568;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.tab-content .radio-group input[type="radio"] {
+    margin: 0;
+    cursor: pointer;
+}
+
+.tab-content button {
+    padding: 6px 12px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 12px;
+    margin-right: 6px;
+    transition: background-color 0.2s;
+}
+
+#convertToUTMBtn,
+#convertToLatLngBtn {
+    background: #3182ce;
+    color: white;
+}
+
+#convertToUTMBtn:hover,
+#convertToLatLngBtn:hover {
+    background: #2c5282;
+}
+
+#resetLatLngBtn,
+#resetUTMBtn {
+    background: #e2e8f0;
+    color: #4a5568;
+}
+
+#resetLatLngBtn:hover,
+#resetUTMBtn:hover {
+    background: #cbd5e0;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .convert-panel {
+        width: calc(100vw - 10px);
+        right: 5px;
+    }
+}

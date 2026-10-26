@@ -1,0 +1,153 @@
+/* css/tools/search_address.css — ค้นหาพิกัดจากที่อยู่ (เดิม css/search_address.css) */
+/* search_address.css */
+#addressPanel {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  width: 200px;
+  background: #ffffff;
+  border-radius: 5px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  z-index: 1000;
+  font-family: 'Sarabun', sans-serif;
+  overflow: hidden;
+}
+
+.address-body input[type="text"] {
+  display: block;      
+  width: 188px;  
+  margin: 3px 1px 6px 6px;
+  padding: 5px 2px 5px 5px;
+  border-radius: 5px;
+  border: 1px solid #90e0ef;
+  font-size: 13px;
+  background-color: #f9fdff;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+/* โฟกัสแล้วเปลี่ยนสี */
+.address-body input[type="text"]:focus {
+  outline: none;
+  border-color: #00b4d8;
+  box-shadow: 0 0 4px rgba(0, 180, 216, 0.6);
+  background-color: #fff;
+}
+
+/* ปรับ datalist (dropdown) ให้สวยขึ้นบน browser ส่วนใหญ่ */
+datalist option {
+  font-size: 13px;
+  padding: 4px;
+  border-radius: 5px;
+}
+
+.address-header {
+  background: #2c5282;
+  color: white;
+  padding: 6px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.address-header h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.address-footer {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px 6px 2px 6px; 
+}
+
+.address-footer label {
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+#manualAddress {
+  flex: 1;
+  margin-right: 0; 
+  padding: 6px;
+  border-radius: 5px;
+  border: 1px solid #90e0ef;
+  font-size: 12px;
+}
+
+#manualAddress:focus {
+    outline: none;
+    border-color: #3182ce;
+    box-shadow: 0 0 0 2px rgba(49, 130, 206, 0.2);
+}
+
+.address-search {
+  text-align: center;
+  margin-top: 6px;
+}
+
+#searchAddressBtn {
+  width: 50%;
+  border-radius: 5px;
+  cursor: pointer;
+  padding: 5px 5px 5px 5px;
+  transition: all 0.2s ease;
+  display: block; 
+  margin: 0 auto;
+}
+#searchAddressBtn:hover {
+  background-color: #f0f0f0;
+  border: 2px solid #00afff;
+  
+}
+
+#closeAddressPanel {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 3px;
+  transition: background-color 0.2s;
+}
+#closeAddressPanel:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+#villageResult {
+  margin-top: 10px;
+  font-size: 12px;
+  color: #03045e;
+  padding: 2px 6px 5px 5px;
+}
+
+.highlight-btn {
+  box-shadow: 0 0 10px #4aa3df;
+  transform: scale(1.05);
+  transition: all 0.2s ease;
+}
+
+/**** result display  ****/
+.search-result-item {
+  padding: 6px 10px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.search-result-item:hover {
+  background: #f0f8ff; /* สีฟ้าอ่อนเวลา hover */
+}
+
+.search-result-item .title {
+  font-size: 12px;
+  font-weight: 500;
+  color: #333;
+}
+
+.search-result-item .coords {
+  font-size: 11px;
+  color: gray;
+}
