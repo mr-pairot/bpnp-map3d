@@ -146,20 +146,25 @@
     if (!dataCache[id]) {
       dataCache[id] = U.loadGeoJSON(BPNP.layers.byId(id).source).then(fc => {
         const T = TYPES[id];
-        const polys = [], points = [];
+        const polys = [], points = [], raw = [], outlinesBySta = {};
         (fc.features || []).forEach(f => {
           if (!f.geometry) return;
           const p = Object.assign({}, f.properties);
           const c = T.colors(p);
           p._fill = c.fill; p._line = c.line; p._border = T.squareBorder(c);
           // เส้นขอบแยก (_outline) → วาดเป็นเส้นอย่างเดียว ไม่นับเป็นโครงสร้าง
-          if (p._outline) { polys.push({ type: 'Feature', properties: p, geometry: f.geometry }); return; }
+          if (p._outline) {
+            polys.push({ type: 'Feature', properties: p, geometry: f.geometry });
+            if (f.geometry.type === 'MultiLineString') (outlinesBySta[p['Sta.']] = outlinesBySta[p['Sta.']] || []).push(...f.geometry.coordinates);
+            return;
+          }
           if (!/Polygon/.test(f.geometry.type)) return;
+          raw.push({ feature: f, props: p });
           const center = U.bboxCenter(f.geometry);
           polys.push({ type: 'Feature', properties: p, geometry: f.geometry });
           points.push({ type: 'Feature', properties: p, geometry: { type: 'Point', coordinates: center } });
         });
-        return { polys, points };
+        return { polys, points, raw, outlinesBySta };
       }).catch(err => { delete dataCache[id]; throw err; });
     }
     return dataCache[id];
@@ -167,8 +172,32 @@
 
   function registerType(map, id) {
     const T = TYPES[id];
-    const src = 'src-' + T.key, srcPt = 'src-' + T.key + '-pt';
-    let labels = null;
+    const src = 'src-' + T.key, srcPt = 'src-' + T.key + '-pt', src3d = 'src-' + T.key + '-3d';
+    let labels = null, built3d = null;
+
+    // ── รูป 3D (เฟส 3D-B): สร้างครั้งแรกที่เข้าโหมด 3D · แสดงเฉพาะโหมด 3D ──
+    function build3d() {
+      if (built3d) return built3d;
+      built3d = Promise.all([loadData(id), BPNP.alignment.load()]).then(([d]) => {
+        const S3 = BPNP.layers.structure3d, feats = [];
+        d.raw.forEach((r, idx) => {
+          const color = id === 'layer_underpass' ? r.props._fill : '#FBC02D';
+          S3.build(r.feature, { kind: id === 'layer_underpass' ? 'underpass' : 'box', color, outlines: d.outlinesBySta[r.props['Sta.']] })
+            .forEach(f => { f.properties._idx = idx; feats.push(f); });
+        });
+        const s3 = map.getSource(src3d);
+        if (s3) s3.setData({ type: 'FeatureCollection', features: feats });
+        return d;
+      }).catch(err => { built3d = null; console.error('[3D] สร้างรูป 3D ไม่สำเร็จ:', T.name, err); });
+      return built3d;
+    }
+    function apply3d() {
+      if (!map.getLayer(src3d + '-ext')) return;
+      const show = BPNP.map.registry.isVisible(id) && BPNP.map.terrain && BPNP.map.terrain.isOn();
+      map.setLayoutProperty(src3d + '-ext', 'visibility', show ? 'visible' : 'none');
+      if (show) build3d();
+    }
+    if (BPNP.events) BPNP.events.on('map:3d', apply3d);
 
     BPNP.map.registry.register(id, {
       slot: 'structure',
@@ -187,6 +216,7 @@
         });
         return {
           sources: {
+            [src3d]: { type: 'geojson', data: { type: 'FeatureCollection', features: [] } },
             [src]:   { type: 'geojson', data: { type: 'FeatureCollection', features: polys } },
             [srcPt]: { type: 'geojson', data: { type: 'FeatureCollection', features: points } }
           },
@@ -195,13 +225,23 @@
             { id: src + '-line', type: 'line', source: src, minzoom: Z_PATH, filter: ['!=', ['get', '_fillOnly'], true],
               paint: { 'line-color': ['get', '_line'], 'line-width': 2, 'line-opacity': T.lineOpacity } },
             { id: srcPt + '-sq', type: 'symbol', source: srcPt, minzoom: Z_NAME,
-              layout: { 'icon-image': ['get', '_icon'], 'icon-allow-overlap': true, 'icon-ignore-placement': true } }
+              layout: { 'icon-image': ['get', '_icon'], 'icon-allow-overlap': true, 'icon-ignore-placement': true } },
+            // รูป 3D (แสดงเฉพาะโหมด 3D — apply3d) ซูมเดียวกับรูป 2D
+            { id: src3d + '-ext', type: 'fill-extrusion', source: src3d, minzoom: Z_PATH,
+              paint: { 'fill-extrusion-color': ['get', 'color'], 'fill-extrusion-base': ['get', 'base'],
+                       'fill-extrusion-height': ['get', 'top'], 'fill-extrusion-opacity': 0.95 } }
           ]
         };
       },
       afterBuild: () => {
         map.on('click', src + '-fill', e => { if (!BPNP.tools.isBusy()) openPopup(T, e.features[0].properties, [e.lngLat.lng, e.lngLat.lat]); });
         map.on('click', srcPt + '-sq', e => { if (!BPNP.tools.isBusy()) openPopup(T, e.features[0].properties, e.features[0].geometry.coordinates); });
+        map.on('click', src3d + '-ext', e => {
+          if (BPNP.tools.isBusy() || !built3d) return;
+          built3d.then(d => { const r = d && d.raw[e.features[0].properties._idx]; if (r) openPopup(T, r.props, [e.lngLat.lng, e.lngLat.lat]); });
+        });
+        map.on('mouseenter', src3d + '-ext', () => { map.getCanvas().style.cursor = 'pointer'; });
+        map.on('mouseleave', src3d + '-ext', () => { map.getCanvas().style.cursor = ''; });
         [src + '-fill', srcPt + '-sq'].forEach(lid => {
           map.on('mouseenter', lid, () => { map.getCanvas().style.cursor = 'pointer'; });
           map.on('mouseleave', lid, () => { map.getCanvas().style.cursor = ''; });
@@ -209,6 +249,7 @@
         U.hoverLabel(map, src + '-fill', f => `${T.name}  กม. ${f.properties['Sta.'] || '-'}`, { className: 'structure-hover' });
       },
       onShow: () => {
+        apply3d();
         if (labels) labels.setEnabled(true);
         if (id === 'layer_underpass') U.legendStack().appendChild(underpassLegend());
         BPNP.auth && BPNP.auth.logUserEvent('Open Layer', T.name);
