@@ -91,6 +91,7 @@
     }
     updateButtons();
     BPNP.storage.set(KEY_3D, on ? '1' : '0');
+    if (BPNP.events) BPNP.events.emit('map:3d', on);     // ชั้นข้อมูลที่มีรูป 3D (structure_3d) ฟังเหตุการณ์นี้
     if (!opts.silent) {
       toast(on ? 'มุมมอง 3D' : 'มุมมอง 2D');
       if (BPNP.auth) BPNP.auth.logUserEvent('Map 3D', on ? (opts.gesture ? 'เปิด 3D (ท่าทาง)' : 'เปิด 3D') : 'ปิด 3D');
