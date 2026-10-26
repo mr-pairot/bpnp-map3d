@@ -1,22 +1,27 @@
 /* js/map/terrain.js
  * ─────────────────────────────────────────────────────────────────────────
- * เฟส 3D-A: ภูมิประเทศ + เอียง/หมุนแผนที่ + เข็มทิศ
- *   - ปุ่ม "3D" (มุมขวาล่าง เหนือปุ่มตำแหน่งฉัน): เปิด = ภูมิประเทศ + เงาเนินเขา + เอียง 60° + ท่าทางเอียง/หมุน
- *                                               ปิด = กลับเป็นมุมมองตรง ทิศเหนือขึ้น และปิดท่าทางเอียง/หมุน (เหมือนเดิม)
- *   - ท่าทาง: เดสก์ท็อป คลิกขวาลาก / Ctrl+ลาก · จอสัมผัส สองนิ้วหมุน / สองนิ้วลากขึ้นลงเพื่อเอียง
- *   - ปุ่มเข็มทิศ (เหนือปุ่ม 3D): แสดงตลอดในโหมด 3D หัวลูกศรชี้ทิศเหนือ · กด = ทิศเหนือขึ้น (คงมุมเอียง 3D)
- *   - จำโหมด 3D ไว้ในเครื่อง · ข้อมูลความสูง: AWS Terrain Tiles (config.map.terrain)
- *   - เงาเนินเขาอยู่เหนือแผนที่พื้นหลัง ใต้ชั้นข้อมูลทั้งหมด
+ * เฟส 3D-A: มุมมอง 3D (เอียง/หมุน) + ภูมิประเทศ + เข็มทิศ   (ปรับตามที่ยืนยันใน v3.8.02)
+ *
+ *   ท่าทางหมุน/เอียงเปิดตลอด: สองนิ้วหมุน · สองนิ้วลากขึ้นลง (เอียง) · Ctrl+ลาก · คลิกขวาลาก
+ *     → ขณะอยู่ 2D ถ้าผู้ใช้เริ่มหมุนหรือเอียงเอง เข้าโหมด 3D ทันทีที่มุมนั้น (ไม่กระโดดไป 60°)
+ *     (คลิกขวาเฉย ๆ ไม่ลาก ยังเปิดดูพิกัดได้ตามเดิม)
+ *   ปุ่ม 3D (เหนือปุ่มตำแหน่งฉัน): 2D → 3D + เอียง 60° · 3D → 2D (ทิศเหนือขึ้น มองตรง ปิดภูมิประเทศ)
+ *   ปุ่ม ⛰ ภูมิประเทศ (กลม ซ้ายปุ่ม 3D · เฉพาะโหมด 3D): เปิด/ปิดความสูง + เงาเนินเขา
+ *     ค่าเริ่มต้นปิด (พื้นเทา ไอคอนเทาเข้ม) · เปิด = พื้นน้ำเงินเข้ม ไอคอนขาว · จำค่าที่เลือกล่าสุด
+ *   ปุ่มเข็มทิศ (กลม เหนือปุ่ม 3D · เฉพาะโหมด 3D): เข็มหมุนตามทิศเท่านั้น · กด = ทิศเหนือขึ้น คงมุมเอียง
+ *   จำโหมด 3D และภูมิประเทศแยกกัน · ข้อมูลความสูง: config.map.terrain (AWS Terrain Tiles)
  * ───────────────────────────────────────────────────────────────────────── */
 (function () {
   'use strict';
-  const STORE_KEY = 'map_3d';
+  const KEY_3D = 'map_3d', KEY_TERRAIN = 'map_terrain';
   const SRC_TERRAIN = 'src-dem', SRC_SHADE = 'src-dem-shade', LYR_SHADE = 'dem-hillshade';
-  let on = false, btn3d = null, compass = null;
+  let on = false, terrainPref = false;
+  let btn3d = null, btnTerrain = null, compass = null;
 
   const map = () => BPNP.map.instance;
   const cfg = () => Object.assign({ tiles: '', encoding: 'terrarium', maxzoom: 15, exaggeration: 1.5, pitch: 60 },
                                    (BPNP.config.map && BPNP.config.map.terrain) || {});
+  const toast = msg => { if (BPNP.core.toast) BPNP.core.toast.show(msg, false, 1500); };
 
   function ensureSources() {
     const m = map(), c = cfg();
@@ -31,64 +36,101 @@
     }
   }
 
-  function setGestures(enabled) {
-    const m = map();
-    if (enabled) {
-      m.dragRotate.enable(); m.touchPitch.enable();
-      m.touchZoomRotate.enableRotation(); m.keyboard.enableRotation();
-    } else {
-      m.dragRotate.disable(); m.touchPitch.disable();
-      m.touchZoomRotate.disableRotation(); m.keyboard.disableRotation();
-    }
-  }
-
-  function setMode(enable, opts = {}) {
-    const m = map(), c = cfg();
-    on = !!enable;
-    if (on) {
+  // ภูมิประเทศทำงานจริงเมื่ออยู่ 3D และผู้ใช้เลือกเปิด
+  function applyTerrain() {
+    const m = map(), c = cfg(), active = on && terrainPref;
+    if (active) {
       ensureSources();
       m.setTerrain({ source: SRC_TERRAIN, exaggeration: c.exaggeration });
       m.setLayoutProperty(LYR_SHADE, 'visibility', 'visible');
       if (typeof m.setSky === 'function') {
         try { m.setSky({ 'sky-color': '#7ec8ff', 'horizon-color': '#dff1ff', 'fog-color': '#ffffff', 'sky-horizon-blend': 0.5, 'horizon-fog-blend': 0.6, 'fog-ground-blend': 0.85 }); } catch (e) { /* รุ่นที่ไม่รองรับ */ }
       }
-      setGestures(true);
-      if (opts.animate !== false) m.easeTo({ pitch: c.pitch, duration: 900 });
     } else {
       if (m.getTerrain && m.getTerrain()) m.setTerrain(null);
       if (m.getLayer(LYR_SHADE)) m.setLayoutProperty(LYR_SHADE, 'visibility', 'none');
-      setGestures(false);
-      m.easeTo({ pitch: 0, bearing: 0, duration: opts.animate === false ? 0 : 700 });
     }
-    if (btn3d) {
-      btn3d.classList.toggle('active', on);
-      btn3d.title = on ? 'มุมมอง 3D (กดเพื่อกลับเป็น 2D)' : 'มุมมอง 2D (กดเพื่อเปิด 3D: ภูมิประเทศ + เอียง/หมุนแผนที่)';
+    if (btnTerrain) {
+      btnTerrain.classList.toggle('active', terrainPref);
+      btnTerrain.title = terrainPref ? 'ภูมิประเทศ: เปิด (กดเพื่อปิด)' : 'ภูมิประเทศ: ปิด (กดเพื่อแสดงความสูงพื้นที่)';
     }
-    if (!opts.silent && BPNP.core.toast) BPNP.core.toast.show(on ? 'มุมมอง 3D' : 'มุมมอง 2D', false, 1500);
-    BPNP.storage.set(STORE_KEY, on ? '1' : '0');
-    updateCompass();
-    if (!opts.silent && BPNP.auth) BPNP.auth.logUserEvent('Map 3D', on ? 'เปิด 3D' : 'ปิด 3D');
   }
 
-  // เข็มทิศแสดงตลอดที่อยู่ในโหมด 3D (ซ่อนเฉพาะโหมด 2D) — เดิมแสดงเฉพาะตอนหมุน/เอียง
-  // ทำให้กดเข็มทิศแล้วเข็มทิศหาย ทั้งที่ยังอยู่ในโหมด 3D (ปุ่ม 3D ยังเป็นสีน้ำเงินเข้ม)
-  function updateCompass() {
+  function enableGestures() {
+    const m = map();
+    m.dragRotate.enable(); m.touchPitch.enable();
+    m.touchZoomRotate.enableRotation(); m.keyboard.enableRotation();
+  }
+
+  function updateButtons() {
+    if (btn3d) {
+      btn3d.classList.toggle('active', on);
+      btn3d.title = on ? 'มุมมอง 3D (กดเพื่อกลับเป็น 2D)' : 'มุมมอง 2D (กดเพื่อเปิด 3D · หรือหมุน/เอียงแผนที่ด้วยสองนิ้ว / Ctrl+ลาก)';
+    }
+    if (compass) compass.style.display = on ? '' : 'none';
+    if (btnTerrain) btnTerrain.style.display = on ? '' : 'none';
+    updateNeedle();
+  }
+
+  function updateNeedle() {
     if (!compass) return;
-    const m = map(), bearing = m.getBearing(), pitch = m.getPitch();
-    compass.style.display = on ? '' : 'none';
-    const arrow = compass.querySelector('.compass-needle');
-    if (arrow) arrow.style.transform = `rotateX(${Math.min(pitch, 60)}deg) rotate(${-bearing}deg)`;
+    const n = compass.querySelector('.compass-needle');
+    if (n) n.style.transform = `rotate(${-map().getBearing()}deg)`;   // หมุนตามทิศเท่านั้น ไม่เอียงตามแผนที่
+  }
+
+  // enable: เข้า/ออก 3D · opts.tilt: เอียงไปมุม 3D (ปุ่ม/โหลดหน้า) — เข้าด้วยท่าทางไม่ต้องเอียงเพิ่ม
+  function setMode(enable, opts = {}) {
+    const m = map();
+    on = !!enable;
+    applyTerrain();
+    if (on) {
+      if (opts.tilt) m.easeTo({ pitch: cfg().pitch, duration: opts.animate === false ? 0 : 900 });
+    } else {
+      m.easeTo({ pitch: 0, bearing: 0, duration: opts.animate === false ? 0 : 700 });
+    }
+    updateButtons();
+    BPNP.storage.set(KEY_3D, on ? '1' : '0');
+    if (!opts.silent) {
+      toast(on ? 'มุมมอง 3D' : 'มุมมอง 2D');
+      if (BPNP.auth) BPNP.auth.logUserEvent('Map 3D', on ? (opts.gesture ? 'เปิด 3D (ท่าทาง)' : 'เปิด 3D') : 'ปิด 3D');
+    }
+  }
+
+  function setTerrain(enable) {
+    terrainPref = !!enable;
+    BPNP.storage.set(KEY_TERRAIN, terrainPref ? '1' : '0');
+    applyTerrain();
+    toast(terrainPref ? 'ภูมิประเทศ: เปิด' : 'ภูมิประเทศ: ปิด');
+    if (BPNP.auth) BPNP.auth.logUserEvent('Map Terrain', terrainPref ? 'เปิด' : 'ปิด');
+  }
+
+  // ผู้ใช้เริ่มหมุน/เอียงเอง (มี originalEvent) ขณะอยู่ 2D → เข้า 3D ที่มุมนั้น
+  function onUserTiltOrRotate(e) {
+    if (on || !e || !e.originalEvent) return;
+    setMode(true, { gesture: true });
   }
 
   BPNP.ui.registerButton(() => {
-    const right = 'var(--safe-right)';
+    const m = map();
+    const right = n => (n ? `calc(var(--safe-right) + (var(--map-btn-size) + var(--map-gap)) * ${n})` : 'var(--safe-right)');
     const row = n => `calc(var(--safe-bottom) + 65px + (var(--map-btn-size) + var(--map-gap)) * ${n})`;
+
     btn3d = BPNP.ui.createStandardButton({
       id: 'map3dBtn',
       html: '<span class="map3d-label">3D</span>',
-      style: { bottom: row(1), right },
-      title: 'มุมมอง 3 มิติ (ภูมิประเทศ + เอียง/หมุนแผนที่)',
-      onClick: () => setMode(!on)
+      style: { bottom: row(1), right: right(0) },
+      title: '',
+      onClick: () => setMode(!on, { tilt: true })
+    });
+    btnTerrain = BPNP.ui.createStandardButton({
+      id: 'terrainBtn',
+      html: `<svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true">
+               <polygon points="9,4 18,19 0,19" fill="currentColor" opacity="0.85"/>
+               <polygon points="16,9 24,19 8,19" fill="currentColor"/>
+             </svg>`,
+      style: { bottom: row(1), right: right(1), display: 'none' },
+      title: '',
+      onClick: () => setTerrain(!terrainPref)
     });
     compass = BPNP.ui.createStandardButton({
       id: 'compassBtn',
@@ -96,18 +138,24 @@
                <polygon points="12,2 16,12 12,10.5 8,12" fill="#e53935"/>
                <polygon points="12,22 16,12 12,13.5 8,12" fill="#90a4ae"/>
              </svg>`,
-      style: { bottom: row(2), right, display: 'none' },
+      style: { bottom: row(2), right: right(0), display: 'none' },
       title: 'หันทิศเหนือขึ้น (คงมุมมอง 3D)',
-      // หันทิศเหนือขึ้นโดยคงมุมเอียงไว้ (ถ้ามองตรงอยู่ จะกลับไปเอียงมุม 3D) — ยังอยู่ในโหมด 3D ชัดเจน
       onClick: () => {
-        const m = map(), pitch = m.getPitch();
+        const pitch = m.getPitch();
         m.easeTo({ bearing: 0, pitch: pitch < 5 ? cfg().pitch : pitch, duration: 600 });
       }
     });
-    map().on('rotate', updateCompass);
-    map().on('pitch', updateCompass);
-    if (BPNP.storage.get(STORE_KEY) === '1') setMode(true, { silent: true });
+
+    enableGestures();
+    m.on('rotatestart', onUserTiltOrRotate);
+    m.on('pitchstart', onUserTiltOrRotate);
+    m.on('rotate', updateNeedle);
+
+    terrainPref = BPNP.storage.get(KEY_TERRAIN) === '1';
+    if (BPNP.storage.get(KEY_3D) === '1') setMode(true, { tilt: true, silent: true });
+    else updateButtons();
+    applyTerrain();
   });
 
-  BPNP.map.terrain = { setMode, isOn: () => on };
+  BPNP.map.terrain = { setMode, setTerrain, isOn: () => on, isTerrainOn: () => on && terrainPref };
 })();
