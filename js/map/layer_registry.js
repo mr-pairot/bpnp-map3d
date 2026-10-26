@@ -104,7 +104,8 @@
     if (!e || !map) return false;
     if (visible) {
       try { await build(e); }
-      catch (err) { console.error('[Registry] สร้างเลเยอร์ไม่สำเร็จ:', id, err); return false; }
+      catch (err) { console.error('[Registry] สร้างเลเยอร์ไม่สำเร็จ:', id, err); e.lastError = err; return false; }
+      e.lastError = null;
     }
     if (!e.built) { e.visible = false; return !visible; }
 
@@ -155,6 +156,7 @@
     has:       id => entries.has(id),
     isVisible: id => !!(entries.get(id) && entries.get(id).visible),
     getOpacity: id => (entries.get(id) ? entries.get(id).opacity : 1),
+    lastError: id => (entries.get(id) ? entries.get(id).lastError || null : null),
     layerIds:  id => (entries.get(id) ? entries.get(id).layerIds.slice() : []),
     list:      () => Array.from(entries.keys())
   };
