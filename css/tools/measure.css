@@ -543,3 +543,12 @@
   filter: drop-shadow(0 0 8px rgba(0, 85, 255, 1));
   -webkit-filter: drop-shadow(0 0 8px rgba(0, 85, 255, 1));
 }
+
+/* กดค้างที่จุดบนแท็บเล็ต/มือถือ: ไม่ให้ระบบเลือกข้อความ/เมนูบันทึกรูป แย่งการลากจุด */
+.mp-vertex, .mp-marker-shape {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  touch-action: none;
+}

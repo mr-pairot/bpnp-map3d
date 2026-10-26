@@ -290,6 +290,10 @@
       if (!anchor) anchor = [0, 0];
       const [ax, ay] = Array.isArray(anchor) ? anchor : [anchor.x, anchor.y];
       this._offset = [-ax, -ay];
+      // กดค้างบนจอสัมผัส: ห้ามเมนู/การเลือกข้อความ/บันทึกรูปของระบบ เพื่อให้เริ่มลากจุดได้ทันที
+      // (เดิม stopPropagation อย่างเดียว → ตัวกันเมนูระดับหน้าไม่เห็นเหตุการณ์ และไม่มีใคร preventDefault)
+      Object.assign(root.style, { touchAction: 'none', userSelect: 'none', webkitUserSelect: 'none', webkitTouchCallout: 'none', webkitUserDrag: 'none' });
+      ['contextmenu', 'selectstart', 'dragstart'].forEach(t => root.addEventListener(t, ev => { ev.preventDefault(); }));
       // คลิกที่หมุดไม่ส่งต่อไปเป็นคลิกแผนที่ (เหมือน Leaflet)
       ['click', 'contextmenu'].forEach(t => root.addEventListener(t, ev => {
         if (this.options.interactive === false) return;
@@ -493,7 +497,12 @@
     preventDefault(e) { const oe = e && (e.originalEvent || e); if (oe && oe.preventDefault) oe.preventDefault(); return DomEvent; },
     stop(e) { DomEvent.stopPropagation(e); return DomEvent.preventDefault(e); },
     disableClickPropagation(el) {
-      ['click', 'dblclick', 'mousedown', 'touchstart', 'contextmenu'].forEach(t => el.addEventListener(t, ev => ev.stopPropagation(), { passive: t === 'touchstart' }));
+      ['click', 'dblclick', 'mousedown', 'touchstart'].forEach(t => el.addEventListener(t, ev => ev.stopPropagation(), { passive: t === 'touchstart' }));
+      // แผงเครื่องมือ: กดค้างไม่ให้เมนูของระบบเด้ง (ช่องกรอกข้อความยังใช้เมนูคัดลอก/วางได้)
+      el.addEventListener('contextmenu', ev => {
+        ev.stopPropagation();
+        if (!ev.target.closest('input, textarea, select, [contenteditable]')) ev.preventDefault();
+      });
       return DomEvent;
     },
     disableScrollPropagation(el) { el.addEventListener('wheel', ev => ev.stopPropagation(), { passive: true }); return DomEvent; },
