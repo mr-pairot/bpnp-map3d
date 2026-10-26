@@ -1,4 +1,4 @@
-/* css/map/terrain.css — ปุ่ม 3D และเข็มทิศ (เฟส 3D-A) */
+/* css/map/terrain.css — ปุ่ม 3D, ภูมิประเทศ, เข็มทิศ (เฟส 3D-A) */
 #map3dBtn .map3d-label {
   font: 800 17px/1 'Sarabun', sans-serif;
   color: #1e3a8a;
@@ -6,5 +6,16 @@
 }
 #map3dBtn.active { background-color: #1e3a8a; }
 #map3dBtn.active .map3d-label { color: #ffffff; }
-#compassBtn { display: flex; align-items: center; justify-content: center; perspective: 120px; }
+
+/* ปุ่มกลม: ภูมิประเทศ + เข็มทิศ */
+#terrainBtn, #compassBtn {
+  border-radius: 50% !important;      /* ทับ .standard-map-btn { border-radius: 8px !important } */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/* ภูมิประเทศ: ปิด = พื้นเทา ไอคอนเทาเข้ม · เปิด = พื้นน้ำเงินเข้ม ไอคอนขาว */
+#terrainBtn { background-color: #e5e7eb; color: #4b5563; }
+#terrainBtn.active { background-color: #1e3a8a; color: #ffffff; }
+/* เข็มทิศ: หมุนตามทิศเท่านั้น */
 #compassBtn .compass-needle { transition: transform 0.15s linear; }
