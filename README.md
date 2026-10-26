@@ -54,7 +54,8 @@ js/layers/          layers_config, layer_utils, raster_overlays, alignment, rail
                     doh_km, progress/ (track_progress, sw_loc, sw_panel, sw_summary)
 js/ui/              ui_manager, layer_panel, bottom_panel, welcome_popup, about_popup
 js/tools/           my_location, click_point, tool_utils, search_km,
-                    search/ (hub, address, utm_convert, utm_multi)
+                    search/ (hub, address, utm_convert, utm_multi),
+                    measure/ (lcompat, measure_plus, excavate, embankment, index)
 js/app.js           ประกอบแอป
 css/                โครงเดียวกับ js/
 data/kml|json/      ข้อมูลเลเยอร์ (data/geojson/ สร้างอัตโนมัติ ไม่ต้อง commit)
@@ -75,5 +76,5 @@ tools/              build.js, kml2geojson.js, หน้าทดสอบ
 | 4B | หลัก กม. กรมทางหลวง, Track Progress, SW-LOC | ✔ 3.4.00 |
 | 5A | ค้นหา กม. | ✔ 3.5.00 |
 | 5B | แผงค้นหา/พิกัด: เส้นทาง, หาตำแหน่ง, ที่อยู่, แปลง UTM | ✔ 3.6.00 |
-| 5C | วัดระยะ/พื้นที่ + ปริมาตรบ่อขุด/ดินถม | – |
+| 5C | วัดระยะ/พื้นที่ + ปริมาตรบ่อขุด/ดินถม | ✔ 3.7.00 |
 | 3D | ภูมิประเทศ, เอียง/หมุน, extrusion | – |

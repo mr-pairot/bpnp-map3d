@@ -1,0 +1,545 @@
+/* css/tools/measure.css — เครื่องมือวัด (เดิม css/mp.css; ตัวเลือก .leaflet-container → .maplibregl-map) */
+/* Measurement Plus — Updated 2026-06-27 */
+
+.mp-panel {
+  position: absolute;
+  top: calc(var(--safe-top) - 3px);
+  left: calc(var(--safe-left) + (var(--map-btn-size) * 2) + (var(--map-gap) * 2) - 2px);
+  z-index: 9999 !important;
+}
+
+.measure-plus-btn {
+  position: absolute;
+  left: 109px;
+  top: 5px;
+  width: 42px;
+  height: 42px;
+  border: none;
+  border-radius: 8px;
+  background-color: white;
+  background-size: 29px 29px;
+  background-position: center;
+  background-repeat: no-repeat;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  cursor: pointer;
+  z-index: 1000;
+}
+
+.measure-plus-btn:hover {
+  background-color: #e8f4ff;
+  border: 1px solid #ccc;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  transform: translateY(-2px);
+  transition: all 0.2s ease-in-out;
+}
+
+.measure-plus-panel {
+  background: white;
+  border-radius: 5px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+  padding: 10px;
+  width: 220px;
+}
+
+.mp-close-btn {
+  position: absolute;
+  top: -4px;
+  right: 1px;
+  background: none;
+  border: none;
+  color: #666;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 1px 5px 1px 1px;
+  border-radius: 3px;
+  transition: background-color 0.2s;
+}
+
+.mp-close-btn:hover {
+  color: #900;
+  font-size: 17px;
+}
+
+.mp-modes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px 1px 6px 0px;
+}
+
+.mp-btn img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.mp-btn,
+.mp-eraser {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 35px;
+  height: 35px;
+  padding: 4px;
+  border: none;
+  background: #fff;
+  cursor: pointer;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.mp-btn:hover {
+  background: #e9fcff;
+}
+
+.mp-eraser:hover {
+  background: #ff6347;
+}
+
+.mp-btn.active {
+  background: #7FFFD4;
+  color: #fff;
+  border-color: #0ea5e9;
+}
+
+.mp-btn.mp-deleteOBJ.active,
+.mp-btn.mp-deleteOBJ:hover  {
+    background-color: #ffd700; 
+}
+ 
+.mp-metrics {
+  color: blue;
+  padding: 3px;
+  border-radius: 3px;
+  background-color: #f5f5f5;
+  border: 1px solid #dcdcdc;
+}
+
+.mp-metrics-title {
+  font-weight: bold;
+  background-color: #e6e6fa;
+  padding: 0 5px;
+}
+
+.mp-metrics-value {
+  padding: 1px 1px 0px 9px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mp-export-controls {
+  display: flex;
+  margin-top: 4px;
+  align-items: center;
+  padding: 0px 10px;
+  background-color: #FAF9DE;
+}
+
+.mp-export-btn {
+  flex: 1;   
+  text-align: center;  
+  padding: 4px 5px;
+  border: 1px solid #cccccc;
+  background-color: #f7f7f7; 
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 10px;
+  color: #333;
+  outline: none;
+  transition: background-color 0.2s, border-color 0.2s, box-shadow 0.2s, transform 0.1s;
+}
+
+.mp-export-btn:hover {
+  background-color: #e9fcff;
+  border-color: #bbbbbb;
+}
+
+.mp-export-btn:focus {
+  border-color: #999999; 
+  box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.2); 
+}
+
+.mp-export-btn:active {
+  background-color: #d0f5fa; 
+  border-color: #aaaaaa;
+  transform: translateY(1px); 
+}
+
+.mp-settings {
+  font-size: 12px;
+  color: #444;
+  margin: 4px 0px 4px 0px;
+  padding: 3px;
+  border-radius: 3px;
+  background-color: #f5f5f5;
+  border: 1px solid #dcdcdc;
+}
+
+.mp-settings summary {
+  cursor: pointer;
+  font-weight: 600;
+  padding: 2px 5px;
+  background-color: #FFEFD5;
+  color: #141414;
+}
+
+.color-column {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.color-column label {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.color-column input[type="color"] {
+  width: 40px;
+  height: 23px;
+  padding: 0;
+  border: none;
+  cursor: pointer;
+}
+
+.mp-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0px 0px 0px 4px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.mp-checkbox input[type="checkbox"] {
+  margin: 0;
+}
+
+.mp-checkbox:hover {
+  color: #00f;
+}
+
+.mp-divider {
+  border: none;
+  border-top: 1px solid #ccc;
+  margin: 0;
+  width: 97%;
+}
+
+.mp-marker-options {
+  align-items: center;
+  gap: 10px;
+  margin: -5px 0px 5px 11px;
+}
+
+.mp-marker-options label {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.mp-marker-options select {
+  padding: 1px;
+  font-size: 11px;
+}
+
+.mp-marker-options input[type="color"] {
+  width: 28px;
+  height: 23px;
+  padding: 0;
+  border: none;
+  cursor: pointer;
+}
+
+.mp-marker-size-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px; 
+}
+
+#mp-marker-size-val {
+  display: inline-block;
+  min-width: 1.2em; 
+  text-align: right;
+}
+
+.mp-marker-size-label input[type="range"] {
+  width: 80px;
+  -webkit-appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.mp-marker-size-label input[type="range"]::-webkit-slider-runnable-track {
+  height: 6px;
+  background: #ddd;
+  border-radius: 3px;
+}
+.mp-marker-size-label input[type="range"]::-moz-range-track {
+  height: 6px;
+  background: #ddd;
+  border-radius: 3px;
+}
+
+.mp-marker-size-label input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 14px;
+  width: 14px;
+  background: white;
+  border: 2px solid #0ea5e9; 
+  border-radius: 50%;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+  margin-top: -4px; 
+}
+.mp-marker-size-label input[type="range"]::-moz-range-thumb {
+  height: 14px;
+  width: 14px;
+  background: white;
+  border: 2px solid #0ea5e9;
+  border-radius: 50%;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.mp-marker-size-label input[type="range"]::-webkit-slider-thumb:hover {
+  border-color: #1e3a8a; 
+  transform: scale(1.2);
+}
+.mp-marker-size-label input[type="range"]::-moz-range-thumb:hover {
+  border-color: #1e3a8a;
+  transform: scale(1.2);
+}
+
+.maplibregl-map.mp-crosshair .maplibregl-canvas-container {
+  cursor: crosshair !important;
+}
+
+.maplibregl-map.mp-delete-cursor .maplibregl-canvas-container {
+  cursor: pointer !important;
+}
+
+.mp-distance-label {
+  background: rgba(255, 240, 250, 0.8);
+  color: #000;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 2px 4px;
+  border-radius: 5px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  white-space: nowrap;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transform: translate(-50%, -50%);
+}
+
+.measure-summary-label {
+  background: rgba(250, 240, 0, 0.7); 
+  border: 2px solid #facc15; 
+  font-weight: bold;
+  font-size: 10px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  padding: 2px 4px;
+  border-radius: 5px;
+  white-space: nowrap;
+}
+
+.measure-summary-label-line {
+  transform: translateX(0);
+  text-align: right;
+}
+
+.measure-summary-label-polygon,
+.measure-summary-label-circle {
+  transform: translate(-50%, var(--offsetY, 0));
+  text-align: center;
+}
+
+.mp-marker-shape {
+  display: block;
+  border: 2px solid;
+  box-sizing: border-box;
+  transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
+  cursor: grab;
+}
+
+.mp-marker-shape:hover {
+  transform: scale(1.5);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
+}
+
+.maplibregl-marker:active .mp-marker-shape {
+  cursor: move;
+  transform: scale(1.4);
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.5);
+}
+
+.mp-marker-shape.square {
+  border-radius: 2px;
+}
+
+.mp-shape-hover-delete {
+  filter: drop-shadow(0 0 5px rgba(255, 0, 0, 0.9));
+  -webkit-filter: drop-shadow(0 0 5px rgba(255, 0, 0, 0.9));
+  cursor: pointer !important; 
+}
+
+.maplibregl-map.mp-grabbing-cursor .maplibregl-canvas-container {
+  cursor: grabbing !important;
+}
+
+.mp-cut-fill-container {
+  display: flex;
+  margin-top: 4px;
+  align-items: center;
+  border-radius: 5px;
+  padding: 4px 10px;
+  background-color: #FEEEC8;
+}
+
+.mp-btn-disabled {
+  background-color: #f3f4f6;
+  color: #9ca3af;
+  border: 1px solid #d1d5db;
+  cursor: not-allowed;
+  padding: 4px 6px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: bold;
+  width: 50%;
+}
+.mp-btn-active {
+  background-color: #0691ff;
+  color: #fff;
+  border: 1px solid #2563eb;
+  cursor: pointer;
+  padding: 4px 6px;
+  width: 50%;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: bold;
+  transition: all 0.2s ease;
+}
+.mp-btn-active:hover {
+  background-color: #2563eb;
+  color: #fff;
+}
+
+.mp-segmented-control {
+  display: inline-flex;
+  background-color: #e2e4f0;
+  border-radius: 4px;
+  padding: 3px;
+  gap: 0;
+  width: 95%;
+}
+
+.mp-segmented-control input[type="radio"] {
+  display: none;
+}
+
+.mp-segmented-control label {
+  flex: 1; 
+  text-align: center;
+  padding: 5px 16px;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 12px;
+  font-family: sans-serif;
+  color: #495057;
+  transition: background-color 0.25s, color 0.25s, box-shadow 0.25s;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.mp-segmented-control input[type="radio"]:checked + label {
+  background-color: #2563eb;
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.mp-segmented-control label:hover {
+  color: #111;
+  font-weight: 600;
+}
+
+.mp-group-box {
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  padding: 9px 8px;
+  background-color: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mp-group-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.mp-group-column {
+  display: flex;
+  flex-direction: row;
+  align-items: center; 
+  gap: 8px;
+  flex: 1;
+}
+
+.mp-group-row label.mp-row-label,
+.mp-group-column label.mp-row-label {
+  font-size: 12px;
+  color: #222;
+  margin: 0;
+}
+
+.mp-group-row select {
+  width: 100%;
+}
+
+.mp-group-column select {
+  font-size: 12px;
+  padding: 4px 6px;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  background: #fff;
+  color: #1e293b;
+  width: 50%;
+}
+
+.mp-group-divider {
+  border: none;
+  border-top: 1px solid #e2e8f0;
+  margin: 0;
+}
+
+#mp-adjust-area-btn {
+  background-color: #FFE594;
+  color: ##856000;
+  border: 1px solid #ffeeba;
+  cursor: pointer;
+  padding: 4px 6px;
+  width: 100%;          
+  border-radius: 6px;   
+  font-size: 11px;      
+  font-weight: bold;
+  transition: all 0.2s ease; 
+}
+
+#mp-adjust-area-btn:hover {
+  background-color: #FFDC75; 
+  border-color: #ffdf7e;
+}
+
+.mp-shape-hover-blue {
+  filter: drop-shadow(0 0 6px rgba(0, 162, 255, 0.9));
+  -webkit-filter: drop-shadow(0 0 6px rgba(0, 162, 255, 0.9));
+  cursor: pointer !important;
+}
+
+.mp-shape-selected-blue {
+  filter: drop-shadow(0 0 8px rgba(0, 85, 255, 1));
+  -webkit-filter: drop-shadow(0 0 8px rgba(0, 85, 255, 1));
+}

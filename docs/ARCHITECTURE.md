@@ -1,6 +1,6 @@
 # BPNP Map 3D — ผังการทำงานและความเชื่อมโยงของไฟล์
 
-> สถานะ: v3.6.00 · ชั้นข้อมูลครบทุกชั้น (เฟส 0–4) · เฟส 5A, 5B เสร็จ · งานที่เหลือ: เฟส 5C, เฟส 3D
+> สถานะ: v3.7.00 · ชั้นข้อมูลครบทุกชั้น (เฟส 0–4) · เครื่องมือครบ (เฟส 5) · งานที่เหลือ: เฟส 3D
 > แผนภาพด้านล่างเป็น Mermaid — GitHub วาดให้อัตโนมัติเมื่อเปิดไฟล์นี้บนเว็บ
 
 ---
@@ -111,6 +111,10 @@ flowchart TB
 | `tools/search/address.js` | ค้นหาพิกัดจากที่อยู่ | kongvut/thai-province-data, Longdo | search_address.js |
 | `tools/search/utm_convert.js` | แปลง UTM ↔ Lat/Lng ทีละจุด | core/geo_utils | convertUTM.js |
 | `tools/search/utm_multi.js` | แปลงหลายแถว + วางจาก Excel + หมุดเลขแถว | core/geo_utils | convertUTM_MultiRow.js |
+| `tools/measure/lcompat.js` | Leaflet ชุดย่อยบน MapLibre (เฉพาะเครื่องมือวัด ไม่ประกาศ window.L) | — | (ใหม่) |
+| `tools/measure/measure_plus.js` | วัดระยะ/พื้นที่/วงกลม, นำเข้า/ส่งออก, ปรับพื้นที่ | turf | mp.js (คัดลอกตรง) |
+| `tools/measure/excavate.js` · `embankment.js` | ปริมาตรบ่อขุด / ดินถม หลายชั้น + รูปตัด | turf | mpex.js, mpem.js (คัดลอกตรง) |
+| `tools/measure/index.js` | สร้างเครื่องมือวัด + ปุ่ม + สถานะ busy | — | main.js |
 
 ---
 
@@ -121,7 +125,7 @@ flowchart TB
     subgraph P5["เฟส 5 เครื่องมือ (js/tools/)"]
         t1["✔ 5A search_km.js + tool_utils.js<br/>เดิม search_sta.js · ปุ่ม search.png คอลัมน์ซ้ายแถวบนสุด"]
         t3["✔ 5B search/ (hub, address, utm_convert, utm_multi)<br/>เส้นทาง OSRM · หาตำแหน่งจากพิกัด · ที่อยู่ · UTM · UTM หลายแถว<br/>เดิม routing_main · routing_ui · search_address · convertUTM × 2"]
-        t2["5C measure/<br/>เดิม mp.js · mpex.js · mpem.js (วัด + บ่อขุด/ดินถม)"]
+        t2["✔ 5C measure/ (lcompat + measure_plus, excavate, embankment)<br/>เดิม mp.js · mpex.js · mpem.js (วัด + บ่อขุด/ดินถม)"]
     end
     subgraph D3["เฟส 3D"]
         d1["map/terrain.js<br/>ภูมิประเทศ · เอียง/หมุน · เข็มทิศ"]
@@ -148,5 +152,6 @@ flowchart TB
 | HTML marker | ห้ามกำหนด `position` / `transform` ที่ element ราก | 19 |
 | ชั้น polygon | `line` กรอง `_fillOnly` · `fill` กรอง `_outline` · ข้อมูล/นับ/ค้นหา ข้าม `_outline` | 27, 29 |
 | popup | `BPNP.map.popup.open()` (เหนือจุด + autoPan เหมือน Leaflet) | 24 |
+| เครื่องมือที่รับคลิกแผนที่ | ลงทะเบียน `BPNP.tools.registerBusy()` ขณะใช้งาน (ชั้นข้อมูลไม่เปิด popup ทับ) | 34, 35 |
 | ข้อความจากข้อมูล | `BPNP.escapeHtml()` หรือ `BPNP.safeHtml()` ก่อนใส่ HTML | 21 |
 | ส่งงาน | `bpnp-map3d.zip` + `changed_files_<เวอร์ชัน>.zip` + สรุปไฟล์ที่เปลี่ยน | — |

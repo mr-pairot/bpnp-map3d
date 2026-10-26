@@ -60,7 +60,12 @@ BPNP.boot.LAYER_SCRIPTS = [
   'js/tools/search/hub.js',
   'js/tools/search/address.js',
   'js/tools/search/utm_convert.js',
-  'js/tools/search/utm_multi.js'
+  'js/tools/search/utm_multi.js',
+  'js/tools/measure/lcompat.js',
+  'js/tools/measure/measure_plus.js',
+  'js/tools/measure/excavate.js',
+  'js/tools/measure/embankment.js',
+  'js/tools/measure/index.js'
 ];
 
 // ประกอบแอป — โหลดหลังสุดเสมอ
@@ -92,5 +97,6 @@ BPNP.boot.APP_CSS = [
   'css/tools/search_hub.css',
   'css/tools/search_address.css',
   'css/tools/utm_convert.css',
-  'css/tools/utm_multi.css'
+  'css/tools/utm_multi.css',
+  'css/tools/measure.css'
 ];
