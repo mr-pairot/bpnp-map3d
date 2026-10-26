@@ -12,7 +12,7 @@
   const cfg = id => BPNP.layers.byId(id);
 
   const ICONS = {
-    station: 'assets/markers/train-blue.png',
+    station: 'assets/markers/train-green.png',
     stop:    'assets/markers/train-orange.png',
     origin:  'assets/markers/train-gray.png',
     default: 'assets/markers/train-green.png'
