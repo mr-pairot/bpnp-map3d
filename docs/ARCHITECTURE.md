@@ -1,6 +1,6 @@
 # BPNP Map 3D — ผังการทำงานและความเชื่อมโยงของไฟล์
 
-> สถานะ: v3.7.00 · ชั้นข้อมูลครบทุกชั้น (เฟส 0–4) · เครื่องมือครบ (เฟส 5) · งานที่เหลือ: เฟส 3D
+> สถานะ: v3.8.00 · ชั้นข้อมูลครบ (เฟส 0–4) · เครื่องมือครบ (เฟส 5) · 3D-A เสร็จ · งานที่เหลือ: 3D-B ยกความสูงโครงสร้าง
 > แผนภาพด้านล่างเป็น Mermaid — GitHub วาดให้อัตโนมัติเมื่อเปิดไฟล์นี้บนเว็บ
 
 ---
@@ -128,8 +128,8 @@ flowchart TB
         t2["✔ 5C measure/ (lcompat + measure_plus, excavate, embankment)<br/>เดิม mp.js · mpex.js · mpem.js (วัด + บ่อขุด/ดินถม)"]
     end
     subgraph D3["เฟส 3D"]
-        d1["map/terrain.js<br/>ภูมิประเทศ · เอียง/หมุน · เข็มทิศ"]
-        d2["ยกความสูงโครงสร้าง<br/>สะพาน · ตอม่อ · Underpass (fill-extrusion)"]
+        d1["✔ 3D-A map/terrain.js<br/>ภูมิประเทศ · เอียง/หมุน · เข็มทิศ"]
+        d2["3D-B ยกความสูงโครงสร้าง (รอค่าความสูง)<br/>สะพาน · ตอม่อ · Underpass (fill-extrusion)"]
     end
     U["ใช้โมดูลที่มี: core/geo_utils · core/alignment · map/layer_registry (slot tools) · ui/ui_manager (ปุ่ม/คอลัมน์ซ้าย)"]
     P5 -.-> U

@@ -33,7 +33,16 @@ window.BPNP_CONFIG = {
     minZoom:        4,
     maxZoom:        21,
     defaultBasemap: 'osm',
-    allowRotate:    false,            // เปิดในเฟส 3D
+    allowRotate:    false,            // 2D เริ่มต้น — ปุ่ม 3D เปิดการเอียง/หมุนเอง (js/map/terrain.js)
+    // เฟส 3D: ภูมิประเทศจาก AWS Terrain Tiles (ฟรี ไม่ต้องใช้คีย์, Terrarium encoding)
+    terrain: {
+      tiles:        'https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png',
+      encoding:     'terrarium',
+      maxzoom:      15,
+      exaggeration: 1.5,              // พื้นที่โครงการค่อนข้างราบ จึงขยายความสูง 1.5 เท่าให้เห็นชัด
+      pitch:        60,               // มุมเอียงเมื่อกดปุ่ม 3D
+      attribution:  'Terrain: <a href="https://registry.opendata.aws/terrain-tiles/" target="_blank" rel="noopener">AWS Terrain Tiles</a>'
+    },
     vectorStyleUrl: 'https://tiles.openfreemap.org/styles/liberty',
     fallbackGlyphs: 'https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf'
   },

@@ -24,7 +24,7 @@
       dragRotate:         !!CFG.allowRotate,
       pitchWithRotate:    !!CFG.allowRotate,
       touchPitch:         !!CFG.allowRotate,
-      maxPitch:           CFG.allowRotate ? 75 : 0,
+      maxPitch:           75,               // เอียงได้เมื่อเปิดโหมด 3D (ท่าทางเอียง/หมุนปิดไว้ในโหมด 2D)
       cooperativeGestures: false
     });
 

@@ -65,7 +65,10 @@ BPNP.boot.LAYER_SCRIPTS = [
   'js/tools/measure/measure_plus.js',
   'js/tools/measure/excavate.js',
   'js/tools/measure/embankment.js',
-  'js/tools/measure/index.js'
+  'js/tools/measure/index.js',
+
+  // ── เฟส 3D ──
+  'js/map/terrain.js'
 ];
 
 // ประกอบแอป — โหลดหลังสุดเสมอ
@@ -98,5 +101,6 @@ BPNP.boot.APP_CSS = [
   'css/tools/search_address.css',
   'css/tools/utm_convert.css',
   'css/tools/utm_multi.css',
-  'css/tools/measure.css'
+  'css/tools/measure.css',
+  'css/map/terrain.css'
 ];
