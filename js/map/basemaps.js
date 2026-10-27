@@ -182,10 +182,10 @@
             0, '#e5e7eb', 15, '#cbd5e1', 40, '#9ca3af', 100, '#6b7280'],
           'fill-extrusion-height': ['interpolate', ['linear'], ['zoom'],
             14, 0,
-            15, ['coalesce', ['get', 'render_height'], 3]],
+            16, ['coalesce', ['get', 'render_height'], 3]],
           'fill-extrusion-base': ['interpolate', ['linear'], ['zoom'],
             14, 0,
-            15, ['coalesce', ['get', 'render_min_height'], 0]],
+            16, ['coalesce', ['get', 'render_min_height'], 0]],
           'fill-extrusion-opacity': 0.85
         }
       }, false));
