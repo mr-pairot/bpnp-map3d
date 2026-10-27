@@ -192,8 +192,14 @@
         .forEach(l => {
           const c = JSON.parse(JSON.stringify(l));
           c.id = 'bm-hyb-lbl-' + l.id;
-          delete c.layout['icon-image'];
-          c.paint = Object.assign({}, c.paint, { 'text-color': '#ffffff', 'text-halo-color': 'rgba(0,0,0,0.85)', 'text-halo-width': 1.6, 'text-halo-blur': 0.3 });
+          // ป้ายหมายเลขถนน (ข้อความจาก "ref" + ไอคอนกรอบ road_N จาก sprite) — คงแบบเดียวกับ OpenFreeMap (Vector) ทุกอย่าง (v3.9.06)
+          // ระบุจากไอคอนกรอบ (ref_length / network) หรือชื่อชั้น — ไม่ใช้ข้อความ เพราะชื่อถนนภาษาไทยมี ref เป็นค่าสำรอง
+          const icon = JSON.stringify(l.layout['icon-image'] || '');
+          const isShield = /shield/.test(l.id) || /ref_length/.test(icon);
+          if (!isShield) {
+            delete c.layout['icon-image'];                   // ชื่อ: ไม่ใช้จุดวงกลมหน้าชื่อหมู่บ้าน/เมือง
+            c.paint = Object.assign({}, c.paint, { 'text-color': '#ffffff', 'text-halo-color': 'rgba(0,0,0,0.85)', 'text-halo-width': 1.6, 'text-halo-blur': 0.3 });
+          }
           style.layers.push(setVis(c, false));
           hybridLabelIds.push(c.id);
         });
