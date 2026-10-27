@@ -8,7 +8,7 @@
 #map3dBtn.active .map3d-label { color: #ffffff; }
 
 /* ปุ่มกลม: ภูมิประเทศ + เข็มทิศ */
-#terrainBtn, #compassBtn {
+#terrainBtn, #compassBtn, #labelsBtn {
   border-radius: 50% !important;      /* ทับ .standard-map-btn { border-radius: 8px !important } */
   display: flex;
   align-items: center;
@@ -17,5 +17,9 @@
 /* ภูมิประเทศ: ปิด = พื้นเทา ไอคอนเทาเข้ม · เปิด = พื้นน้ำเงินเข้ม ไอคอนขาว */
 #terrainBtn { background-color: #e5e7eb; color: #4b5563; }
 #terrainBtn.active { background-color: #1e3a8a; color: #ffffff; }
+/* ปุ่ม "ก" ชื่อถนน/สถานที่ (แผนที่ OpenFreeMap + Satellite) — โทนเดียวกับปุ่มภูมิประเทศ */
+#labelsBtn { background-color: #e5e7eb; color: #4b5563; }
+#labelsBtn.active { background-color: #1e3a8a; color: #ffffff; }
+#labelsBtn .labels-glyph { font: 700 22px/1 'Sarabun', sans-serif; }
 /* เข็มทิศ: หมุนตามทิศเท่านั้น */
 #compassBtn .compass-needle { transition: transform 0.15s linear; }

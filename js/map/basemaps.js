@@ -18,6 +18,7 @@
   const STYLE_CACHE_KEY = 'vector_style_cache';
   const STYLE_TIMEOUT_MS = 5000;
   const VECTOR_ID = 'ofm';
+  const HYBRID_ID = 'ofm-satellite';
 
   const tk = (CFG.keys && CFG.keys.tracestrack) || '';
 
@@ -27,6 +28,10 @@
       tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'] },
     { id: VECTOR_ID,     name: 'OpenFreeMap (Vector)', vector: true,
       attribution: '&copy; OpenStreetMap contributors | OpenFreeMap' },
+    // ภาพดาวเทียม Esri + อาคาร 3D (เฉพาะโหมด 3D) + ชื่อถนน/สถานที่ (ปุ่ม "ก") จาก OpenFreeMap — v3.9.05
+    { id: HYBRID_ID,     name: 'OpenFreeMap (Vector) + Satellite', hybrid: true, maxzoom: 18,
+      attribution: '&copy; Esri | &copy; OpenStreetMap contributors | OpenFreeMap',
+      tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'] },
     { id: 'gstreets',    name: 'Google Streets',   maxzoom: 20, attribution: '&copy; Google',
       tiles: [0, 1, 2, 3].map(n => `https://mt${n}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}`) },
     { id: 'ghybrid',     name: 'Google Hybrid',    maxzoom: 20, attribution: '&copy; Google Hybrid',
@@ -40,6 +45,10 @@
   ];
 
   let vectorLayerIds = [];
+  let hybridBuildingIds = [], hybridLabelIds = [];
+  const HYBRID_LABELS_KEY = 'map_hybrid_labels';     // จำการเปิด/ปิดชื่อ (ค่าเริ่มต้น เปิด)
+  let hybridLabelsOn = true;
+  let labelsBtn = null;
   let labelFont = ['Noto Sans Regular'];   // ฟอนต์ที่ glyph server มีแน่นอน (ใช้กับป้ายของเลเยอร์ข้อมูล)
   let vectorAvailable = false;
   let activeId = null;
@@ -160,6 +169,34 @@
       const vLayers = applyThaiLabels(JSON.parse(JSON.stringify(vec.layers)));
       vectorLayerIds = vLayers.map(l => l.id);
       vLayers.forEach(l => style.layers.push(setVis(l, activeId === VECTOR_ID)));
+
+      // ── รายการ OpenFreeMap + Satellite: ใช้ source เวกเตอร์เดิมร่วมกัน (ไม่ดาวน์โหลดซ้ำ) ──
+      const vecSrc = Object.keys(vec.sources).find(k => vec.sources[k].type === 'vector') || 'openmaptiles';
+      // อาคาร 3D สีเทาตามความสูง — แสดงเฉพาะโหมด 3D (applyHybrid)
+      const bId = 'bm-hyb-buildings';
+      style.layers.push(setVis({
+        id: bId, type: 'fill-extrusion', source: vecSrc, 'source-layer': 'building', minzoom: 14,   // = Leaflet 15
+        filter: ['!=', ['get', 'hide_3d'], true],
+        paint: {
+          'fill-extrusion-color': ['interpolate', ['linear'], ['coalesce', ['get', 'render_height'], 3],
+            0, '#e5e7eb', 15, '#cbd5e1', 40, '#9ca3af', 100, '#6b7280'],
+          'fill-extrusion-height': ['coalesce', ['get', 'render_height'], 3],
+          'fill-extrusion-base': ['coalesce', ['get', 'render_min_height'], 0],
+          'fill-extrusion-opacity': 0.85
+        }
+      }, false));
+      hybridBuildingIds = [bId];
+      // ชื่อถนน/สถานที่ภาษาไทย: ตัวหนังสือขาว ขอบเข้ม อ่านได้บนภาพดาวเทียม
+      hybridLabelIds = [];
+      vLayers.filter(l => l.type === 'symbol' && ['place', 'transportation_name', 'water_name'].includes(l['source-layer']) && l.layout && l.layout['text-field'])
+        .forEach(l => {
+          const c = JSON.parse(JSON.stringify(l));
+          c.id = 'bm-hyb-lbl-' + l.id;
+          delete c.layout['icon-image'];
+          c.paint = Object.assign({}, c.paint, { 'text-color': '#ffffff', 'text-halo-color': 'rgba(0,0,0,0.85)', 'text-halo-width': 1.6, 'text-halo-blur': 0.3 });
+          style.layers.push(setVis(c, false));
+          hybridLabelIds.push(c.id);
+        });
     }
     return style;
   }
@@ -179,16 +216,54 @@
       if (map.getLayer(lid)) map.setLayoutProperty(lid, 'visibility', b.vector ? 'visible' : 'none');
     });
     activeId = id;
+    applyHybrid();
     BPNP.events.emit('basemap:change', id);
     return true;
   }
 
+  // ── รายการ OpenFreeMap + Satellite: อาคาร (เฉพาะ 3D) · ชื่อ (ปุ่ม "ก") · ปุ่มแสดงเฉพาะรายการนี้ ──
+  function applyHybrid() {
+    const map = BPNP.map.instance;
+    if (!map) return;
+    const on = activeId === HYBRID_ID;
+    const is3d = !!(BPNP.map.terrain && BPNP.map.terrain.isOn());
+    hybridBuildingIds.forEach(id => { if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', on && is3d ? 'visible' : 'none'); });
+    hybridLabelIds.forEach(id => { if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', on && hybridLabelsOn ? 'visible' : 'none'); });
+    if (labelsBtn) {
+      labelsBtn.style.display = on && hybridLabelIds.length ? '' : 'none';
+      labelsBtn.classList.toggle('active', hybridLabelsOn);
+      labelsBtn.title = hybridLabelsOn ? 'ชื่อถนน/สถานที่: เปิด (กดเพื่อปิด)' : 'ชื่อถนน/สถานที่: ปิด (กดเพื่อแสดง)';
+    }
+  }
+
+  function setHybridLabels(onOff) {
+    hybridLabelsOn = !!onOff;
+    BPNP.storage.set(HYBRID_LABELS_KEY, hybridLabelsOn ? '1' : '0');
+    applyHybrid();
+    if (BPNP.core.toast) BPNP.core.toast.show(hybridLabelsOn ? 'ชื่อถนน/สถานที่: เปิด' : 'ชื่อถนน/สถานที่: ปิด', false, 1500);
+  }
+
+  // ปุ่ม "ก" กลม ซ้ายปุ่มภูมิประเทศ (แถวเดียวกับปุ่ม 3D) — ตำแหน่งคงที่ ไม่ขยับเมื่อสลับ 2D/3D
+  if (BPNP.ui && BPNP.ui.registerButton) BPNP.ui.registerButton(() => {
+    hybridLabelsOn = BPNP.storage.get(HYBRID_LABELS_KEY) !== '0';
+    labelsBtn = BPNP.ui.createStandardButton({
+      id: 'labelsBtn',
+      html: '<span class="labels-glyph">ก</span>',
+      style: { bottom: 'calc(var(--safe-bottom) + 65px + (var(--map-btn-size) + var(--map-gap)) * 1)',
+               right: 'calc(var(--safe-right) + (var(--map-btn-size) + var(--map-gap)) * 2)', display: 'none' },
+      title: '',
+      onClick: () => setHybridLabels(!hybridLabelsOn)
+    });
+    applyHybrid();
+  });
+  if (BPNP.events) BPNP.events.on('map:3d', applyHybrid);
+
   BPNP.map.basemaps = {
-    VECTOR_ID,
-    buildStyle,
+    VECTOR_ID, HYBRID_ID,
+    buildStyle, applyHybrid, setHybridLabels,
     setActive,
     get list() {
-      return RASTERS.map(b => ({ id: b.id, name: b.name, type: b.vector ? 'vector' : 'raster', available: b.vector ? vectorAvailable : true }));
+      return RASTERS.map(b => ({ id: b.id, name: b.name, type: b.vector ? 'vector' : (b.hybrid ? 'hybrid' : 'raster'), available: b.vector ? vectorAvailable : true }));
     },
     get active() { return activeId; },
     get labelFont() { return labelFont; },

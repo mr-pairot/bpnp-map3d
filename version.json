@@ -1,8 +1,8 @@
 {
-  "version": "3.9.04",
+  "version": "3.9.05",
   "build": "",
   "changelog": [
-    "กล่องชื่อสถานีพอดีกับตัวหนังสือ"
+    "เพิ่มแผนที่พื้นหลัง OpenFreeMap + Satellite พร้อมอาคาร 3 มิติ"
   ],
   "dataVersions": {}
 }
