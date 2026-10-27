@@ -164,17 +164,24 @@
   // ── ป้ายชื่อวางที่พิกเซลเต็ม (v3.9.03) ──
   // เดิมจัดกึ่งกลางด้วย translateX(-50%) → ป้ายที่กว้างเลขคี่/ทศนิยม ตกครึ่งพิกเซล ตัวอักษรเบลอ (เห็นชัดบนจอ PC)
   // วัดความกว้างจาก layout (ไม่ถูกผลของการย่อในโหมด 3D) → ปัดเป็นเลขคู่ แล้วเลื่อนเป็นจำนวนเต็ม
+  // v3.9.04: แก้การวัด — 3.9.03 บวก padding ซ้ำ (CSS ใช้ border-box) กล่องจึงกว้างเกิน 16 px ตัวหนังสือชิดซ้าย
   function snapLabels() {
     (stationMarkers || []).forEach(mk => {
       const l = mk.getElement().querySelector('.station-marker-label');
       if (!l || l.dataset.snapped === '1' || !l.isConnected) return;
-      const w = parseFloat(getComputedStyle(l).width);
+      l.style.width = ''; l.style.boxSizing = '';               // วัดจากขนาดธรรมชาติ
+      const cs = getComputedStyle(l);
+      const w = parseFloat(cs.width);
       if (!(w > 0)) return;                                   // ยังไม่ได้วาด (ซ่อนอยู่) — ลองใหม่ครั้งหน้า
-      let cw = Math.ceil(w); if (cw % 2) cw += 1;             // เนื้อหาเลขคู่ (+ padding 8+8) → ความกว้างรวมเลขคู่
-      l.style.width = cw + 'px';
-      l.style.boxSizing = 'content-box';
-      const total = l.offsetWidth;
-      l.style.transform = `translateX(${-Math.round(total / 2)}px)`;
+      // ความกว้างทั้งกล่อง: ถ้า box-sizing เป็น border-box ค่า width รวม padding/ขอบแล้ว (CSS ทั้งแอปใช้ border-box)
+      const extra = cs.boxSizing === 'border-box' ? 0
+        : parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight) + parseFloat(cs.borderLeftWidth) + parseFloat(cs.borderRightWidth);
+      // ปัดขึ้นเป็นจำนวนเต็ม (เพิ่ม < 1 px ทางขวา) · ตัวหนังสือเริ่มที่ padding ซ้ายพอดี (พิกเซลเต็ม → คม)
+      // เลื่อนเป็นจำนวนเต็ม: กึ่งกลางกล่องคลาดจากไอคอนได้ไม่เกิน 0.5 px (มองไม่เห็น)
+      const total = Math.ceil(w + extra);
+      l.style.boxSizing = 'border-box';
+      l.style.width = total + 'px';
+      l.style.transform = `translateX(${-Math.floor(total / 2)}px)`;
       l.dataset.snapped = '1';
     });
   }
@@ -182,7 +189,7 @@
   function register(map) {
     const R = BPNP.map.registry;
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => {   // ฟอนต์มาทีหลัง → วัดใหม่
-      (stationMarkers || []).forEach(mk => { const l = mk.getElement().querySelector('.station-marker-label'); if (l) { delete l.dataset.snapped; l.style.width = ''; l.style.transform = ''; } });
+      (stationMarkers || []).forEach(mk => { const l = mk.getElement().querySelector('.station-marker-label'); if (l) { delete l.dataset.snapped; l.style.width = ''; l.style.boxSizing = ''; l.style.transform = ''; } });
       requestAnimationFrame(snapLabels);
     });
     ['move', 'moveend', 'resize'].forEach(ev => map.on(ev, () => scheduleDepth(map)));
