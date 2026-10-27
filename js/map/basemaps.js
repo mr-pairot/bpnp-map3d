@@ -172,24 +172,46 @@
 
       // ── รายการ OpenFreeMap + Satellite: ใช้ source เวกเตอร์เดิมร่วมกัน (ไม่ดาวน์โหลดซ้ำ) ──
       const vecSrc = Object.keys(vec.sources).find(k => vec.sources[k].type === 'vector') || 'openmaptiles';
+      
       // อาคาร 3D สีเทาตามความสูง — แสดงเฉพาะโหมด 3D (applyHybrid)
       const bId = 'bm-hyb-buildings';
       style.layers.push(setVis({
-        id: bId, type: 'fill-extrusion', source: vecSrc, 'source-layer': 'building', minzoom: 14,   // = Leaflet 15
-        filter: ['!=', ['get', 'hide_3d'], true],
+        id: bId,
+        type: 'fill-extrusion',
+        source: vecSrc,
+        'source-layer': 'building',
+        minzoom: 14,
+        filter: ['!=', ['coalesce', ['get', 'hide_3d'], false], true],
         paint: {
-          'fill-extrusion-color': ['interpolate', ['linear'], ['coalesce', ['get', 'render_height'], 3],
-            0, '#e5e7eb', 15, '#cbd5e1', 40, '#9ca3af', 100, '#6b7280'],
-          'fill-extrusion-height': ['interpolate', ['linear'], ['zoom'],
+          'fill-extrusion-color': [
+            'interpolate',
+            ['linear'],
+            ['coalesce', ['get', 'render_height'], ['get', 'height'], 3],
+            0, '#e5e7eb',
+            15, '#cbd5e1',
+            40, '#9ca3af',
+            100, '#6b7280'
+          ],
+          // ปรับการเปลี่ยนผ่านความสูงสเกลตาม Zoom ให้อาคารคืนสเกลความสูงจริงตั้งแต่ Zoom 14.5
+          'fill-extrusion-height': [
+            'interpolate',
+            ['linear'],
+            ['zoom'],
             14, 0,
-            16, ['coalesce', ['get', 'render_height'], 3]],
-          'fill-extrusion-base': ['interpolate', ['linear'], ['zoom'],
+            14.5, ['coalesce', ['get', 'render_height'], ['get', 'height'], 3]
+          ],
+          'fill-extrusion-base': [
+            'interpolate',
+            ['linear'],
+            ['zoom'],
             14, 0,
-            16, ['coalesce', ['get', 'render_min_height'], 0]],
+            14.5, ['coalesce', ['get', 'render_min_height'], ['get', 'min_height'], 0]
+          ],
           'fill-extrusion-opacity': 0.85
         }
       }, false));
       hybridBuildingIds = [bId];
+
       // ชื่อถนน/สถานที่ภาษาไทย: ตัวหนังสือขาว ขอบเข้ม อ่านได้บนภาพดาวเทียม
       hybridLabelIds = [];
       vLayers.filter(l => l.type === 'symbol' && ['place', 'transportation_name', 'water_name'].includes(l['source-layer']) && l.layout && l.layout['text-field'])
