@@ -46,13 +46,14 @@
 
   let vectorLayerIds = [];
   let hybridBuildingIds = [], hybridLabelIds = [];
-  const HYBRID_LABELS_KEY = 'map_hybrid_labels';
+  const HYBRID_LABELS_KEY = 'map_hybrid_labels';     // จำการเปิด/ปิดชื่อ (ค่าเริ่มต้น เปิด)
   let hybridLabelsOn = true;
   let labelsBtn = null;
-  let labelFont = ['Noto Sans Regular'];
+  let labelFont = ['Noto Sans Regular'];   // ฟอนต์ที่ glyph server มีแน่นอน (ใช้กับป้ายของเลเยอร์ข้อมูล)
   let vectorAvailable = false;
   let activeId = null;
 
+  // ── โหลด style เวกเตอร์ (มี timeout + สำเนาออฟไลน์) ──
   async function fetchVectorStyle() {
     const ctrl = ('AbortController' in window) ? new AbortController() : null;
     const timer = ctrl ? setTimeout(() => ctrl.abort(), STYLE_TIMEOUT_MS) : null;
@@ -70,6 +71,7 @@
     }
   }
 
+  // ── ปรับป้ายเป็นภาษาไทย (ย้ายจาก forceThaiLabels เดิม ทำกับ JSON ก่อนสร้างแผนที่) ──
   function applyThaiLabels(layers) {
     let srcName = 'openmaptiles', srcLayer = 'transportation_name', font = ['Noto Sans Regular'];
     const sample = layers.find(l => l.type === 'symbol' && l.id.includes('highway'));
@@ -103,6 +105,7 @@
       }
     });
 
+    // ชื่อถนนสายหลักภาษาไทยตามแนวเส้น
     layers.push({
       id: 'bpnp-major-road-names',
       type: 'symbol',
@@ -132,6 +135,7 @@
     return layer;
   }
 
+  // ── สร้าง style รวม ──
   async function buildStyle(wantedId) {
     const vec = await fetchVectorStyle();
     vectorAvailable = !!(vec && Array.isArray(vec.layers));
@@ -145,6 +149,7 @@
       glyphs: (vec && vec.glyphs) || CFG.map.fallbackGlyphs,
       sources: {},
       layers: [
+        // พื้นหลังสำรอง (มองเห็นระหว่างรอ tile)
         { id: 'bm-background', type: 'background', paint: { 'background-color': '#f2efe9' } }
       ]
     };
@@ -165,51 +170,41 @@
       vectorLayerIds = vLayers.map(l => l.id);
       vLayers.forEach(l => style.layers.push(setVis(l, activeId === VECTOR_ID)));
 
+      // ── รายการ OpenFreeMap + Satellite: ใช้ source เวกเตอร์เดิมร่วมกัน (ไม่ดาวน์โหลดซ้ำ) ──
       const vecSrc = Object.keys(vec.sources).find(k => vec.sources[k].type === 'vector') || 'openmaptiles';
-      
+      // อาคาร 3D สีเทาตามความสูง — แสดงเฉพาะโหมด 3D (applyHybrid)
       const bId = 'bm-hyb-buildings';
       style.layers.push(setVis({
-        id: bId,
-        type: 'fill-extrusion',
-        source: vecSrc,
-        'source-layer': 'building',
-        minzoom: 14,
-        filter: ['!=', ['coalesce', ['get', 'hide_3d'], false], true],
+        id: bId, type: 'fill-extrusion', source: vecSrc, 'source-layer': 'building', minzoom: 14,   // = Leaflet 15
+        filter: ['!=', ['get', 'hide_3d'], true],
         paint: {
-          'fill-extrusion-color': [
-            'interpolate',
-            ['linear'],
-            ['coalesce', ['get', 'render_height'], ['get', 'height'], 3],
-            0, '#e5e7eb',
-            15, '#cbd5e1',
-            40, '#9ca3af',
-            100, '#6b7280'
-          ],
-          // แก้ไข: ใช้การคูณ (*) ระหว่าง "ความสูงจริง" กับ "ตัวคูณตามการซูม (0 ถึง 1)"
-          'fill-extrusion-height': [
-            '*',
-            ['to-number', ['coalesce', ['get', 'render_height'], ['get', 'height'], 3]],
-            ['interpolate', ['linear'], ['zoom'], 14, 0, 14.5, 1]
-          ],
-          'fill-extrusion-base': [
-            '*',
-            ['to-number', ['coalesce', ['get', 'render_min_height'], ['get', 'min_height'], 0]],
-            ['interpolate', ['linear'], ['zoom'], 14, 0, 14.5, 1]
-          ],
+          'fill-extrusion-color': ['interpolate', ['linear'], ['coalesce', ['get', 'render_height'], 3],
+            0, '#e5e7eb', 15, '#cbd5e1', 40, '#9ca3af', 100, '#6b7280'],
+          // ความสูงผูกกับซูม (v3.9.07 ตามตัวอย่าง MapLibre "Display buildings in 3D"):
+          //   ซูม 14 (= Leaflet 15) แบนราบ → ค่อย ๆ สูงขึ้น → ซูม 15 (= Leaflet 16) สูงเต็มตามข้อมูล
+          //   ฐานใช้ interpolate แบบเดียวกัน (ตัวอย่างต้นฉบับใช้ ['get','zoom'] ซึ่งอ่านค่าจากข้อมูลอาคาร ไม่ใช่ระดับซูม)
+          'fill-extrusion-height': ['interpolate', ['linear'], ['zoom'],
+            14, 0,
+            15, ['coalesce', ['get', 'render_height'], 3]],
+          'fill-extrusion-base': ['interpolate', ['linear'], ['zoom'],
+            14, 0,
+            15, ['coalesce', ['get', 'render_min_height'], 0]],
           'fill-extrusion-opacity': 0.85
         }
       }, false));
       hybridBuildingIds = [bId];
-
+      // ชื่อถนน/สถานที่ภาษาไทย: ตัวหนังสือขาว ขอบเข้ม อ่านได้บนภาพดาวเทียม
       hybridLabelIds = [];
       vLayers.filter(l => l.type === 'symbol' && ['place', 'transportation_name', 'water_name'].includes(l['source-layer']) && l.layout && l.layout['text-field'])
         .forEach(l => {
           const c = JSON.parse(JSON.stringify(l));
           c.id = 'bm-hyb-lbl-' + l.id;
+          // ป้ายหมายเลขถนน (ข้อความจาก "ref" + ไอคอนกรอบ road_N จาก sprite) — คงแบบเดียวกับ OpenFreeMap (Vector) ทุกอย่าง (v3.9.06)
+          // ระบุจากไอคอนกรอบ (ref_length / network) หรือชื่อชั้น — ไม่ใช้ข้อความ เพราะชื่อถนนภาษาไทยมี ref เป็นค่าสำรอง
           const icon = JSON.stringify(l.layout['icon-image'] || '');
           const isShield = /shield/.test(l.id) || /ref_length/.test(icon);
           if (!isShield) {
-            delete c.layout['icon-image'];
+            delete c.layout['icon-image'];                   // ชื่อ: ไม่ใช้จุดวงกลมหน้าชื่อหมู่บ้าน/เมือง
             c.paint = Object.assign({}, c.paint, { 'text-color': '#ffffff', 'text-halo-color': 'rgba(0,0,0,0.85)', 'text-halo-width': 1.6, 'text-halo-blur': 0.3 });
           }
           style.layers.push(setVis(c, false));
@@ -239,6 +234,7 @@
     return true;
   }
 
+  // ── รายการ OpenFreeMap + Satellite: อาคาร (เฉพาะ 3D) · ชื่อ (ปุ่ม "ก") · ปุ่มแสดงเฉพาะรายการนี้ ──
   function applyHybrid() {
     const map = BPNP.map.instance;
     if (!map) return;
@@ -260,6 +256,7 @@
     if (BPNP.core.toast) BPNP.core.toast.show(hybridLabelsOn ? 'ชื่อถนน/สถานที่: เปิด' : 'ชื่อถนน/สถานที่: ปิด', false, 1500);
   }
 
+  // ปุ่ม "ก" กลม ซ้ายปุ่มภูมิประเทศ (แถวเดียวกับปุ่ม 3D) — ตำแหน่งคงที่ ไม่ขยับเมื่อสลับ 2D/3D
   if (BPNP.ui && BPNP.ui.registerButton) BPNP.ui.registerButton(() => {
     hybridLabelsOn = BPNP.storage.get(HYBRID_LABELS_KEY) !== '0';
     labelsBtn = BPNP.ui.createStandardButton({
@@ -284,6 +281,7 @@
     get active() { return activeId; },
     get labelFont() { return labelFont; },
     get attribution() { const b = byId(activeId); return b ? b.attribution : ''; },
+    // เลเยอร์ของแผนที่ฐานทั้งหมด (registry วางเลเยอร์ข้อมูลไว้เหนือชุดนี้)
     get topLayerId() {
       const map = BPNP.map.instance;
       const layers = map ? map.getStyle().layers : [];

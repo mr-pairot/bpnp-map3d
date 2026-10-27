@@ -1,8 +1,8 @@
 {
-  "version": "3.9.06.03",
+  "version": "3.9.07",
   "build": "",
   "changelog": [
-    "หมายเลขถนนมีกรอบบนแผนที่ OpenFreeMap + Satellite"
+    "อาคาร 3D ค่อย ๆ สูงขึ้นตามการซูม"
   ],
   "dataVersions": {}
 }

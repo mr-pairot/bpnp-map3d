@@ -1191,3 +1191,16 @@ v3.2.00–3.3.03 ทำเป็นปุ่มมาตรฐานคอลั
 - ชั้นชื่อ (15 ชั้น) ยังเป็นตัวหนังสือขาวขอบดำ ไม่มีไอคอน
 
 ทดสอบ: ชั้นป้ายหมายเลขถนน 3 ชั้น ไอคอน/ข้อความ/สี ตรงกับต้นฉบับ และแสดงเมื่อเลือกแผนที่นี้ · ชั้นชื่อ 15 ชั้น ขาวทั้งหมด ไม่มีไอคอน · ไม่มี error
+
+---
+
+## 50. v3.9.07 — ความสูงอาคาร 3D ผูกกับซูม (แผนที่ OpenFreeMap + Satellite)
+
+อ้างอิง: ตัวอย่าง MapLibre "Display buildings in 3D" — `fill-extrusion-height: interpolate(zoom 15 → 0, 16 → render_height)`
+แก้ `js/map/basemaps.js` ชั้น `bm-hyb-buildings`:
+- `fill-extrusion-height`: `['interpolate', ['linear'], ['zoom'], 14, 0, 15, coalesce(render_height, 3)]`
+- `fill-extrusion-base`: แบบเดียวกันกับ `render_min_height`
+- ตัวเลขซูมเลื่อน 1 ระดับจากตัวอย่าง (ชั้นเริ่มที่ ML 14 = Leaflet 15) · ไม่ใช้ `['get','zoom']` แบบตัวอย่าง (อ่านค่าจากข้อมูลอาคาร ไม่ใช่ระดับซูม → ฐานเป็น 0 เสมอ)
+- ไม่เปลี่ยนชั้น `building-3d` ของแผนที่ OpenFreeMap (Vector)
+
+ทดสอบ: MapLibre รับนิพจน์ไม่มี error · 2D ซ่อน / 3D แสดง · คำนวณด้วย @maplibre/maplibre-gl-style-spec: อาคาร 30 ม. → Leaflet 15 = 0, 15.5 = 15, 16 ขึ้นไป = 30 ม. · ไม่มีข้อมูลความสูง → 3 ม. ที่ Leaflet 16
