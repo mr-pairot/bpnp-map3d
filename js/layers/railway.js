@@ -161,8 +161,30 @@
     root.addEventListener('touchstart', () => { on(); setTimeout(off, 2500); }, { passive: true });
   }
 
+  // ── ป้ายชื่อวางที่พิกเซลเต็ม (v3.9.03) ──
+  // เดิมจัดกึ่งกลางด้วย translateX(-50%) → ป้ายที่กว้างเลขคี่/ทศนิยม ตกครึ่งพิกเซล ตัวอักษรเบลอ (เห็นชัดบนจอ PC)
+  // วัดความกว้างจาก layout (ไม่ถูกผลของการย่อในโหมด 3D) → ปัดเป็นเลขคู่ แล้วเลื่อนเป็นจำนวนเต็ม
+  function snapLabels() {
+    (stationMarkers || []).forEach(mk => {
+      const l = mk.getElement().querySelector('.station-marker-label');
+      if (!l || l.dataset.snapped === '1' || !l.isConnected) return;
+      const w = parseFloat(getComputedStyle(l).width);
+      if (!(w > 0)) return;                                   // ยังไม่ได้วาด (ซ่อนอยู่) — ลองใหม่ครั้งหน้า
+      let cw = Math.ceil(w); if (cw % 2) cw += 1;             // เนื้อหาเลขคู่ (+ padding 8+8) → ความกว้างรวมเลขคู่
+      l.style.width = cw + 'px';
+      l.style.boxSizing = 'content-box';
+      const total = l.offsetWidth;
+      l.style.transform = `translateX(${-Math.round(total / 2)}px)`;
+      l.dataset.snapped = '1';
+    });
+  }
+
   function register(map) {
     const R = BPNP.map.registry;
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => {   // ฟอนต์มาทีหลัง → วัดใหม่
+      (stationMarkers || []).forEach(mk => { const l = mk.getElement().querySelector('.station-marker-label'); if (l) { delete l.dataset.snapped; l.style.width = ''; l.style.transform = ''; } });
+      requestAnimationFrame(snapLabels);
+    });
     ['move', 'moveend', 'resize'].forEach(ev => map.on(ev, () => scheduleDepth(map)));
     if (BPNP.events) BPNP.events.on('map:3d', () => scheduleDepth(map));
 
@@ -194,7 +216,7 @@
         stationMarkers.forEach(mk => bindFront(map, mk));
         return {};
       },
-      onShow: () => { (stationMarkers || []).forEach(m => m.addTo(map)); scheduleDepth(map); },
+      onShow: () => { (stationMarkers || []).forEach(m => m.addTo(map)); requestAnimationFrame(snapLabels); scheduleDepth(map); },
       onHide: () => (stationMarkers || []).forEach(m => m.remove())
     });
   }
