@@ -180,8 +180,12 @@
         paint: {
           'fill-extrusion-color': ['interpolate', ['linear'], ['coalesce', ['get', 'render_height'], 3],
             0, '#e5e7eb', 15, '#cbd5e1', 40, '#9ca3af', 100, '#6b7280'],
-          'fill-extrusion-height': ['coalesce', ['get', 'render_height'], 3],
-          'fill-extrusion-base': ['coalesce', ['get', 'render_min_height'], 0],
+          'fill-extrusion-height': ['interpolate', ['linear'], ['zoom'],
+            14, 0,
+            15, ['coalesce', ['get', 'render_height'], 3]],
+          'fill-extrusion-base': ['interpolate', ['linear'], ['zoom'],
+            14, 0,
+            15, ['coalesce', ['get', 'render_min_height'], 0]],
           'fill-extrusion-opacity': 0.85
         }
       }, false));
