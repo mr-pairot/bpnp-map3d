@@ -1,5 +1,13 @@
 [
  {
+  "version": "3.9.08",
+  "date": "27 Oct 2026",
+  "title": "อาคาร 3D ค่อย ๆ สูงขึ้น (OpenFreeMap Vector)",
+  "details": [
+   "แผนที่ OpenFreeMap (Vector): อาคาร 3 มิติค่อย ๆ สูงขึ้นเมื่อซูมเข้า เหมือนแผนที่ OpenFreeMap + Satellite"
+  ]
+ },
+ {
   "version": "3.9.07",
   "date": "27 Oct 2026",
   "title": "อาคาร 3D ค่อย ๆ สูงขึ้นตามการซูม",

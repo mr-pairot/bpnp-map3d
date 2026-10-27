@@ -1204,3 +1204,11 @@ v3.2.00–3.3.03 ทำเป็นปุ่มมาตรฐานคอลั
 - ไม่เปลี่ยนชั้น `building-3d` ของแผนที่ OpenFreeMap (Vector)
 
 ทดสอบ: MapLibre รับนิพจน์ไม่มี error · 2D ซ่อน / 3D แสดง · คำนวณด้วย @maplibre/maplibre-gl-style-spec: อาคาร 30 ม. → Leaflet 15 = 0, 15.5 = 15, 16 ขึ้นไป = 30 ม. · ไม่มีข้อมูลความสูง → 3 ม. ที่ Leaflet 16
+
+---
+
+## 51. v3.9.08 — ความสูงอาคาร 3D ผูกกับซูม (แผนที่ OpenFreeMap Vector)
+
+แก้ `js/map/basemaps.js` ใน `buildStyle()` ก่อนใส่ชั้นของ style เวกเตอร์: ชั้น `fill-extrusion` ของ `building` (`building-3d` จาก style OpenFreeMap)
+ห่อนิพจน์เดิม: `height/base = ['interpolate', ['linear'], ['zoom'], 14, 0, 15, <นิพจน์เดิม>]` — สี (`hsl(35,8%,85%)`) และความทึบ (0.8) คงเดิม · ไม่เปลี่ยนการแสดงใน 2D
+ทดสอบ: MapLibre รับนิพจน์ไม่มี error · อาคาร 30 ม. → Leaflet 15 = 0, 15.5 = 15, 16 ขึ้นไป = 30 ม. · แผนที่ดาวเทียมไม่เปลี่ยน

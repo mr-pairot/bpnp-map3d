@@ -168,6 +168,14 @@
       Object.assign(style.sources, vec.sources);
       const vLayers = applyThaiLabels(JSON.parse(JSON.stringify(vec.layers)));
       vectorLayerIds = vLayers.map(l => l.id);
+      // อาคาร 3D ของแผนที่ OpenFreeMap (Vector): ความสูงผูกกับซูมแบบเดียวกับแผนที่ดาวเทียม (v3.9.08)
+      //   ห่อนิพจน์เดิมของ style ไว้ (สี/ความทึบคงเดิม) · ซูม 14 (= Leaflet 15) แบน → ซูม 15 (= Leaflet 16) สูงเต็ม
+      vLayers.forEach(l => {
+        if (l.type !== 'fill-extrusion' || l['source-layer'] !== 'building' || !l.paint) return;
+        const grow = v => (v === undefined ? v : ['interpolate', ['linear'], ['zoom'], 14, 0, 15, v]);
+        if (l.paint['fill-extrusion-height'] !== undefined) l.paint['fill-extrusion-height'] = grow(l.paint['fill-extrusion-height']);
+        if (l.paint['fill-extrusion-base'] !== undefined) l.paint['fill-extrusion-base'] = grow(l.paint['fill-extrusion-base']);
+      });
       vLayers.forEach(l => style.layers.push(setVis(l, activeId === VECTOR_ID)));
 
       // ── รายการ OpenFreeMap + Satellite: ใช้ source เวกเตอร์เดิมร่วมกัน (ไม่ดาวน์โหลดซ้ำ) ──
