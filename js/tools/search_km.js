@@ -3,7 +3,7 @@
  * เฟส 5A: ค้นหา กม. (เดิม search_sta.js)
  *   - ปุ่ม assets/ui/search.png คอลัมน์ซ้าย แถวบนสุด
  *   - พิมพ์ กม. (เช่น 10+500 หรือ 10500) → รายการแนะนำจากจุด alignment ทุก 20 ม. (สูงสุด 20 รายการ)
- *   - เลือก → หมุด กม. สีฟ้า + บินไปซูม Leaflet 14 + วงกระเพื่อมหลัง 2 วินาที + แสดงพิกัด
+ *   - เลือก → หมุด กม. สีชมพูเข้ม ขอบขาว (อยู่บนสุด) + บินไปซูม Leaflet 14 + วงกระเพื่อมสีเดียวกันหลัง 2 วินาที + แสดงพิกัด
  *   - ปิดแผง → ลบหมุดและหยุดวงกระเพื่อม
  * CSS: css/tools/search_km.css
  * ───────────────────────────────────────────────────────────────────────── */
@@ -12,6 +12,9 @@
   const T = () => BPNP.tools.utils;
   let panel = null, input = null, suggest = null, latLngDiv = null, marker = null, visible = false;
 
+  // สีหมุดผลค้นหา (v3.9.02): ชมพูเข้ม + ขอบขาว + เงา — แยกจากป้าย กม. สีฟ้า (ไม่ซ้ำสีอื่นบนแผนที่)
+  const PIN_COLOR = '#D81B60';
+  const RIPPLE = { color: 'rgba(216, 27, 96, 0.4)', dotColor: '#D81B60' };
   const formatSta = n => { n = Number(n); return `${Math.floor(n / 1000)}+${String(n % 1000).padStart(3, '0')}`; };
 
   function pinHtml(staString) {
@@ -21,8 +24,8 @@
       km = a; frac = String(parseInt(b || '0', 10)).padStart(3, '0');
     }
     return `
-      <svg width="33" height="44" viewBox="0 0 35 45" xmlns="http://www.w3.org/2000/svg">
-        <path d="M28.205 3.217H6.777c-2.367 0-4.286 1.87-4.286 4.179v19.847c0 2.308 1.919 4.179 4.286 4.179h5.357l5.337 13.58 5.377-13.58h5.357c2.366 0 4.285-1.87 4.285-4.179V7.396c0-2.308-1.919-4.179-4.285-4.179" fill="#32a9dd"></path>
+      <svg width="33" height="44" viewBox="0 0 35 45" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;filter:drop-shadow(0 2px 3px rgba(0,0,0,.45))">
+        <path d="M28.205 3.217H6.777c-2.367 0-4.286 1.87-4.286 4.179v19.847c0 2.308 1.919 4.179 4.286 4.179h5.357l5.337 13.58 5.377-13.58h5.357c2.366 0 4.285-1.87 4.285-4.179V7.396c0-2.308-1.919-4.179-4.285-4.179" fill="${PIN_COLOR}" stroke="#ffffff" stroke-width="2" stroke-linejoin="round"></path>
         <text x="17.5" y="15" text-anchor="middle" fill="#fff" font-family="Sarabun" font-weight="bold" font-size="12px">${BPNP.escapeHtml(km)}</text>
         <line x1="4" y1="17" x2="31" y2="17" stroke="#fff" stroke-width="1" />
         <text x="17.5" y="28" text-anchor="middle" fill="#fff" font-family="Sarabun" font-size="8px">${BPNP.escapeHtml(frac)}</text>
@@ -115,8 +118,9 @@
     latLngDiv.textContent = `พิกัด: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
     marker = T().remove(marker);
     marker = T().add(T().marker(lat, lng, { html: pinHtml(formatSta(staVal)), size: [34, 44], anchor: 'bottom', className: 'sta-search-pin' }));
+    marker.getElement().style.zIndex = '200000';          // หมุดผลค้นหาอยู่บนสุดเสมอ (เหนือป้าย กม. และหมุดสถานี)
     T().flyTo(lat, lng, 14);
-    T().ripple(lat, lng, 2000);
+    T().ripple(lat, lng, 2000, RIPPLE);
     BPNP.auth && BPNP.auth.logUserEvent('Search KM', formatSta(staVal));
   }
 

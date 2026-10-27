@@ -5,7 +5,7 @@
  *   T.add(m) / T.remove(m)                         เพิ่ม/ลบหมุด (เดิม addTo(map) / map.removeLayer)
  *   T.flyTo(lat, lng, leafletZoom = 14)            บิน 1.5 วินาที (เดิม map.flyTo([lat,lng], z))
  *   T.fitPoints([[lat,lng],...], { padding, maxLeafletZoom })   (เดิม fitBounds / flyToBounds)
- *   T.ripple(lat, lng, delayMs = 2000) / T.stopRipple()          วงกระเพื่อม (click_point.js)
+ *   T.ripple(lat, lng, delayMs = 2000, { color, dotColor }) / T.stopRipple()   วงกระเพื่อม (click_point.js)
  *   T.bindPopup(marker, html)                      คลิกหมุดเปิด popup
  *   T.download(content, fileName, mime)            ดาวน์โหลดไฟล์ (KML ฯลฯ)
  *   T.blockMap(el)                                 กันการคลิก/เลื่อนในแผงไม่ให้ส่งต่อไปที่แผนที่
@@ -56,10 +56,11 @@
 
   function stopRipple() { if (BPNP.tools.clickPoint) BPNP.tools.clickPoint.stop(); }
   let rippleTimer = null;
-  function ripple(lat, lng, delayMs = 2000) {
+  // opts: { color, dotColor } สีวงกระเพื่อมเฉพาะครั้ง
+  function ripple(lat, lng, delayMs = 2000, opts = {}) {
     stopRipple();
     clearTimeout(rippleTimer);
-    rippleTimer = setTimeout(() => { if (BPNP.tools.clickPoint) BPNP.tools.clickPoint.start([lng, lat], 1000); }, delayMs);
+    rippleTimer = setTimeout(() => { if (BPNP.tools.clickPoint) BPNP.tools.clickPoint.start([lng, lat], 1000, opts); }, delayMs);
   }
 
   function bindPopup(m, html, opts = {}) {

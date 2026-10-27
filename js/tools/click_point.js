@@ -16,6 +16,7 @@
 
   let map;
   let rippleTimer = null, centerDot = null, current = null;   // current = [lng, lat]
+  let rippleColor = null, dotColor = null;                     // สีเฉพาะครั้ง (เช่น ค้นหา กม.) — null = สีเดิมใน CSS
   let shortHold = null, longHold = null, holdStart = null;
 
   // ── วงกระเพื่อม ──
@@ -29,17 +30,22 @@
     if (!current) return;
     const r = document.createElement('div');
     r.className = 'ripple-effect';
+    if (rippleColor) r.style.backgroundColor = rippleColor;
     place(r, current);
     map.getContainer().appendChild(r);
     setTimeout(() => r.remove(), 1500);
   }
 
-  function start(lngLat, interval = 1000) {
+  // opts.color = สีวงกระเพื่อม (rgba) · opts.dotColor = สีจุดกลาง — ไม่ระบุ = สีเดิม
+  function start(lngLat, interval = 1000, opts = {}) {
     clearInterval(rippleTimer);
     current = BPNP.geo.toLngLat(lngLat);
+    rippleColor = opts.color || null;
+    dotColor = opts.dotColor || null;
     if (centerDot) centerDot.remove();
     centerDot = document.createElement('div');
     centerDot.className = 'ripple-center-dot';
+    if (dotColor) centerDot.style.backgroundColor = dotColor;
     place(centerDot, current);
     map.getContainer().appendChild(centerDot);
     rippleTimer = setInterval(singleRipple, interval);
@@ -199,6 +205,6 @@
 
   BPNP.tools.clickPoint = { init, start, stop, showPopup };
   // ชื่อเดิม (เครื่องมือค้นหาในเฟส 5 เรียกใช้)
-  window.startRippleEffect = (latlng, opts = {}) => start(latlng, opts.interval || 1000);
+  window.startRippleEffect = (latlng, opts = {}) => start(latlng, opts.interval || 1000, opts);
   window.stopRipples = stop;
 })();
