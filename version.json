@@ -1,8 +1,8 @@
 {
-  "version": "3.9.10",
+  "version": "3.9.11",
   "build": "",
   "changelog": [
-    "รูป 3D Box Culvert / Underpass สำหรับ editor · ตรวจ role ซ้ำเมื่อกลับเข้าแอป"
+    "ปุ่มบนมือถือ/แท็บเล็ตไม่มีกรอบค้าง · ปรับป้าย Editor Mode และเครดิตแผนที่"
   ],
   "dataVersions": {}
 }

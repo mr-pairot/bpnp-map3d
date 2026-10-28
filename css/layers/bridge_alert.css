@@ -44,9 +44,13 @@
 .alert-panel .actions         { display: flex; gap: 6px; margin-top: 8px; }
 .alert-panel .btn             { flex: 1; padding: 6px; border-radius: 5px; border: none; font-weight: bold; cursor: pointer; transition: 0.2s; }
 .alert-panel .btn.set         { background: #3E63DD; color: #fff; }
-.alert-panel .btn.set:hover   { background: #2349C8; }
+@media (hover: hover) and (pointer: fine) {
+.alert-panel .btn.set:hover { background: #2349C8; }
+}
 .alert-panel .btn.reset       { background: #eee; }
+@media (hover: hover) and (pointer: fine) {
 .alert-panel .btn.reset:hover { background: #bdbdbd; }
+}
 
 /* --- Toggle Button --- */
 .toggle-alert-str {

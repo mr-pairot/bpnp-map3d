@@ -61,8 +61,10 @@
     pointer-events: none;
 }
 
+@media (hover: hover) and (pointer: fine) {
 .update-notify-btn:hover::before {
     opacity: 1;
+}
 }
 
 @keyframes pulse-red {

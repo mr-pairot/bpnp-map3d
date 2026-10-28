@@ -40,7 +40,9 @@
   background: transparent;
   border-radius: 50%;
 }
+@media (hover: hover) and (pointer: fine) {
 .maplibregl-popup-close-button:hover { color: #585858; background: rgba(0, 0, 0, 0.05); }
+}
 
 /* ── หมุดตำแหน่งผู้ใช้ ── */
 .maplibregl-marker.user-marker {

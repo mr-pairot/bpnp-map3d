@@ -81,8 +81,10 @@
     outline: none;
 }
 
+@media (hover: hover) and (pointer: fine) {
 .welcome-close-btn:hover {
     color: #00d2ff; /* เปลี่ยนเป็นสี Cyan เมื่อชี้ */
+}
 }
 .welcome-close-btn:after {
     font-size: 29px;

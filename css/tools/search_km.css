@@ -21,12 +21,14 @@
   cursor: pointer;
   z-index: 900;
 }
+@media (hover: hover) and (pointer: fine) {
 #searchStaBtn:hover {
   background-color: #e8f4ff;
   border: 1px solid #ccc;
   box-shadow: 0 4px 8px rgba(0,0,0,0.2);
   transform: translateY(-2px);
   transition: all 0.2s ease-in-out;
+}
 }
 
 /* ===== Floating Panel (กล่องหลัก) ===== */
@@ -108,8 +110,10 @@
   border-bottom: none;
 }
 
+@media (hover: hover) and (pointer: fine) {
 .suggestion-item:hover {
   background-color: #e8f4ff; /* สีไฮไลท์เมื่อเอาเมาส์ชี้ */
+}
 }
 
 /* ===== Close Button ===== */
@@ -126,8 +130,10 @@
   border: none;
   z-index: 1100;
 }
+@media (hover: hover) and (pointer: fine) {
 #staCloseBtn:hover {
   color: red;
+}
 }
 
 /* Text Show lat/lng */

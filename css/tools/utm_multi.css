@@ -45,8 +45,10 @@
     transition: background-color 0.2s;
 }
 
+@media (hover: hover) and (pointer: fine) {
 #multiCloseBtn:hover {
     background: rgba(255,255,255,0.2);
+}
 }
 
 .multi-convert-tabs {
@@ -74,8 +76,10 @@
     font-size: small;
 }
 
+@media (hover: hover) and (pointer: fine) {
 .multi-tab-btn:hover:not(.active) {
     background: #edf2f7;
+}
 }
 
 .multi-convert-body {
@@ -191,9 +195,10 @@
     color: white;
 }
 
-#multiConvertToUTMBtn:hover,
-#multiConvertToLatLngBtn:hover {
+@media (hover: hover) and (pointer: fine) {
+#multiConvertToUTMBtn:hover, #multiConvertToLatLngBtn:hover {
     background: #2c5282;
+}
 }
 
 #multiResetLatLngBtn,
@@ -202,9 +207,10 @@
     color: #4a5568;
 }
 
-#multiResetLatLngBtn:hover,
-#multiResetUTMBtn:hover {
+@media (hover: hover) and (pointer: fine) {
+#multiResetLatLngBtn:hover, #multiResetUTMBtn:hover {
     background: #cbd5e0;
+}
 }
 
 .multi-tab-content .multi-radio-group {

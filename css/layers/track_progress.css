@@ -227,10 +227,12 @@
     transition: transform 0.15s ease, filter 0.15s ease;
 }
 
+@media (hover: hover) and (pointer: fine) {
 .progress-block:hover {
     transform: scaleY(1.04);
     filter: brightness(1.1);
     z-index: 5;
+}
 }
 
 /* ── Layers (7 ชั้น) ───────────────────────────────────────── */

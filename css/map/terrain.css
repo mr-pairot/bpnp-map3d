@@ -24,16 +24,17 @@
 /* เข็มทิศ: หมุนตามทิศเท่านั้น */
 #compassBtn .compass-needle { transition: transform 0.15s linear; }
 
-/* ป้าย "Editor Mode" (js/core/features.js) — role editor + โหมด 3D */
+/* ป้าย "Editor Mode" (js/core/features.js) — role editor + โหมด 3D · มุมขวาล่าง ซ้ายของปุ่ม "กม. ทล." */
 #editorModeBadge {
-  position: absolute; 
+  position: absolute;
   bottom: calc(var(--safe-bottom) + 26px);
-  right: calc(var(--safe-right) + 105px); 
+  right: calc(var(--safe-right) + 105px);
   z-index: 900;
   padding: 4px 12px;
   border-radius: 999px;
-  background: rgba(88, 28, 135, 0.5); 
-  backdrop-filter: blur(9px); 
+  background: rgba(88, 28, 135, 0.5);
+  -webkit-backdrop-filter: blur(9px);   /* iOS ก่อน 18 / LINE บน iOS */
+  backdrop-filter: blur(9px);
   color: #ffffff;
   font: 600 12px/1.4 'Sarabun', sans-serif;
   letter-spacing: 0.3px;
@@ -41,4 +42,3 @@
   pointer-events: none;
   white-space: nowrap;
 }
-

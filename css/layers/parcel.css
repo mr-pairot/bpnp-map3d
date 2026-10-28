@@ -47,7 +47,9 @@
   background-repeat: no-repeat;
 }
 .parcel-search-ctl.open.has-text .ps-cancel { display: block; }
+@media (hover: hover) and (pointer: fine) {
 .parcel-search-ctl .ps-cancel:hover { opacity: 1; }
+}
 .parcel-search-ctl .ps-cancel span { display: none; }
 
 .parcel-search-ctl .ps-button {
@@ -68,7 +70,9 @@
   box-sizing: border-box;
   cursor: pointer;
 }
+@media (hover: hover) and (pointer: fine) {
 .parcel-search-ctl .ps-button:hover { background-position: 0 -20px; }
+}
 
 .parcel-search-ctl .ps-tips {
   position: absolute;
@@ -98,8 +102,10 @@
   font-size: 14px;
 }
 .parcel-search-ctl .ps-tip small { color: #666; }
-.parcel-search-ctl .ps-tip-select,
+.parcel-search-ctl .ps-tip-select { background-color: #cefaff; color: #007bff; }
+@media (hover: hover) and (pointer: fine) {
 .parcel-search-ctl .ps-tip:hover { background-color: #cefaff; color: #007bff; }
+}
 
 .parcel-search-ctl .ps-alert:empty { display: none; }
 .parcel-search-ctl .ps-alert {

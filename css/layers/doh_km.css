@@ -35,9 +35,11 @@
     will-change: transform, box-shadow, background-color;
 }
 
+@media (hover: hover) and (pointer: fine) {
 .toggle-DOH:hover .toggle-DOH__button {
     transform: translateY(-3px);
     box-shadow: 0 8px 16px rgba(0,0,0,0.15); 
+}
 }
 
 .toggle-DOH:active .toggle-DOH__button {

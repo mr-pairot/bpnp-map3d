@@ -71,8 +71,10 @@
     -webkit-tap-highlight-color: transparent !important; 
 }
 
+@media (hover: hover) and (pointer: fine) {
 .bp-close-btn:hover { 
     color: #dc3545; 
+}
 }
 
 .bp-close-btn:focus,
@@ -109,7 +111,9 @@
     z-index: 1;
 }
 
+@media (hover: hover) and (pointer: fine) {
 .bp-data-table tbody tr:hover {
     background-color: #e7f5ff;
     cursor: pointer;
+}
 }

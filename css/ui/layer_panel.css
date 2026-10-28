@@ -89,9 +89,11 @@
     -webkit-tap-highlight-color: transparent;
 }
 
+@media (hover: hover) and (pointer: fine) {
 .close-btn:hover {
     color: #900;
     font-size: 20px;
+}
 }
 
 .layer-section {
@@ -124,8 +126,10 @@
     -webkit-tap-highlight-color: transparent;
 }
 
+@media (hover: hover) and (pointer: fine) {
 .layer-header:hover {
     background-color: #e2e6ea;
+}
 }
 
 .layer-header.active {
@@ -194,8 +198,10 @@
     overflow: visible;
 }
 
+@media (hover: hover) and (pointer: fine) {
 .layer-item label:hover {
     color: #00f;
+}
 }
 
 .layer-item input[type="checkbox"] {
@@ -222,9 +228,11 @@
     -webkit-tap-highlight-color: transparent;
 }
 
+@media (hover: hover) and (pointer: fine) {
 .layer-item input[type="checkbox"]:hover {
     border-color: #0d6efd;
     background-color: #f6fbfe;
+}
 }
 
 .layer-item input[type="checkbox"]:checked {
@@ -244,9 +252,11 @@
     border-width: 0 2px 2px 0;
 }
 
+@media (hover: hover) and (pointer: fine) {
 .layer-item input[type="checkbox"]:checked:hover {
     background-color: #0a58ca;
     border-color: #0a58ca;
+}
 }
 
 .layer-item input[type="checkbox"]:focus-visible {
@@ -278,9 +288,11 @@
     -webkit-tap-highlight-color: transparent;
 }
 
+@media (hover: hover) and (pointer: fine) {
 .layer-item input[type="radio"]:hover {
     border-color: #0d6efd;
     background-color: #f6fbfe;
+}
 }
 
 .layer-item input[type="radio"]:checked {
@@ -289,10 +301,12 @@
     box-shadow: inset 0 0 0 1.5px #fff; 
 }
 
+@media (hover: hover) and (pointer: fine) {
 .layer-item input[type="radio"]:checked:hover {
     background-color: #0a58ca;
     border-color: #0a58ca;
     box-shadow: inset 0 0 0 1.5px #fff;
+}
 }
 
 .layer-item input[type="radio"]:focus-visible {
@@ -354,10 +368,12 @@ input[type="range"].opacity-slider::-webkit-slider-thumb {
     cursor: grab;
 }
 
+@media (hover: hover) and (pointer: fine) {
 input[type="range"].opacity-slider:hover::-webkit-slider-thumb {
     width: 19px;
     height: 19px;
     box-shadow: 0 0 5px rgba(0, 123, 255, 0.45);
+}
 }
 
 input[type="range"].opacity-slider:active::-webkit-slider-thumb {
@@ -378,10 +394,12 @@ input[type="range"].opacity-slider::-moz-range-thumb {
     cursor: grab;
 }
 
+@media (hover: hover) and (pointer: fine) {
 input[type="range"].opacity-slider:hover::-moz-range-thumb {
     width: 19px;
     height: 19px;
     box-shadow: 0 0 5px rgba(0, 123, 255, 0.45);
+}
 }
 
 input[type="range"].opacity-slider::-moz-range-track {
@@ -419,10 +437,12 @@ input[type="range"].opacity-slider::-moz-range-progress {
     user-select: none;
 }
 
+@media (hover: hover) and (pointer: fine) {
 .hs-toggle-cb:not(:checked) + .hs-toggle-btn:hover {
     background-color: #f6fbfe;
     border-color: #b6d4fe; 
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
 }
 
 .hs-toggle-cb:checked + .hs-toggle-btn {
@@ -432,10 +452,12 @@ input[type="range"].opacity-slider::-moz-range-progress {
     box-shadow: 0 0 3px rgba(59, 130, 246, 0.5);
 }
 
+@media (hover: hover) and (pointer: fine) {
 .hs-toggle-cb:checked + .hs-toggle-btn:hover {
     background-color: #2563eb;
     border-color: #1d4ed8;
     box-shadow: 0 3px 8px rgba(37, 99, 235, 0.6);
+}
 }
 
 @media (max-width: 768px) {
@@ -540,9 +562,11 @@ input[type="range"].opacity-slider::-moz-range-progress {
     transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
+@media (hover: hover) and (pointer: fine) {
 .info-tooltip-container:hover .info-icon {
     background-color: #495057; 
     transform: scale(1.1); 
+}
 }
 
 .tooltip-content {
@@ -582,10 +606,12 @@ input[type="range"].opacity-slider::-moz-range-progress {
     border-color: transparent transparent rgba(33, 37, 41, 0.95) transparent;
 }
 
+@media (hover: hover) and (pointer: fine) {
 .info-tooltip-container:hover .tooltip-content {
     visibility: visible;
     opacity: 1;
     transform: translate(-50%, 0) scaleY(1); 
+}
 }
 
 .layer-header span:first-child {
@@ -648,7 +674,9 @@ input[type="range"].opacity-slider::-moz-range-progress {
   cursor: grab;
   touch-action: none;      /* แตะที่จับ = ลากทันที ไม่เลื่อนหน้า */
 }
+@media (hover: hover) and (pointer: fine) {
 .layer-grip:hover { color: #4b5563; }
+}
 .layer-item.touch-dragging .layer-grip { cursor: grabbing; color: #1E90FF; }
 .layer-item.touch-dragging {
   background: #e8f2ff;

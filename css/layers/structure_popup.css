@@ -280,10 +280,12 @@
     cursor: pointer;
 }
 
+@media (hover: hover) and (pointer: fine) {
 .bp-yt-btn:hover {
     background-color: #f3f4f6;
     color: #1f2937;
     border-color: #ef4444;
+}
 }
 
 .bp-yt-icon {
@@ -292,8 +294,10 @@
     fill: #ef4444;
 }
 
+@media (hover: hover) and (pointer: fine) {
 .bp-yt-btn:hover .bp-yt-icon {
     fill: #dc2626;
+}
 }
 
 .structure-popup-card {

@@ -31,7 +31,9 @@
   white-space: nowrap;
   font-family: 'Sarabun', sans-serif;
 }
+@media (hover: hover) and (pointer: fine) {
 .station-marker:hover { z-index: 2; }
+}
 /* ให้หมุดสถานีวาดตัวอักษรตามปกติ (v3.9.03) — MapLibre ตั้ง will-change: transform ให้หมุดทุกอัน (แยกชั้นบนการ์ดจอ)
  * ทำให้ตัวอักษรถูกลบรอยหยักแบบหยาบ และป้ายที่ย่อในโหมด 3D ถูกย่อจากภาพเดิมแทนการวาดใหม่ → เบลอ
  * หมุดสถานีมี ~60 อัน การเลื่อนแผนที่ยังลื่น */

@@ -25,12 +25,14 @@
   z-index: 1000;
 }
 
+@media (hover: hover) and (pointer: fine) {
 .measure-plus-btn:hover {
   background-color: #e8f4ff;
   border: 1px solid #ccc;
   box-shadow: 0 4px 8px rgba(0,0,0,0.2);
   transform: translateY(-2px);
   transition: all 0.2s ease-in-out;
+}
 }
 
 .measure-plus-panel {
@@ -55,9 +57,11 @@
   transition: background-color 0.2s;
 }
 
+@media (hover: hover) and (pointer: fine) {
 .mp-close-btn:hover {
   color: #900;
   font-size: 17px;
+}
 }
 
 .mp-modes {
@@ -88,12 +92,16 @@
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 
+@media (hover: hover) and (pointer: fine) {
 .mp-btn:hover {
   background: #e9fcff;
 }
+}
 
+@media (hover: hover) and (pointer: fine) {
 .mp-eraser:hover {
   background: #ff6347;
+}
 }
 
 .mp-btn.active {
@@ -102,9 +110,13 @@
   border-color: #0ea5e9;
 }
 
-.mp-btn.mp-deleteOBJ.active,
-.mp-btn.mp-deleteOBJ:hover  {
+.mp-btn.mp-deleteOBJ.active {
     background-color: #ffd700; 
+}
+@media (hover: hover) and (pointer: fine) {
+.mp-btn.mp-deleteOBJ:hover {
+    background-color: #ffd700; 
+}
 }
  
 .mp-metrics {
@@ -150,9 +162,11 @@
   transition: background-color 0.2s, border-color 0.2s, box-shadow 0.2s, transform 0.1s;
 }
 
+@media (hover: hover) and (pointer: fine) {
 .mp-export-btn:hover {
   background-color: #e9fcff;
   border-color: #bbbbbb;
+}
 }
 
 .mp-export-btn:focus {
@@ -217,8 +231,10 @@
   margin: 0;
 }
 
+@media (hover: hover) and (pointer: fine) {
 .mp-checkbox:hover {
   color: #00f;
+}
 }
 
 .mp-divider {
@@ -302,13 +318,17 @@
   transition: transform 0.2s ease, border-color 0.2s ease;
 }
 
+@media (hover: hover) and (pointer: fine) {
 .mp-marker-size-label input[type="range"]::-webkit-slider-thumb:hover {
   border-color: #1e3a8a; 
   transform: scale(1.2);
 }
+}
+@media (hover: hover) and (pointer: fine) {
 .mp-marker-size-label input[type="range"]::-moz-range-thumb:hover {
   border-color: #1e3a8a;
   transform: scale(1.2);
+}
 }
 
 .maplibregl-map.mp-crosshair .maplibregl-canvas-container {
@@ -362,9 +382,11 @@
   cursor: grab;
 }
 
+@media (hover: hover) and (pointer: fine) {
 .mp-marker-shape:hover {
   transform: scale(1.5);
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
+}
 }
 
 .maplibregl-marker:active .mp-marker-shape {
@@ -419,9 +441,11 @@
   font-weight: bold;
   transition: all 0.2s ease;
 }
+@media (hover: hover) and (pointer: fine) {
 .mp-btn-active:hover {
   background-color: #2563eb;
   color: #fff;
+}
 }
 
 .mp-segmented-control {
@@ -458,9 +482,11 @@
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
 }
 
+@media (hover: hover) and (pointer: fine) {
 .mp-segmented-control label:hover {
   color: #111;
   font-weight: 600;
+}
 }
 
 .mp-group-box {
@@ -528,9 +554,11 @@
   transition: all 0.2s ease; 
 }
 
+@media (hover: hover) and (pointer: fine) {
 #mp-adjust-area-btn:hover {
   background-color: #FFDC75; 
   border-color: #ffdf7e;
+}
 }
 
 .mp-shape-hover-blue {

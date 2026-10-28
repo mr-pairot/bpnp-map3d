@@ -82,8 +82,10 @@
     line-height: 1;
 }
 
+@media (hover: hover) and (pointer: fine) {
 .sw-close-btn:hover {
     color: #dc3545;
+}
 }
 
 /* --- 3. ส่วนของแท็บ (Tabs) --- */
@@ -111,10 +113,12 @@
     font-family: 'Sarabun', sans-serif;
 }
 
+@media (hover: hover) and (pointer: fine) {
 .sw-tab:hover {
     background-color: #e9ecef;
     color: #495057;
     border-color: #adb5bd;
+}
 }
 
 .sw-tab.active {
@@ -179,8 +183,10 @@
     border-bottom: 1px solid #f1f3f5;
 }
 
+@media (hover: hover) and (pointer: fine) {
 .sw-data-table tbody tr:hover {
     background-color: rgba(13, 43, 69, 0.08);
+}
 }
 
 .sw-data-table td {

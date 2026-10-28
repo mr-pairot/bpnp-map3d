@@ -27,10 +27,10 @@
     { id: 'osm',         name: 'OpenStreetMap',    maxzoom: 19, attribution: '&copy; OpenStreetMap contributors',
       tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'] },
     { id: VECTOR_ID,     name: 'OpenFreeMap (Vector)', vector: true,
-      attribution: '&copy; OpenStreetMap contributors | OpenFreeMap' },
+      attribution: '&copy; OSM | OpenFreeMap' },   // แบบย่อทุกจอ (v3.9.11)
     // ภาพดาวเทียม Esri + อาคาร 3D (เฉพาะโหมด 3D) + ชื่อถนน/สถานที่ (ปุ่ม "ก") จาก OpenFreeMap — v3.9.05
     { id: HYBRID_ID,     name: 'OpenFreeMap (Vector) + Satellite', hybrid: true, maxzoom: 18,
-      attribution: '&copy; Esri | &copy; OpenStreetMap contributors | OpenFreeMap',
+      attribution: '&copy; Esri | &copy; OSM | OpenFreeMap',   // แบบย่อทุกจอ (v3.9.11) ไม่ทับเครดิตผู้พัฒนาบนมือถือ
       tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'] },
     { id: 'gstreets',    name: 'Google Streets',   maxzoom: 20, attribution: '&copy; Google',
       tiles: [0, 1, 2, 3].map(n => `https://mt${n}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}`) },

@@ -96,10 +96,12 @@ datalist option {
   display: block; 
   margin: 0 auto;
 }
+@media (hover: hover) and (pointer: fine) {
 #searchAddressBtn:hover {
   background-color: #f0f0f0;
   border: 2px solid #00afff;
   
+}
 }
 
 #closeAddressPanel {
@@ -112,8 +114,10 @@ datalist option {
   border-radius: 3px;
   transition: background-color 0.2s;
 }
+@media (hover: hover) and (pointer: fine) {
 #closeAddressPanel:hover {
   background: rgba(255,255,255,0.2);
+}
 }
 
 #villageResult {
@@ -137,8 +141,10 @@ datalist option {
   transition: background 0.2s;
 }
 
+@media (hover: hover) and (pointer: fine) {
 .search-result-item:hover {
   background: #f0f8ff; /* สีฟ้าอ่อนเวลา hover */
+}
 }
 
 .search-result-item .title {

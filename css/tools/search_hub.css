@@ -31,12 +31,14 @@
       cursor: pointer;
       z-index: 900;
 }
+@media (hover: hover) and (pointer: fine) {
 #togglePanelBtn:hover {
       background-color: #e8f4ff;
       border: 1px solid #ccc;
       box-shadow: 0 4px 8px rgba(0,0,0,0.2);
       transform: translateY(-2px);
       transition: all 0.2s ease-in-out;
+}
 }
 /* =======================
 1) Control Panel Styling
@@ -90,8 +92,10 @@
   color: gray;
   font-weight: bold;
 }
+@media (hover: hover) and (pointer: fine) {
 .remove-btn:hover {
   color: darkred;
+}
 }
 .route-popup {
   background-color: transparent;
@@ -133,13 +137,11 @@ Menu Button Display
   background-color: white;  /* พื้นหลัง */
   transition: all 0.2s ease; /* ให้เปลี่ยนลื่น ๆ */
 }
-#routeBtn:hover,
-#findLocationBtn:hover,
-#findAddressBtn:hover,
-#convertUTMBtn:hover,
-#convertUTM_MultiBtn:hover{
+@media (hover: hover) and (pointer: fine) {
+#routeBtn:hover, #findLocationBtn:hover, #findAddressBtn:hover, #convertUTMBtn:hover, #convertUTM_MultiBtn:hover {
   background-color: #f0f0f0;
   border: 2px solid #00afff;
+}
 }
 
 #exitBtn {

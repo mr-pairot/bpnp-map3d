@@ -342,6 +342,23 @@
     }
   });
 
+  // ── ปุ่มย่อขณะกดบนจอสัมผัส (v3.9.11) ──
+  // ใส่ class is-pressed ตอนนิ้ว/ปากกาแตะ เอาออกเมื่อยก/ยกเลิก/เลื่อนออก (CSS: css/base/override_ui.css)
+  // ใช้ pointer event แทน :active เพราะ :active บนจอสัมผัสทำงานไม่แน่นอน (iOS ต้องมี touch listener, Android หน่วง)
+  (function pressFeedback() {
+    const SEL = 'button, [role="button"], .standard-map-btn, .toggle-DOH, .hs-toggle-btn, .sw-tab, .legend-header button';
+    let pressed = null;
+    const release = () => { if (pressed) { pressed.classList.remove('is-pressed'); pressed = null; } };
+    document.addEventListener('pointerdown', e => {
+      if (e.pointerType === 'mouse') return;
+      const el = e.target.closest && e.target.closest(SEL);
+      if (!el || el.disabled) return;
+      release(); pressed = el; el.classList.add('is-pressed');
+    }, { passive: true, capture: true });
+    ['pointerup', 'pointercancel', 'dragstart'].forEach(t => document.addEventListener(t, release, { passive: true, capture: true }));
+    document.addEventListener('pointerout', e => { if (pressed && e.target === pressed && !pressed.contains(e.relatedTarget)) release(); }, { passive: true, capture: true });
+  })();
+
   Object.assign(BPNP.ui, { buildMapDOM, createStandardButton, registerButton, initAllUI, checkTermsOfUse, showAlert, resetApp, leftColumnAdd, leftColumnRefresh });
 
   // ชื่อเดิม: ใช้กับ onclick ใน HTML และโมดูลที่ย้ายมาในเฟสถัดไป

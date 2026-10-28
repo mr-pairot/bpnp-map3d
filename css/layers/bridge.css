@@ -62,8 +62,10 @@
 .bridge-tab[data-tab="steel_bridge"] { color: #FF8C00; }
 .bridge-tab[data-tab="overpass"] { color: #8b5cf6; }
 
+@media (hover: hover) and (pointer: fine) {
 .bridge-tab:hover {
     background-color: #e2e6ea;
+}
 }
 
 /* --- สถานะ Active ของแต่ละ Tab --- */
@@ -170,9 +172,11 @@
     transition: background-color 0.2s ease;
 }
 
+@media (hover: hover) and (pointer: fine) {
 #bridge-table-body tr:hover {
     background-color: #e7f5ff;
     cursor: pointer;
+}
 }
 
 /* การ์ด popup สะพาน: กว้างคงที่ 230 px (เดิม minWidth/maxWidth 230) */

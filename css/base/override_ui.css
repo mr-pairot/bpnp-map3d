@@ -33,11 +33,13 @@
   align-items: center;
 }
 
+@media (hover: hover) and (pointer: fine) {
 .standard-map-btn:hover {
   background-color: #e8f4ff;
   border: 1px solid #ccc;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   transform: translateY(-2px);
+}
 }
 
 .custom-standalone-scale {
@@ -70,7 +72,7 @@
 .custom-standalone-attr {
     position: absolute;
     bottom: calc(var(--safe-bottom) + 0px);
-    right: calc(var(--safe-left) + 5px);
+    right: calc(var(--safe-right) + 5px);   /* เดิมใช้ --safe-left (แก้ v3.9.11) */
     z-index: 1000;
     
     background: rgba(255, 255, 255, 0.7);
@@ -158,6 +160,7 @@
     opacity: 0;
 
     background: rgba(255, 255, 255, 0.85);
+    -webkit-backdrop-filter: blur(10px);   /* iOS ก่อน 18 / LINE บน iOS */
     backdrop-filter: blur(10px);
     color: #333;
     font-size: 11px;
@@ -170,15 +173,19 @@
                 padding 0.3s ease 0.5s;
 }
 
+@media (hover: hover) and (pointer: fine) {
 .custom-attribution:hover .attr-label {
     max-width: 200px; 
     opacity: 1;
     padding: 4px 8px 4px 20px; 
     transition-delay: 0s; 
 }
+}
 
+@media (hover: hover) and (pointer: fine) {
 .custom-attribution:hover .attr-avatar {
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+}
 }
 
 @keyframes attr-spin {
@@ -189,4 +196,38 @@
 #customLocateBtn {
     border-radius: 50% !important;
     background-size: 29px 29px !important;
+}
+
+
+/* ═══ ปุ่มบนจอสัมผัส (v3.9.11) ═══════════════════════════════════════════
+ * 1) สไตล์ชี้เมาส์ (:hover) ทุกไฟล์อยู่ใน @media (hover: hover) and (pointer: fine) แล้ว
+ *    — บนจอสัมผัสสถานะ hover ค้างหลังแตะ (Android) ทำให้เห็นกรอบ/สีค้างจนแตะจุดอื่น
+ * 2) ปิดไฮไลต์สี่เหลี่ยมตอนแตะของเบราว์เซอร์มือถือ/แท็บเล็ต
+ * 3) ไม่แสดงเส้นโฟกัสเมื่อกดด้วยนิ้วหรือเมาส์ — คงไว้เมื่อใช้แป้นพิมพ์ (Tab) เพื่อการเข้าถึง
+ * 4) จอสัมผัส: ปุ่มย่อ ~95% ขณะกดค้าง (ใช้ scale แยก ไม่ทับ transform ที่ปุ่มใช้จัดตำแหน่ง)
+ * ═══════════════════════════════════════════════════════════════════════ */
+html, body, * { -webkit-tap-highlight-color: transparent; }
+
+button:focus, a:focus, [role="button"]:focus, [tabindex]:focus,
+input[type="checkbox"]:focus, input[type="radio"]:focus, input[type="range"]:focus, label:focus,
+.maplibregl-ctrl button:focus { outline: none; }
+button:focus-visible, a:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible,
+.maplibregl-ctrl button:focus-visible { outline: 2px solid #0d6efd; outline-offset: 2px; }
+
+@media (hover: none), (pointer: coarse) {
+  button, [role="button"], .standard-map-btn, .toggle-DOH, .hs-toggle-btn, .sw-tab, .legend-header button {
+    transition-property: scale, background-color, color, box-shadow, opacity;
+    transition-duration: 0.08s;
+  }
+  /* is-pressed ใส่โดย js/ui/ui_manager.js (pointerdown ด้วยนิ้ว/ปากกา) — :active ทำงานไม่แน่นอนบนจอสัมผัส */
+  .is-pressed { scale: 0.95; }
+}
+
+/* จอแคบ (≤ 420 px): เครดิตแผนที่กับเครดิตผู้พัฒนาอยู่แถวเดียวกัน — ลดขนาดเล็กน้อยไม่ให้ทับกัน (v3.9.11) */
+@media (max-width: 420px) {
+  .custom-standalone-attr { font-size: 10px; padding: 2px 4px; right: calc(var(--safe-right) + 3px); }
+  .dev-attribution { padding: 2px 6px; font-size: 10px; }
+}
+@media (max-width: 380px) {
+  .custom-standalone-attr { padding: 2px 2px; right: calc(var(--safe-right) + 2px); }
 }

@@ -44,8 +44,10 @@
     transition: background-color 0.2s;
 }
 
+@media (hover: hover) and (pointer: fine) {
 #closeConvertBtn:hover {
     background: rgba(255,255,255,0.2);
+}
 }
 
 .convert-tabs {
@@ -73,8 +75,10 @@
     font-size: small;
 }
 
+@media (hover: hover) and (pointer: fine) {
 .tab-btn:hover:not(.active) {
     background: #edf2f7;
+}
 }
 
 .convert-body {
@@ -169,9 +173,10 @@
     color: white;
 }
 
-#convertToUTMBtn:hover,
-#convertToLatLngBtn:hover {
+@media (hover: hover) and (pointer: fine) {
+#convertToUTMBtn:hover, #convertToLatLngBtn:hover {
     background: #2c5282;
+}
 }
 
 #resetLatLngBtn,
@@ -180,9 +185,10 @@
     color: #4a5568;
 }
 
-#resetLatLngBtn:hover,
-#resetUTMBtn:hover {
+@media (hover: hover) and (pointer: fine) {
+#resetLatLngBtn:hover, #resetUTMBtn:hover {
     background: #cbd5e0;
+}
 }
 
 /* Responsive */

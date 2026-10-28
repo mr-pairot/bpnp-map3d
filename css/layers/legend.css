@@ -48,9 +48,11 @@
   -ms-user-select: none;
 }
 
+@media (hover: hover) and (pointer: fine) {
 .legend-header button:hover {
   background: #e8e8e8;
   border-color: #999;
+}
 }
 
 .legend-header button:active {
@@ -183,9 +185,11 @@
   pointer-events: auto !important; /* ต้องเปิดให้คลิกได้ */
 }
 
+@media (hover: hover) and (pointer: fine) {
 .detail-toggle-btn:hover {
   color: #0056b3;
   font-weight: bold;
+}
 }
 
 /* กล่องรายการรหัสแปลง (ซ่อนอยู่ default) */
@@ -227,10 +231,12 @@
   border-bottom: none;
 }
 
+@media (hover: hover) and (pointer: fine) {
 .detail-list-item:hover {
   background-color: #f0f8ff; /* สีฟ้าอ่อนเมื่อเอาเมาส์ชี้ */
   color: #000;
   font-weight: bold;
+}
 }
 
 /* Gallery Container: จัดเรียงรูปเป็น Grid */
@@ -260,9 +266,11 @@
   border: 1px solid #ddd;
 }
 
+@media (hover: hover) and (pointer: fine) {
 .parcel-thumb:hover {
   transform: scale(1.1); /* ขยายเล็กน้อยเมื่อเอาเมาส์ชี้ */
   border-color: #007bff;
+}
 }
 
 /* ── ที่วาง legend มุมขวาบน (แทน .leaflet-top.leaflet-right) ── */
