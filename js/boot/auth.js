@@ -214,7 +214,7 @@
     const hosts = (CFG.auth && CFG.auth.devBypassHosts) || [];
     if (hosts.indexOf(location.hostname) !== -1) {
       console.warn('[Auth] โหมดพัฒนา (localhost): ข้ามการล็อกอิน');
-      setUser({ userId: 'dev', displayName: 'Developer', status: 'approved', role: 'admin' }, { isDev: true });
+      setUser({ userId: 'dev', displayName: 'Developer', status: 'approved', role: 'editor' }, { isDev: true });   // role ที่ใช้จริง: editor / viewer
       enterApp();
       return;
     }
@@ -265,6 +265,26 @@
       console.warn('[Auth] ตรวจเบื้องหลังไม่สำเร็จ (อาจออฟไลน์) — ใช้ session เดิมต่อ');
     }
   }
+
+  // ── ตรวจสิทธิ์/role ซ้ำเมื่อกลับเข้าแอป (v3.9.10) ──
+  // ออกจากแอป (สลับแอป/พับจอ) นาน ≥ 15 นาที แล้วกลับมา → check_session เบื้องหลัง (ได้ role ล่าสุดจากชีท Users)
+  // ถ้ากำลังใช้เครื่องมืออยู่ (วาด/วัด/วางจุด ฯลฯ — BPNP.tools.isBusy) รอจนว่างก่อน (ตรวจทุก 30 วินาที)
+  const RECHECK_AFTER_MS = 15 * 60 * 1000, RECHECK_RETRY_MS = 30 * 1000;
+  let hiddenAt = 0, recheckTimer = null;
+  function recheckWhenIdle() {
+    clearTimeout(recheckTimer);
+    const token = getToken();
+    if (!token || !window.currentUser || window.currentUser.isDev) return;
+    if (document.hidden) return;                                   // ออกไปอีกแล้ว รอกลับมาครั้งหน้า
+    if (BPNP.tools && BPNP.tools.isBusy && BPNP.tools.isBusy()) { recheckTimer = setTimeout(recheckWhenIdle, RECHECK_RETRY_MS); return; }
+    if (navigator.onLine === false) return;
+    verifyInBackground(token);
+  }
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) { hiddenAt = Date.now(); clearTimeout(recheckTimer); return; }
+    if (hiddenAt && Date.now() - hiddenAt >= RECHECK_AFTER_MS) recheckWhenIdle();
+    hiddenAt = 0;
+  });
 
   async function initializeLIFF() {
     updateLoadingText('กำลังเชื่อมต่อ LINE...');

@@ -9,6 +9,7 @@
  * ───────────────────────────────────────────────────────────────────────── */
 BPNP.boot.APP_SCRIPTS = [
   // ── core ──
+  'js/core/features.js',
   'js/core/toast.js',
   'js/core/geo_utils.js',
   'js/core/alignment.js',

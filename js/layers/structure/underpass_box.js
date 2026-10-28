@@ -193,11 +193,13 @@
     }
     function apply3d() {
       if (!map.getLayer(src3d + '-ext')) return;
-      const show = BPNP.map.registry.isVisible(id) && BPNP.map.terrain && BPNP.map.terrain.isOn();
+      // config.features.structure3d (true / false / ['editor']) — ไม่ผ่าน = ไม่แสดงและไม่สร้างรูป 3D เลย
+      const enabled = !!(BPNP.features && BPNP.features.isOn('structure3d'));
+      const show = enabled && BPNP.map.registry.isVisible(id) && BPNP.map.terrain && BPNP.map.terrain.isOn();
       map.setLayoutProperty(src3d + '-ext', 'visibility', show ? 'visible' : 'none');
       if (show) build3d();
     }
-    if (BPNP.events) BPNP.events.on('map:3d', apply3d);
+    if (BPNP.events) { BPNP.events.on('map:3d', apply3d); BPNP.events.on('features:change', apply3d); }   // role เปลี่ยนระหว่างใช้งาน
 
     BPNP.map.registry.register(id, {
       slot: 'structure',

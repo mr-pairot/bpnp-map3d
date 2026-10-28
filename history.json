@@ -1,5 +1,22 @@
 [
  {
+  "version": "3.9.10",
+  "date": "27 Oct 2026",
+  "title": "สิทธิ์ตาม role (editor / viewer)",
+  "details": [
+   "รูป 3D Box Culvert / Underpass เปิดเฉพาะผู้ใช้ role editor พร้อมป้าย \"Editor Mode\" ในมุมมอง 3D",
+   "ตรวจสิทธิ์ซ้ำเบื้องหลังเมื่อกลับเข้าแอปหลังออกไป 15 นาที (role ที่เปลี่ยนในชีทมีผลโดยไม่ต้องรีเฟรช)"
+  ]
+ },
+ {
+  "version": "3.9.09",
+  "date": "27 Oct 2026",
+  "title": "ปิดรูป 3D Box Culvert / Underpass ชั่วคราว",
+  "details": [
+   "ปิดการแสดงรูป 3 มิติของ Box Culvert และ Underpass ไว้ก่อน ระหว่างปรับปรุงให้ถูกต้อง (รูป 2D แสดงตามปกติ)"
+  ]
+ },
+ {
   "version": "3.9.08",
   "date": "27 Oct 2026",
   "title": "อาคาร 3D ค่อย ๆ สูงขึ้น (OpenFreeMap Vector)",

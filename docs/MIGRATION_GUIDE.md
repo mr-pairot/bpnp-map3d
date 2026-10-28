@@ -1212,3 +1212,36 @@ v3.2.00–3.3.03 ทำเป็นปุ่มมาตรฐานคอลั
 แก้ `js/map/basemaps.js` ใน `buildStyle()` ก่อนใส่ชั้นของ style เวกเตอร์: ชั้น `fill-extrusion` ของ `building` (`building-3d` จาก style OpenFreeMap)
 ห่อนิพจน์เดิม: `height/base = ['interpolate', ['linear'], ['zoom'], 14, 0, 15, <นิพจน์เดิม>]` — สี (`hsl(35,8%,85%)`) และความทึบ (0.8) คงเดิม · ไม่เปลี่ยนการแสดงใน 2D
 ทดสอบ: MapLibre รับนิพจน์ไม่มี error · อาคาร 30 ม. → Leaflet 15 = 0, 15.5 = 15, 16 ขึ้นไป = 30 ม. · แผนที่ดาวเทียมไม่เปลี่ยน
+
+---
+
+## 52. v3.9.09 — สวิตช์ปิดรูป 3D Box Culvert / Underpass
+
+ผู้ใช้ขอปิดรูป 3D ไว้ก่อนระหว่างปรับรูปให้ถูกต้อง (ยังมีรูปผิดหลายรายการ)
+- `js/config.js` เพิ่ม `features.structure3d: false`
+- `js/layers/structure/underpass_box.js` `apply3d()` ตรวจสวิตช์ก่อน — ปิด = ไม่แสดงและไม่สร้างรูป 3D (ไม่มีภาระคำนวณ) · รูป 2D แสดงตามปกติ
+- เปิดกลับ: เปลี่ยนเป็น `structure3d: true` ใน `js/config.js` (ไม่ต้องแก้ไฟล์อื่น)
+
+ทดสอบ: ปิด → โหมด 3D ชั้น 3D ซ่อน สร้าง 0 ชิ้น เส้น 2D แสดง · เปิด → Box 7,565 / Underpass 15,045 ชิ้น แสดงตามเดิม · ไม่มี error
+
+---
+
+## 53. v3.9.10 — เปิดความสามารถตาม role + ตรวจ role ซ้ำเมื่อกลับเข้าแอป
+
+### role ปัจจุบัน (ตรวจโค้ด)
+- GAS `rowToUser_()` อ่าน `role` จากชีท Users ตามชื่อหัวคอลัมน์ (ตัวพิมพ์เล็ก, ว่าง = viewer) · ส่งกลับทุกครั้งที่ login และ `check_session` (อ่านแถวผู้ใช้ใหม่ทุกครั้ง ไม่แคช role — แคชเฉพาะ session → userId 10 นาที)
+- แอปเก็บที่ `window.currentUser.role` · ค่าที่ใช้: **editor / viewer**
+- เดิมตรวจเฉพาะตอนเปิด/โหลดหน้า (`strictMode: true`) ระหว่างเปิดค้างไม่ตรวจซ้ำ
+
+### ที่เพิ่ม
+| ไฟล์ | สิ่งที่ทำ |
+|---|---|
+| `js/core/features.js` (ใหม่) | `BPNP.features.isOn(name)` อ่าน `config.features` — `true` / `false` / `['editor']` · ส่ง `features:change` เมื่อ role เปลี่ยน · ป้าย **"Editor Mode"** (role editor + โหมด 3D) กลางจอแถวที่สอง · viewer ไม่เห็นอะไรเพิ่ม |
+| `js/config.js` | `features.structure3d: ['editor']` |
+| `js/layers/structure/underpass_box.js` | ใช้ `BPNP.features.isOn('structure3d')` · ฟัง `features:change` (role เปลี่ยนแล้วแสดง/ซ่อนทันที) |
+| `js/boot/auth.js` | ตรวจซ้ำเมื่อกลับเข้าแอปหลังออกไป ≥ 15 นาที (`visibilitychange`) → `check_session` เบื้องหลัง · ถ้ากำลังใช้เครื่องมือ (`BPNP.tools.isBusy()`) รอจนว่าง (ตรวจทุก 30 วินาที) · ออฟไลน์ข้าม · โหมดพัฒนา (localhost) role = editor |
+| `css/map/terrain.css` | สไตล์ป้าย Editor Mode |
+
+หมายเหตุ: เป็นการซ่อนการแสดงผลฝั่งแอป ไม่ใช่การป้องกันข้อมูล (เหมาะกับความสามารถที่ยังทดสอบ)
+
+ทดสอบ (GAS จำลอง): editor 2D ไม่มีป้าย/รูป 3D · editor 3D มีป้าย + รูป 3D · ออกไป 5 นาที ไม่ตรวจ · 16 นาทีระหว่างใช้เครื่องมือ รอ → ว่างแล้วตรวจ 1 ครั้ง → role viewer: รูป 3D และป้ายหายทันที · 20 นาที role editor: กลับมา · ไม่มี error

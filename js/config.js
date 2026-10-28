@@ -27,6 +27,13 @@ window.BPNP_CONFIG = {
   // เฟสสูงสุดที่รองรับแล้ว: เลเยอร์ที่ phase มากกว่านี้จะแสดง "ยังไม่รองรับ" ในรายการชั้นข้อมูล
   supportedPhase: 4,
 
+  // สวิตช์เปิด/ปิดความสามารถ (js/core/features.js)
+  //   true = เปิดทุกคน · false = ปิดทุกคน · ['editor'] = เปิดเฉพาะ role ในรายการ (ชีท Users คอลัมน์ role: editor / viewer)
+  features: {
+    // รูป 3 มิติ Box Culvert / Underpass ในโหมด 3D — เปิดเฉพาะ editor ระหว่างปรับรูปให้ถูกต้อง (v3.9.10)
+    structure3d: ['editor']
+  },
+
   map: {
     center:         [103.64, 16.1],   // [lng, lat]
     zoom:           9,                // = ซูม 10 ของ Leaflet (ซูม MapLibre = Leaflet − 1)
