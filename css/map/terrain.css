@@ -32,8 +32,8 @@
   z-index: 900;
   padding: 4px 12px;
   border-radius: 999px;
-  background: rgba(30, 58, 138, 0.85); /* โปร่งใสประมาณ 15% */
-  backdrop-filter: blur(3px); /* เบลอฉากหลังให้ตัวหนังสืออ่านง่ายขึ้น */
+  background: rgba(88, 28, 135, 0.5); 
+  backdrop-filter: blur(9px); 
   color: #ffffff;
   font: 600 12px/1.4 'Sarabun', sans-serif;
   letter-spacing: 0.3px;
