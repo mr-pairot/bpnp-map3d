@@ -1,0 +1,22 @@
+{
+  "_help": [
+    "ตั้งค่าสะพาน 3 มิติ (js/layers/structure/bridge_3d.js) — แก้ไฟล์นี้ได้โดยไม่ต้องแก้โค้ด",
+    "defaults.CB / defaults.SB = ค่าตั้งต้นตามประเภทสะพาน (CB คอนกรีต, SB เหล็ก)",
+    "bridges = ค่ารายสะพาน อ้างอิงด้วย Sta. ตามข้อมูล (เช่น \"21+325.000\") ใส่เฉพาะค่าที่ต่างจากค่าตั้งต้น",
+    "piers = ชนิดตอม่อในรายต้น { \"2\": \"B\" } นับจาก กม. น้อย (ต้น 1 และต้นสุดท้ายเป็นตอม่อริม = Type D ผนังทึบเสมอ)",
+    "ชนิดตอม่อ: A เสาเดี่ยวผายบน · B เสาคู่ · C พอร์ทัล (คร่อมถนน, ใช้ portalSpan) · D ผนังทึบ",
+    "ระดับพื้นสะพาน (deckLevel): ค่ารายสะพาน > ช่องลอดใต้สะพาน (height_limit ใน bridge_progress.json) + ความลึกคาน > defaults.deckLevel",
+    "ความกว้างพื้นสะพาน (deckWidth): ค่ารายสะพาน > ความกว้างจากรูป 2D",
+    "ค่าที่ตั้งได้รายสะพาน: deckLevel, deckWidth, deckType (concrete/truss), pierType, piers, aTopMode (direct/cap), aFlareDepth, portalSpan, dThick, dRadius, girderDepth, tracks (0/1/2), gauge (1.0/1.435), wingWall (ม. 0 = ไม่มี)"
+  ],
+  "defaults": {
+    "deckLevel": 7.0,
+    "tracks": 2,
+    "gauge": 1.0,
+    "dThick": 1.2,
+    "dRadius": 0.6,
+    "CB": { "deckType": "concrete", "pierType": "A", "aTopMode": "direct" },
+    "SB": { "deckType": "truss", "pierType": "A", "aTopMode": "cap" }
+  },
+  "bridges": {}
+}
