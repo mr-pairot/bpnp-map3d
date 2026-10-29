@@ -50,6 +50,8 @@ BPNP.boot.LAYER_SCRIPTS = [
   'js/layers/structure/bridge.js',
   'js/layers/structure/bridge_panel.js',
   'js/layers/structure/bridge_alert.js',
+  'js/layers/structure/bridge_gen.js',
+  'js/layers/structure/bridge_3d.js',
   'js/layers/doh_km.js',
   'js/layers/progress/track_progress.js',
   'js/layers/progress/sw_summary.js',
