@@ -31,7 +31,9 @@ window.BPNP_CONFIG = {
   //   true = เปิดทุกคน · false = ปิดทุกคน · ['editor'] = เปิดเฉพาะ role ในรายการ (ชีท Users คอลัมน์ role: editor / viewer)
   features: {
     // รูป 3 มิติ Box Culvert / Underpass ในโหมด 3D — เปิดเฉพาะ editor ระหว่างปรับรูปให้ถูกต้อง (v3.9.10)
-    structure3d: ['editor']
+    structure3d: ['editor'],
+    // สะพานรถไฟ 3 มิติ CB / SB ในโหมด 3D (js/layers/structure/bridge_3d.js · ตั้งค่า data/json/bridge_3d.json) — v3.10.00
+    bridge3d: ['editor']
   },
 
   map: {
