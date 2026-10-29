@@ -175,29 +175,54 @@
     const src = 'src-' + T.key, srcPt = 'src-' + T.key + '-pt', src3d = 'src-' + T.key + '-3d';
     let labels = null, built3d = null;
 
-    // ── รูป 3D (เฟส 3D-B): สร้างครั้งแรกที่เข้าโหมด 3D · แสดงเฉพาะโหมด 3D ──
+    // ── รูป 3D (เฟส 3D-B): แสดงเฉพาะโหมด 3D · สร้างเฉพาะรายการในจอ (v3.10.01) ──
+    //   รูปทรงละเอียด (กำแพงปีกขั้นละ 0.05 ม.) จึงไม่สร้างทั้งโครงการพร้อมกัน:
+    //   สร้างเมื่อรายการเข้ามาในจอ (+ ขอบ 30%) แล้วเก็บไว้ · ส่งให้แผนที่เฉพาะที่อยู่ในจอ · ซูมไกลกว่าระดับรูป 2D ไม่ส่งเลย
+    const cache3d = new Map();          // idx → ชิ้นส่วน 3D ของรายการนั้น
+    const CACHE_MAX = 150;
+    let data3d = null;
     function build3d() {
-      if (built3d) return built3d;
-      built3d = Promise.all([loadData(id), BPNP.alignment.load()]).then(([d]) => {
-        const S3 = BPNP.layers.structure3d, feats = [];
-        d.raw.forEach((r, idx) => {
-          const color = id === 'layer_underpass' ? r.props._fill : '#FBC02D';
-          S3.build(r.feature, { kind: id === 'layer_underpass' ? 'underpass' : 'box', color, outlines: d.outlinesBySta[r.props['Sta.']] })
-            .forEach(f => { f.properties._idx = idx; feats.push(f); });
-        });
-        const s3 = map.getSource(src3d);
-        if (s3) s3.setData({ type: 'FeatureCollection', features: feats });
-        return d;
-      }).catch(err => { built3d = null; console.error('[3D] สร้างรูป 3D ไม่สำเร็จ:', T.name, err); });
-      return built3d;
+      if (!built3d) {
+        built3d = Promise.all([loadData(id), BPNP.alignment.load()]).then(([d]) => {
+          d.raw.forEach(r => { r.center3d = U.bboxCenter(r.feature.geometry); });
+          data3d = d;
+          return d;
+        }).catch(err => { built3d = null; console.error('[3D] เตรียมรูป 3D ไม่สำเร็จ:', T.name, err); });
+      }
+      return built3d.then(d => { if (d) update3dView(); return d; });
     }
+    function update3dView() {
+      const s3 = map.getSource(src3d);
+      if (!data3d || !s3) return;
+      const visible = map.getLayoutProperty(src3d + '-ext', 'visibility') === 'visible';
+      if (!visible || map.getZoom() < Z_PATH) { s3.setData({ type: 'FeatureCollection', features: [] }); return; }
+      const b = map.getBounds(), px = (b.getEast() - b.getWest()) * 0.3, py = (b.getNorth() - b.getSouth()) * 0.3;
+      const W = b.getWest() - px, E = b.getEast() + px, S = b.getSouth() - py, N = b.getNorth() + py;
+      const S3 = BPNP.layers.structure3d, feats = [], inView = new Set();
+      data3d.raw.forEach((r, idx) => {
+        const c = r.center3d;
+        if (!c || c[0] < W || c[0] > E || c[1] < S || c[1] > N) return;
+        inView.add(idx);
+        if (!cache3d.has(idx)) {
+          const color = id === 'layer_underpass' ? r.props._fill : '#FBC02D';
+          const parts = S3.build(r.feature, { kind: id === 'layer_underpass' ? 'underpass' : 'box', color, outlines: data3d.outlinesBySta[r.props['Sta.']] });
+          parts.forEach(f => { f.properties._idx = idx; });
+          cache3d.set(idx, parts);
+        }
+        cache3d.get(idx).forEach(f => feats.push(f));
+      });
+      // คืนหน่วยความจำ: เก็บไว้ไม่เกิน CACHE_MAX รายการ (ทิ้งรายการที่อยู่นอกจอก่อน)
+      if (cache3d.size > CACHE_MAX) for (const k of [...cache3d.keys()]) { if (!inView.has(k)) cache3d.delete(k); if (cache3d.size <= CACHE_MAX) break; }
+      s3.setData({ type: 'FeatureCollection', features: feats });
+    }
+    map.on('moveend', () => { if (data3d) update3dView(); });
     function apply3d() {
       if (!map.getLayer(src3d + '-ext')) return;
       // config.features.structure3d (true / false / ['editor']) — ไม่ผ่าน = ไม่แสดงและไม่สร้างรูป 3D เลย
       const enabled = !!(BPNP.features && BPNP.features.isOn('structure3d'));
       const show = enabled && BPNP.map.registry.isVisible(id) && BPNP.map.terrain && BPNP.map.terrain.isOn();
       map.setLayoutProperty(src3d + '-ext', 'visibility', show ? 'visible' : 'none');
-      if (show) build3d();
+      if (show) build3d(); else update3dView();
     }
     if (BPNP.events) { BPNP.events.on('map:3d', apply3d); BPNP.events.on('features:change', apply3d); }   // role เปลี่ยนระหว่างใช้งาน
 

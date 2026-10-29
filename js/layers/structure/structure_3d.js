@@ -9,18 +9,26 @@
  *                     หรือขนานแนวราง — เลือกทิศที่ตัวท่อทับรูป 2D มากที่สุด (ท่อใต้ถนนข้างทางรถไฟ)
  *                     ถ้ายังทับไม่ถึง 80% (รูปเฉียงแต่ไม่มีค่า skew) กวาดหาทิศทุก 2°
  *                     ถ้ายังไม่ถึง 80% (เช่น รางยาวโค้งตามถนน) ยกรูป 2D ชิ้นใหญ่สุดขึ้นสูงเท่าท่อแทน (part 'outline')
- *   กำแพงปีก: จากรูป 2D — ปลายที่กางออกมากที่สุดของแต่ละด้าน · ขอบบนลาดจากความสูงหัวท่อลงถึง max(0.5, 1/3) ที่ปลาย
- *             (fill-extrusion มีขอบบนเรียบเท่านั้น จึงแบ่งเป็นขั้นละ ~0.25 ม. ให้ดูลาด)
- *   ปลายพับ : ขาสั้นที่ปลายกำแพงปีกในรูป 2D (Underpass) สูงเท่าปลายกำแพงปีก (ระดับต่ำสุด)
+ *   รูปทรง (v3.10.01 ตามไฟล์แนบ create3D/box-builder.js — ตำแหน่ง/ทิศยังใช้วิธีเดิมของแอป):
+ *     Underpass: พื้นล่าง 0.30 ม. · ผนังบนพื้น · พื้นบน · ขอบกั้นดิน 0.30×0.30 สองปลาย · กำแพงปีกบนพื้น
+ *                + พื้นปากท่อระหว่างกำแพงปีก + ปลายพับ 1.0 ม. สูง 1.0 ม.
+ *     Box Culvert: ไม่มีพื้น · ผนังบนดิน · พื้นบน · ขอบกั้นดิน · กำแพงปีกบนดิน (ไม่มีปลายพับ)
+ *   กำแพงปีก: ทิศ/ความยาวจากรูป 2D รายตัว (ไม่พบ → 3 ม. กาง 45°) · หนา 0.30 · ขอบบนลาดจากยอดขอบกั้นดินลงถึง 1.0 ม.
+ *             ขั้นละ 0.05 ม. (fill-extrusion ขอบบนเรียบ จึงทำความลาดด้วยขั้นเล็ก)
  *
  *   BPNP.layers.structure3d.build(feature, { kind: 'box'|'underpass', color, wingColor }) → [GeoJSON Feature]
  *     properties: base, top (ม.), color, part ('wall'|'slab'|'wing'|'return'), _idx (ใส่โดยผู้เรียก)
  * ───────────────────────────────────────────────────────────────────────── */
 (function () {
   'use strict';
-  const STEP_LEN = 0.25;       // ความยาวต่อขั้นของกำแพงปีกลาด (ม.)
-  const MIN_STEPS = 12;
-  const TIP_RATIO = 1 / 3, TIP_MIN = 0.5;
+  // รูปทรงตามไฟล์แนบ create3D/box-builder.js (v3.10.01)
+  const STEP_LEN = 0.05;       // ความยาวต่อขั้นของกำแพงปีกลาด (ม.) — ละเอียด (สร้างเฉพาะรายการในจอ)
+  const FLOOR_T = 0.30;        // พื้นล่าง / พื้นปากท่อ (เฉพาะ Underpass)
+  const CURB_T = 0.30, CURB_H = 0.30;   // ขอบกั้นดินบนหัวท่อ
+  const WING_T = 0.30;         // ความหนากำแพงปีก
+  const TIP_H = 1.0;           // ความสูงปลายกำแพงปีก
+  const RETURN_L = 1.0;        // ปลายพับ (เฉพาะ Underpass)
+  const WING_DEFAULT = 3.0;    // ไม่พบปลายในรูป 2D → ยาว 3 ม. กาง 45° (ตามไฟล์แนบ)
   const WING_MAX = 12;         // ความยาวกำแพงปีกสูงสุดที่ยอมรับ (ม.) — กันจุดจากรูป 2D ส่วนอื่น
 
   // "2-1.20x1.20" · "4x2-1.20x1.20" (= 8 ช่อง) · "1-2.50x4.00"
@@ -67,7 +75,9 @@
     else { w = sz.a; h = sz.b; }                                      // Box: กว้าง×สูง
     const n = sz.n, L = +p.Length;
     if (!(n > 0 && w > 0 && h > 0 && L > 0)) return [];
-    const t = Math.max(0.2, Math.round(w / 10 * 100) / 100), H = h + t;
+    const isUP = opts.kind === 'underpass';
+    const floor = isUP ? FLOOR_T : 0;                                  // Box Culvert ไม่มีพื้น
+    const t = Math.max(0.2, Math.round(w / 10 * 100) / 100), H = h + t + floor;
 
     // กึ่งกลาง: ชิ้นที่ใหญ่ที่สุดของรูป 2D (= ตัวท่อ)
     //   ช่อง Coordinate คือจุดบนแนวราง ณ กม. (ท่อด้านข้าง LT/RT + offset คลาดเป็นสิบเมตร)
@@ -111,53 +121,62 @@
     const out = [];
     const add = (pts, base, top, part, color) => out.push({ type: 'Feature', properties: { base, top, part, color }, geometry: poly(pts) });
 
-    // ── ตัวท่อ: ผนัง n+1 แผง + พื้นบน ──
+    // ── ตัวท่อ (ตามไฟล์แนบ): พื้นล่าง (Underpass) · ผนัง n+1 แผงบนพื้น · พื้นบน · ขอบกั้นดินสองปลาย ──
     const Wt = n * w + (n + 1) * t;
+    const col = opts.color, wingColor = opts.wingColor || darker(opts.color);
+    if (isUP) add([[-Wt / 2, -L / 2], [Wt / 2, -L / 2], [Wt / 2, L / 2], [-Wt / 2, L / 2]], 0, floor, 'bottom_slab', col);
     for (let i = 0; i <= n; i++) {
       const x0 = -Wt / 2 + i * (w + t);
-      add([[x0, -L / 2], [x0 + t, -L / 2], [x0 + t, L / 2], [x0, L / 2]], 0, H, 'wall', opts.color);
+      add([[x0, -L / 2], [x0 + t, -L / 2], [x0 + t, L / 2], [x0, L / 2]], floor, H, 'wall', col);
     }
-    add([[-Wt / 2, -L / 2], [Wt / 2, -L / 2], [Wt / 2, L / 2], [-Wt / 2, L / 2]], h, H, 'slab', opts.color);
+    add([[-Wt / 2, -L / 2], [Wt / 2, -L / 2], [Wt / 2, L / 2], [-Wt / 2, L / 2]], floor + h, H, 'slab', col);
+    const topCurb = H + CURB_H;
+    add([[-Wt / 2, -L / 2], [Wt / 2, -L / 2], [Wt / 2, -L / 2 + CURB_T], [-Wt / 2, -L / 2 + CURB_T]], H, topCurb, 'curb', col);
+    add([[-Wt / 2, L / 2 - CURB_T], [Wt / 2, L / 2 - CURB_T], [Wt / 2, L / 2], [-Wt / 2, L / 2]], H, topCurb, 'curb', col);
 
-    // ── กำแพงปีก + ปลายพับ จากรูป 2D ──
+    // ── กำแพงปีก: ทิศ/ความยาวจากรูป 2D รายตัว · รูปทรงตามไฟล์แนบ ──
+    //   หนา 0.30 ม. เริ่มด้านในผนังนอก · ขอบบนลาดจากยอดขอบกั้นดินลงถึง 1.0 ม. ที่ปลาย (ขั้นละ 0.05 ม.)
+    //   Underpass: ตั้งบนพื้น 0.30 ม. + พื้นปากท่อระหว่างกำแพงปีก + ปลายพับ 1.0 ม. (ตั้งฉากแนวท่อ สูง 1.0 ม. จากพื้นดิน)
     const g = feature.geometry, polys = g.type === 'Polygon' ? [g.coordinates] : (g.type === 'MultiPolygon' ? g.coordinates : []);
     const pts = [];
     polys.forEach(pp => pp.forEach(r => r.forEach(ll => pts.push(toXY(ll)))));
     (opts.outlines || []).forEach(line => line.forEach(ll => pts.push(toXY(ll))));
     const outside = pts.filter(([, y]) => Math.abs(y) >= L / 2 + 0.3);
-    const tipH = Math.max(TIP_MIN, H * TIP_RATIO);
-    const wingColor = opts.wingColor || darker(opts.color);
+    const innerX = Wt / 2 - t, outerX = innerX + WING_T;
+    const lerp = (p1, p2, a) => [p1[0] + (p2[0] - p1[0]) * a, p1[1] + (p2[1] - p1[1]) * a];
 
-    [-1, 1].forEach(end => [-1, 1].forEach(s => {
-      // จุดปลายต้องอยู่ใกล้มุมหัวท่อ (≤ 12 ม.) — บางรายการมีรูป 2D ส่วนอื่นอยู่ห่างออกไป
-      const cx0 = s * Wt / 2, cy0 = end * L / 2;
-      const cand = outside.filter(([x, y]) => Math.sign(y) === end && Math.sign(x) === s && Math.hypot(x - cx0, y - cy0) <= WING_MAX);
-      if (!cand.length) return;
-      const tip = cand.reduce((a, b) => (Math.abs(b[0]) > Math.abs(a[0]) ? b : a));
-      const c0 = [s * Wt / 2, end * L / 2];
-      const vx = tip[0] - c0[0], vy = tip[1] - c0[1], len = Math.hypot(vx, vy);
-      if (len < 0.3) return;
-      let nx = -vy / len, ny = vx / len;
-      if (nx * s < 0) { nx = -nx; ny = -ny; }                         // หนาออกด้านนอกท่อ
-      const steps = Math.max(MIN_STEPS, Math.ceil(len / STEP_LEN));
-      for (let k = 0; k < steps; k++) {
-        const a0 = k / steps, a1 = (k + 1) / steps;
-        const q0 = [c0[0] + vx * a0, c0[1] + vy * a0], q1 = [c0[0] + vx * a1, c0[1] + vy * a1];
-        const top = H + (tipH - H) * (k + 0.5) / steps;
-        add([q0, q1, [q1[0] + nx * t, q1[1] + ny * t], [q0[0] + nx * t, q0[1] + ny * t]], 0, top, 'wing', wingColor);
-      }
-      // ปลายพับ: จุดในรูป 2D ที่อยู่ใกล้ปลายกำแพงปีก (≤ 3 ม.) และออกไปไกลกว่าตามแนวท่อ
-      const ret = cand.filter(([x, y]) => Math.abs(y) > Math.abs(tip[1]) + 0.2 && Math.hypot(x - tip[0], y - tip[1]) <= 3)
-                      .reduce((a, b) => (!a || Math.hypot(b[0] - tip[0], b[1] - tip[1]) > Math.hypot(a[0] - tip[0], a[1] - tip[1]) ? b : a), null);
-      if (ret) {
-        const rx = ret[0] - tip[0], ry = ret[1] - tip[1], rl = Math.hypot(rx, ry);
-        if (rl >= 0.3) {
-          let mx = -ry / rl, my = rx / rl;
-          if (mx * s < 0) { mx = -mx; my = -my; }
-          add([tip, ret, [ret[0] + mx * t, ret[1] + my * t], [tip[0] + mx * t, tip[1] + my * t]], 0, tipH, 'return', wingColor);
+    [-1, 1].forEach(end => {
+      const tips = {};
+      [-1, 1].forEach(s => {
+        // จุดปลายจากรูป 2D: ใกล้มุมหัวท่อ (≤ 12 ม.) และกางออกมากที่สุด
+        const cx0 = s * Wt / 2, cy0 = end * L / 2;
+        const cand = outside.filter(([x, y]) => Math.sign(y) === end && Math.sign(x) === s && Math.hypot(x - cx0, y - cy0) <= WING_MAX);
+        let vx, vy;
+        if (cand.length) {
+          const tip = cand.reduce((a, b2) => (Math.abs(b2[0]) > Math.abs(a[0]) ? b2 : a));
+          vx = tip[0] - cx0; vy = tip[1] - cy0;
         }
-      }
-    }));
+        if (vx === undefined || Math.hypot(vx, vy) < 0.5 || Math.abs(vy) < WING_T + 0.1) { vx = s * WING_DEFAULT; vy = end * WING_DEFAULT; }
+        const P1 = [s * outerX, end * L / 2], P2 = [s * innerX, end * L / 2];
+        const P3 = [P1[0] + vx, P1[1] + vy];
+        const k = isUP ? (Math.abs(vy) - WING_T) / Math.abs(vy) : 1;          // Underpass: ด้านในสั้นลงเท่าความหนา ไปชนปลายพับ
+        const Pin = [P2[0] + vx * k, P2[1] + vy * k];
+        const len = Math.hypot(vx, vy), steps = Math.max(1, Math.ceil(len / STEP_LEN));
+        const baseZ = isUP ? floor : 0;
+        for (let i = 0; i < steps; i++) {
+          const a0 = i / steps, a1 = (i + 1) / steps;
+          const top = topCurb - (topCurb - TIP_H) * (i / steps);
+          add([lerp(P1, P3, a0), lerp(P2, Pin, a0), lerp(P2, Pin, a1), lerp(P1, P3, a1)], baseZ, top, 'wing', wingColor);
+        }
+        if (isUP) {
+          const P5 = [P3[0] + s * RETURN_L, P3[1]], P6 = [P5[0], P3[1] - end * WING_T];
+          add([P3, Pin, P6, P5], 0, Math.max(TIP_H, floor + 0.1), 'return_wing', wingColor);
+        }
+        tips[s] = P3;
+      });
+      // พื้นปากท่อ (Underpass): ระหว่างปลายกำแพงปีกสองข้าง ไม่รวมปลายพับ
+      if (isUP) add([[-Wt / 2, end * L / 2], [Wt / 2, end * L / 2], tips[1], tips[-1]], 0, floor, 'headwall_floor', col);
+    });
     return out;
   }
 
