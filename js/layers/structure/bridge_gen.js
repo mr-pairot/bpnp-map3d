@@ -57,7 +57,7 @@ const PRESETS = Object.freeze({
   portalSpan: [12, 16, 20, 25]
 });
 
-const TRACK_SPACING = 4.0; // ระยะศูนย์กลางรางคู่ (ม.)
+const TRACK_SPACING = 5.0; // ระยะศูนย์กลางรางคู่ (ม.)
 const SPAN_GAP = 0.1;      // ช่องว่างรอยต่อระหว่างช่วง (ม.)
 
 const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
