@@ -102,6 +102,7 @@
     terrainPref = !!enable;
     BPNP.storage.set(KEY_TERRAIN, terrainPref ? '1' : '0');
     applyTerrain();
+    if (BPNP.events) BPNP.events.emit('map:terrain', terrainPref);   // สะพาน 3D ยกตามพื้นดินใหม่
     toast(terrainPref ? 'ภูมิประเทศ: เปิด' : 'ภูมิประเทศ: ปิด');
     if (BPNP.auth) BPNP.auth.logUserEvent('Map Terrain', terrainPref ? 'เปิด' : 'ปิด');
   }
