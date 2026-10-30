@@ -242,10 +242,10 @@
           <rect x="22.5" y="3.5" width="3" height="5" rx="1.5" transform="rotate(90 24 24)" />
           <rect x="22.5" y="3.5" width="3" height="5" rx="1.5" transform="rotate(180 24 24)" />
           <rect x="22.5" y="3.5" width="3" height="5" rx="1.5" transform="rotate(270 24 24)" />
-          <rect x="23" y="4" width="2" height="4" rx="1" transform="rotate(45 24 24)" />
-          <rect x="23" y="4" width="2" height="4" rx="1" transform="rotate(135 24 24)" />
-          <rect x="23" y="4" width="2" height="4" rx="1" transform="rotate(225 24 24)" />
-          <rect x="23" y="4" width="2" height="4" rx="1" transform="rotate(315 24 24)" />
+          <rect x="23" y="4" width="2" height="3" rx="1" transform="rotate(45 24 24)" />
+          <rect x="23" y="4" width="2" height="3" rx="1" transform="rotate(135 24 24)" />
+          <rect x="23" y="4" width="2" height="3" rx="1" transform="rotate(225 24 24)" />
+          <rect x="23" y="4" width="2" height="3" rx="1" transform="rotate(315 24 24)" />
         </g>
         
         <g class="compass-needle" style="transform-origin: 24px 24px; transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);" filter="url(#dropShadow)">
