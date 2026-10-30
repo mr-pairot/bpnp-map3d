@@ -24,8 +24,8 @@
 
 /* เข็มทิศ: หมุนตามทิศเท่านั้น */
 #compassBtn {
-  width: calc(var(--map-btn-size) * 1.5) !important;
-  height: calc(var(--map-btn-size) * 1.5) !important;
+  width: calc(var(--map-btn-size) * 1.2) !important;
+  height: calc(var(--map-btn-size) * 1.2) !important;
 /*  margin-right: calc(var(--map-btn-size) * -0.25) !important;
   margin-bottom: calc(var(--map-btn-size) * -0.25) !important; */
 }
