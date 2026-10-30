@@ -87,13 +87,22 @@
     if (n) n.style.transform = `rotate(${-map().getBearing()}deg)`;
   }
 
-    // ─── ระบบเข็มทิศจริง (Device Orientation) ───
+ // ─── ระบบเข็มทิศจริง (Device Orientation) ───
   let isRealCompassMode = false;
   let isLongPressFired = false;
   let pressStartTime = 0;
+  let orientationRAF = null; // ตัวแปรสำหรับคุมเฟรมเรตไม่ให้แผนที่กระตุก
+
+  // หากผู้ใช้เริ่มหมุนหรือเลื่อนแผนที่เอง ให้ปิดโหมดเข็มทิศจริงอัตโนมัติ
+  function autoCancelRealCompass() {
+    if (isRealCompassMode) {
+      toggleRealCompass(false);
+    }
+  }
 
   function handleOrientation(event) {
     if (!isRealCompassMode || !compass) return;
+    
     let heading = null;
     // ดึงค่าทิศเหนือ (Apple ใช้ webkitCompassHeading ส่วน Android ใช้ค่า alpha)
     if (event.webkitCompassHeading !== undefined) {
@@ -103,14 +112,22 @@
     }
     
     if (heading !== null) {
-      const n = compass.querySelector('.compass-needle');
-      if (n) n.style.transform = `rotate(${-heading}deg)`;
+      // ใช้ requestAnimationFrame จัดการให้การอัปเดตแผนที่เนียนตาที่สุดและไม่ค้าง
+      if (orientationRAF) cancelAnimationFrame(orientationRAF);
+      orientationRAF = requestAnimationFrame(() => {
+        // 1. หมุนหน้าจอแผนที่ให้ตรงกับทิศที่โทรศัพท์หันไป
+        map().setBearing(heading);
+        
+        // 2. หมุนเฉพาะเข็มให้สีแดงชี้ไปที่ทิศเหนือโลกเสมอ
+        const n = compass.querySelector('.compass-needle');
+        if (n) n.style.transform = `rotate(${-heading}deg)`;
+      });
     }
   }
 
   function toggleRealCompass(enable) {
+    const m = map();
     if (enable) {
-      // ตรวจสอบและขอ Permission สำหรับ iOS 13+
       if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
         DeviceOrientationEvent.requestPermission()
           .then(permissionState => {
@@ -119,17 +136,21 @@
           })
           .catch(console.error);
       } else {
-        // สำหรับ Android และอุปกรณ์อื่นๆ ทำงานได้ทันที
         startSensors();
       }
     } else {
-      // ยกเลิกการทำงาน
       isRealCompassMode = false;
       window.removeEventListener('deviceorientationabsolute', handleOrientation);
       window.removeEventListener('deviceorientation', handleOrientation);
+      if (orientationRAF) cancelAnimationFrame(orientationRAF);
+      
+      // ถอด Event เลิกติดตามการสัมผัสแผนที่
+      m.off('dragstart', autoCancelRealCompass);
+      m.off('rotatestart', autoCancelRealCompass);
+      
       const dot = compass.querySelector('#realCompassDot');
       if (dot) dot.style.display = 'none';
-      updateNeedle(); // สแนปเข็มทิศกลับให้ตรงกับแผนที่ทันที
+      updateNeedle(); // สแนปเข็มกลับให้ตรงแผนที่ทันที
       toast('ปิดโหมดเข็มทิศจริง');
     }
   }
@@ -140,16 +161,23 @@
       return;
     }
     isRealCompassMode = true;
-    // Android ส่วนใหญ่ใช้ absolute ถึงจะตรงทิศโลกจริง
+    const m = map();
+    
+    // ดักจับ: ถ้าผู้ใช้ใช้นิ้วเลื่อนหรือหมุนแผนที่เอง ให้ยกเลิกโหมดนี้อัตโนมัติเพื่อไม่ให้ขัดแย้งกัน
+    m.on('dragstart', autoCancelRealCompass);
+    m.on('rotatestart', autoCancelRealCompass);
+
     if ('ondeviceorientationabsolute' in window) {
       window.addEventListener('deviceorientationabsolute', handleOrientation);
     } else {
       window.addEventListener('deviceorientation', handleOrientation);
     }
+    
     const dot = compass.querySelector('#realCompassDot');
     if (dot) dot.style.display = '';
-    toast('เปิดโหมดเข็มทิศจริง');
+    toast('เปิดโหมดเข็มทิศจริง (แผนที่หมุนตามโทรศัพท์)');
   }
+
 /////
 
 
