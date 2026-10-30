@@ -144,7 +144,7 @@
 
 html: `<svg viewBox="0 0 48 48" width="100%" height="100%" aria-hidden="true">
         <defs>
-          <!-- เกรเดียนต์ไล่สีโลหะ -->
+          <!-- เกรเดียนต์ไล่สีโลหะ (สำหรับขอบวงแหวน) -->
           <linearGradient id="metalGrad" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stop-color="#ffffff"/>
             <stop offset="25%" stop-color="#94a3b8"/>
@@ -153,31 +153,31 @@ html: `<svg viewBox="0 0 48 48" width="100%" height="100%" aria-hidden="true">
             <stop offset="100%" stop-color="#94a3b8"/>
           </linearGradient>
           
-          <!-- เงาตกกระทบให้ดูเป็น 3D -->
+          <!-- เงาตกกระทบให้ดูนูนเป็น 3D (สำหรับขอบและเข็ม) -->
           <filter id="dropShadow" x="-20%" y="-20%" width="140%" height="140%">
             <feDropShadow dx="1" dy="2" stdDeviation="1.5" flood-color="#000000" flood-opacity="0.35"/>
           </filter>
         </defs>
 
-        <!-- วงแหวนรอบนอกสุด -->
+        <!-- วงแหวนรอบนอกสุด (ใช้สีโลหะ + มีเงา) -->
         <circle cx="24" cy="24" r="21" fill="none" stroke="url(#metalGrad)" stroke-width="3" filter="url(#dropShadow)"/>
 
-        <!-- ขีดสเกล (ใช้จุดหมุน 24,24 ทำให้องศาเป๊ะ 100%) -->
-        <g fill="url(#metalGrad)" filter="url(#dropShadow)">
-          <!-- ทิศหลัก N, E, S, W (ขีดหนา) -->
+        <!-- ขีดสเกล (ปรับให้สีด้านและแบนติดหน้าปัด ไม่มีเงา) -->
+        <g fill="#94a3b8">
+          <!-- ทิศหลัก N, E, S, W -->
           <rect x="22.5" y="3.5" width="3" height="5" rx="1.5" />
           <rect x="22.5" y="3.5" width="3" height="5" rx="1.5" transform="rotate(90 24 24)" />
           <rect x="22.5" y="3.5" width="3" height="5" rx="1.5" transform="rotate(180 24 24)" />
           <rect x="22.5" y="3.5" width="3" height="5" rx="1.5" transform="rotate(270 24 24)" />
           
-          <!-- ทิศรอง NE, SE, SW, NW (ขีดบางและสั้นกว่านิดหน่อยให้เป็นสเกล) -->
+          <!-- ทิศรอง NE, SE, SW, NW -->
           <rect x="23" y="4" width="2" height="4" rx="1" transform="rotate(45 24 24)" />
           <rect x="23" y="4" width="2" height="4" rx="1" transform="rotate(135 24 24)" />
           <rect x="23" y="4" width="2" height="4" rx="1" transform="rotate(225 24 24)" />
           <rect x="23" y="4" width="2" height="4" rx="1" transform="rotate(315 24 24)" />
         </g>
         
-        <!-- เข็มทิศสีแดงน้ำเงิน (หมุนตามแผนที่) -->
+        <!-- เข็มทิศสีแดงน้ำเงิน (ลอยอยู่เหนือหน้าปัด เลยต้องมีเงา) -->
         <g class="compass-needle" style="transform-origin: 24px 24px; transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);" filter="url(#dropShadow)">
           <polygon points="24,8 30,24 24,24" fill="#ff2a2a"/>
           <polygon points="24,8 18,24 24,24" fill="#cc0000"/>
