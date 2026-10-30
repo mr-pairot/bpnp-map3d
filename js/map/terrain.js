@@ -333,12 +333,7 @@
       style: { 
         bottom: row(2), 
         right: right(0), 
-        display: 'none',
-        // ปรับขนาดเข็มทิศให้โต 1.5 เท่า
-      //  width: 'calc(var(--map-btn-size) * 1.5)',
-      //  height: 'calc(var(--map-btn-size) * 1.5)',
-      //  marginRight: 'calc(var(--map-btn-size) * -0.25)',
-      //  marginBottom: 'calc(var(--map-btn-size) * -0.25)'
+        display: 'none'
       },
 
       title: 'เข็มทิศ (กดค้างเพื่อใช้เข็มทิศเซ็นเซอร์)',
