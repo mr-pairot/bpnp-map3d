@@ -21,7 +21,14 @@
 #labelsBtn { background-color: #e5e7eb; color: #4b5563; }
 #labelsBtn.active { background-color: #1e3a8a; color: #ffffff; }
 #labelsBtn .labels-glyph { font: 700 22px/1 'Sarabun', sans-serif; }
+
 /* เข็มทิศ: หมุนตามทิศเท่านั้น */
+#compassBtn {
+  width: calc(var(--map-btn-size) * 1.5) !important;
+  height: calc(var(--map-btn-size) * 1.5) !important;
+  margin-right: calc(var(--map-btn-size) * -0.25) !important;
+  margin-bottom: calc(var(--map-btn-size) * -0.25) !important;
+}
 #compassBtn .compass-needle { transition: transform 0.15s linear; }
 
 /* ป้าย "Editor Mode" (js/core/features.js) — role editor + โหมด 3D · มุมขวาล่าง ซ้ายของปุ่ม "กม. ทล." */
