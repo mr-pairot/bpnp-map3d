@@ -73,8 +73,26 @@
 
   function updateNeedle() {
     if (!compass || isRealCompassMode) return; 
+    const heading = map().getBearing();
     const n = compass.querySelector('.compass-needle');
-    if (n) n.style.transform = `rotate(${-map().getBearing()}deg)`;
+    if (n) n.style.transform = `rotate(${-heading}deg)`;
+    updateCompassDial(heading);
+  }
+
+  // ฟังก์ชันสลับแสดงตัว N / ขีดสเกล ตามทิศทางแผนที่
+  function updateCompassDial(heading) {
+    if (!compass) return;
+    const nLetter = compass.querySelector('#compass-n-letter');
+    const nDash = compass.querySelector('#compass-n-dash');
+    if (!nLetter || !nDash) return;
+    
+    // แปลงมุมให้อยู่ในกรอบ 0-360 องศา
+    let h = (heading % 360 + 360) % 360;
+    // หากมุมอยู่ใกล้เคียง 0 องศา (ไม่เกิน 2 องศา เผื่อจังหวะลื่นไหลของอนิเมชัน) = ถือว่าเข็มชี้ตรง
+    const isNorthUp = h < 2 || h > 358;
+    
+    nLetter.style.display = isNorthUp ? '' : 'none';
+    nDash.style.display = isNorthUp ? 'none' : '';
   }
 
   // ─── ระบบเข็มทิศจริง (Device Orientation) ───
@@ -99,7 +117,7 @@
     if (!isRealCompassMode) return;
     
     if (targetHeading !== null) {
-      // ค่อยๆ หมุน (Lerp) มุมปัจจุบันเข้าหามุมเป้าหมาย (ความเร็ว 0.08 ต่อเฟรม ทำให้ดูนุ่มนวล)
+      // ค่อยๆ หมุน (Lerp) มุมปัจจุบันเข้าหามุมเป้าหมาย
       currentHeading = lerpAngle(currentHeading, targetHeading, 0.08);
       
       map().setBearing(currentHeading);
@@ -108,6 +126,9 @@
       if (n) {
         n.style.transform = `rotate(${-currentHeading}deg)`;
       }
+      
+      // อัปเดตตัว N และขีดสเกลให้สัมพันธ์กับจังหวะหมุน
+      updateCompassDial(currentHeading);
     }
     
     orientationRAF = requestAnimationFrame(updateCompassFrame);
@@ -286,8 +307,14 @@
           </filter>
         </defs>
         <circle cx="24" cy="24" r="21" fill="none" stroke="url(#metalGrad)" stroke-width="3" filter="url(#dropShadow)"/>
+        
         <g fill="#94a3b8">
-          <rect x="22.5" y="3.5" width="3" height="5" rx="1.5" />
+          <!-- ตัวอักษร N สีแดง (จะแสดงเฉพาะตอนมุม 0 องศา) -->
+          <path id="compass-n-letter" d="M 21.5 8 L 21.5 3.5 L 26.5 8 L 26.5 3.5" fill="none" stroke="#ff2a2a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          
+          <!-- ขีดสเกลเดิม (จะแสดงตอนหมุนแผนที่ไปทิศอื่น) -->
+          <rect id="compass-n-dash" x="22.5" y="3.5" width="3" height="5" rx="1.5" style="display: none;" />
+          
           <rect x="22.5" y="3.5" width="3" height="5" rx="1.5" transform="rotate(90 24 24)" />
           <rect x="22.5" y="3.5" width="3" height="5" rx="1.5" transform="rotate(180 24 24)" />
           <rect x="22.5" y="3.5" width="3" height="5" rx="1.5" transform="rotate(270 24 24)" />
@@ -296,6 +323,7 @@
           <rect x="23" y="4" width="2" height="3" rx="1" transform="rotate(225 24 24)" />
           <rect x="23" y="4" width="2" height="3" rx="1" transform="rotate(315 24 24)" />
         </g>
+
         <g class="compass-needle" style="transform-origin: 24px 24px; transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);" filter="url(#dropShadow)">
           <polygon points="24,8 30,24 24,24" fill="#ff2a2a"/>
           <polygon points="24,8 18,24 24,24" fill="#cc0000"/>
