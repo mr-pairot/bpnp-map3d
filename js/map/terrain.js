@@ -171,10 +171,10 @@ html: `<svg viewBox="0 0 48 48" width="100%" height="100%" aria-hidden="true">
           <rect x="22.5" y="3.5" width="3" height="5" rx="1.5" transform="rotate(270 24 24)" />
           
           <!-- ทิศรอง NE, SE, SW, NW -->
-          <rect x="23" y="4" width="2" height="4" rx="1" transform="rotate(45 24 24)" />
-          <rect x="23" y="4" width="2" height="4" rx="1" transform="rotate(135 24 24)" />
-          <rect x="23" y="4" width="2" height="4" rx="1" transform="rotate(225 24 24)" />
-          <rect x="23" y="4" width="2" height="4" rx="1" transform="rotate(315 24 24)" />
+          <rect x="23" y="4" width="1" height="3" rx="1" transform="rotate(45 24 24)" />
+          <rect x="23" y="4" width="1" height="3" rx="1" transform="rotate(135 24 24)" />
+          <rect x="23" y="4" width="1" height="3" rx="1" transform="rotate(225 24 24)" />
+          <rect x="23" y="4" width="1" height="3" rx="1" transform="rotate(315 24 24)" />
         </g>
         
         <!-- เข็มทิศสีแดงน้ำเงิน (ลอยอยู่เหนือหน้าปัด เลยต้องมีเงา) -->
