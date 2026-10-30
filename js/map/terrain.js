@@ -79,16 +79,13 @@
     updateCompassDial(heading);
   }
 
-  // ฟังก์ชันสลับแสดงตัว N / ขีดสเกล ตามทิศทางแผนที่
   function updateCompassDial(heading) {
     if (!compass) return;
     const nLetter = compass.querySelector('#compass-n-letter');
     const nDash = compass.querySelector('#compass-n-dash');
     if (!nLetter || !nDash) return;
     
-    // แปลงมุมให้อยู่ในกรอบ 0-360 องศา
     let h = (heading % 360 + 360) % 360;
-    // หากมุมอยู่ใกล้เคียง 0 องศา (ไม่เกิน 2 องศา เผื่อจังหวะลื่นไหลของอนิเมชัน) = ถือว่าเข็มชี้ตรง
     const isNorthUp = h < 2 || h > 358;
     
     nLetter.style.display = isNorthUp ? '' : 'none';
@@ -102,22 +99,18 @@
   let pressStartTime = 0;
   let orientationRAF = null;
   
-  // ตัวแปรสำหรับทำอนิเมชันให้ลื่นไหล (Smooth Lerp)
   let targetHeading = null;
   let currentHeading = 0;
 
-  // ฟังก์ชันคำนวณการหมุนไปในทิศที่ใกล้ที่สุด (ไม่ให้หมุนย้อนกลับทางไกล)
   function lerpAngle(start, end, factor) {
     const delta = ((((end - start) % 360) + 540) % 360) - 180;
     return start + delta * factor;
   }
 
-  // ลูปแสดงผลให้แผนที่และเข็มทิศหมุนตามเซ็นเซอร์อย่างนุ่มนวล
   function updateCompassFrame() {
     if (!isRealCompassMode) return;
     
     if (targetHeading !== null) {
-      // ค่อยๆ หมุน (Lerp) มุมปัจจุบันเข้าหามุมเป้าหมาย
       currentHeading = lerpAngle(currentHeading, targetHeading, 0.08);
       
       map().setBearing(currentHeading);
@@ -127,7 +120,6 @@
         n.style.transform = `rotate(${-currentHeading}deg)`;
       }
       
-      // อัปเดตตัว N และขีดสเกลให้สัมพันธ์กับจังหวะหมุน
       updateCompassDial(currentHeading);
     }
     
@@ -136,7 +128,7 @@
 
   function autoCancelRealCompass(e) {
     if (isRealCompassMode && e && e.originalEvent) {
-      if (Date.now() - compassActivatedTime < 1500) return; // 🛡️ เกราะป้องกันนิ้วแฉลบ
+      if (Date.now() - compassActivatedTime < 1500) return; 
       toggleRealCompass(false);
     }
   }
@@ -152,7 +144,7 @@
     }
     
     if (heading !== null) {
-      targetHeading = heading; // อัปเดตมุมเป้าหมายให้ตัว Lerp ดึงไปหา
+      targetHeading = heading;
     }
   }
 
@@ -178,10 +170,9 @@
       m.off('dragstart', autoCancelRealCompass);
       m.off('rotatestart', autoCancelRealCompass);
       
-      const dot = compass.querySelector('#realCompassDot');
-      if (dot) dot.style.display = 'none';
+      const ripple = compass.querySelector('#compass-sensor-ripple');
+      if (ripple) ripple.style.display = 'none';
 
-      // คืนค่า CSS Transition ให้เข็มทิศ เพื่อรองรับการคลิกหมุนแผนที่ปกติ
       const n = compass.querySelector('.compass-needle');
       if (n) {
         n.style.transition = 'transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)';
@@ -204,7 +195,6 @@
     m.on('dragstart', autoCancelRealCompass);
     m.on('rotatestart', autoCancelRealCompass);
 
-    // ดึงมุมเดิมมาเป็นจุดเริ่มต้น เพื่อให้การหมุนแอนิเมชันเริ่มจากหน้าจอที่ดูอยู่ปัจจุบัน
     currentHeading = m.getBearing();
     targetHeading = currentHeading;
 
@@ -214,21 +204,18 @@
       window.addEventListener('deviceorientation', handleOrientation);
     }
     
-    const dot = compass.querySelector('#realCompassDot');
-    if (dot) dot.style.display = '';
+    const ripple = compass.querySelector('#compass-sensor-ripple');
+    if (ripple) ripple.style.display = '';
 
-    // ปิด CSS Transition ชั่วคราว เพราะเราใช้ JS (requestAnimationFrame) ในการทำภาพสมูทระดับ 60fps แล้ว
     const n = compass.querySelector('.compass-needle');
     if (n) n.style.transition = 'none';
     
     if (orientationRAF) cancelAnimationFrame(orientationRAF);
-    updateCompassFrame(); // เริ่มลูปเข็มทิศ
+    updateCompassFrame(); 
     
     toast('เปิดโหมดเข็มทิศจริง (แผนที่หมุนตามโทรศัพท์)');
   }
 
-
-  // enable: เข้า/ออก 3D · opts.tilt: เอียงไปมุม 3D (ปุ่ม/โหลดหน้า) — เข้าด้วยท่าทางไม่ต้องเอียงเพิ่ม
   function setMode(enable, opts = {}) {
     const m = map();
     on = !!enable;
@@ -273,6 +260,7 @@
       title: '',
       onClick: () => setMode(!on, { tilt: true })
     });
+    
     btnTerrain = BPNP.ui.createStandardButton({
       id: 'terrainBtn',
       html: `<svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true">
@@ -286,12 +274,16 @@
 
     compass = BPNP.ui.createStandardButton({
       id: 'compassBtn',
-      html: `<svg viewBox="0 0 48 48" width="100%" height="100%" aria-hidden="true">
+      html: `<svg viewBox="0 0 48 48" width="100%" height="100%" aria-hidden="true" style="overflow: visible;">
         <style>
-          @keyframes compassDotPulse {
-            0% { opacity: 0.3; transform: scale(0.7); }
-            50% { opacity: 1; transform: scale(1.3); }
-            100% { opacity: 0.3; transform: scale(0.7); }
+          @keyframes compassRipple {
+            0% { r: 1.5px; opacity: 0.9; stroke-width: 2px; }
+            100% { r: 8px; opacity: 0; stroke-width: 0px; }
+          }
+          @keyframes compassRippleDelay {
+            0% { r: 1.5px; opacity: 0; stroke-width: 2px; }
+            33% { r: 1.5px; opacity: 0.8; }
+            100% { r: 8px; opacity: 0; stroke-width: 0px; }
           }
         </style>
         <defs>
@@ -306,15 +298,12 @@
             <feDropShadow dx="1" dy="2" stdDeviation="1.5" flood-color="#000000" flood-opacity="0.35"/>
           </filter>
         </defs>
+        
         <circle cx="24" cy="24" r="21" fill="none" stroke="url(#metalGrad)" stroke-width="3" filter="url(#dropShadow)"/>
         
         <g fill="#94a3b8">
-          <!-- ตัวอักษร N สีแดง (จะแสดงเฉพาะตอนมุม 0 องศา) -->
           <path id="compass-n-letter" d="M 21.5 8 L 21.5 3.5 L 26.5 8 L 26.5 3.5" fill="none" stroke="#ff2a2a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-          
-          <!-- ขีดสเกลเดิม (จะแสดงตอนหมุนแผนที่ไปทิศอื่น) -->
           <rect id="compass-n-dash" x="22.5" y="3.5" width="3" height="5" rx="1.5" style="display: none;" />
-          
           <rect x="22.5" y="3.5" width="3" height="5" rx="1.5" transform="rotate(90 24 24)" />
           <rect x="22.5" y="3.5" width="3" height="5" rx="1.5" transform="rotate(180 24 24)" />
           <rect x="22.5" y="3.5" width="3" height="5" rx="1.5" transform="rotate(270 24 24)" />
@@ -324,30 +313,43 @@
           <rect x="23" y="4" width="2" height="3" rx="1" transform="rotate(315 24 24)" />
         </g>
 
+        <!-- กลุ่มเข็มทิศ: เข็มแดงจะชี้ขึ้นทิศเหนือเสมอ และมีเอฟเฟกต์กระเพื่อมติดอยู่ที่ปลาย -->
         <g class="compass-needle" style="transform-origin: 24px 24px; transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);" filter="url(#dropShadow)">
+          <!-- เอฟเฟกต์วงกระเพื่อมสีส้มแดง (Ripple) ซ่อนอยู่โดยค่าเริ่มต้น -->
+          <g id="compass-sensor-ripple" style="display: none;">
+            <circle cx="24" cy="5" r="1.5" fill="none" stroke="#ff5722" style="animation: compassRipple 1.2s infinite ease-out;" />
+            <circle cx="24" cy="5" r="1.5" fill="none" stroke="#ff5722" style="animation: compassRippleDelay 1.2s infinite ease-out;" />
+            <!-- แกนกลางสว่างจ้า -->
+            <circle cx="24" cy="5" r="1.5" fill="#ff5722" filter="drop-shadow(0 0 2px #ff5722)" />
+          </g>
+          
           <polygon points="24,8 30,24 24,24" fill="#ff2a2a"/>
           <polygon points="24,8 18,24 24,24" fill="#cc0000"/>
           <polygon points="24,40 30,24 24,24" fill="#2962ff"/>
           <polygon points="24,40 18,24 24,24" fill="#0039cb"/>
           <circle cx="24" cy="24" r="2.5" fill="url(#metalGrad)" />
         </g>
-        <circle id="realCompassDot" cx="40" cy="8" r="3.5" fill="#00e676" filter="drop-shadow(0 0 3px #00e676)" style="display: none; transform-origin: 40px 8px; animation: compassDotPulse 1.5s infinite ease-in-out;" />
       </svg>`,
-      style: { bottom: row(2), right: right(0), display: 'none' },
+      style: { 
+        bottom: row(2), 
+        right: right(0), 
+        display: 'none',
+        // ปรับขนาดเข็มทิศให้โต 1.2 เท่า ชดเชย margin ขวาเพื่อให้ยังคงดูจัดกึ่งกลาง
+        width: 'calc(var(--map-btn-size) * 1.2)',
+        height: 'calc(var(--map-btn-size) * 1.2)',
+        marginRight: 'calc(var(--map-btn-size) * -0.1)'
+      },
       title: 'เข็มทิศ (กดค้างเพื่อใช้เข็มทิศเซ็นเซอร์)',
       onClick: (e) => {
-        // 🛡️ ข้าม Event ถ้าเพิ่งปล่อยนิ้วไม่ถึง 1.5 วินาที
         if (Date.now() - lastLongPressTime < 1500) {
           return;
         }
         
         if (isRealCompassMode) {
           toggleRealCompass(false); 
-          // เมื่อกดปิดโหมดเข็มทิศด้วยปุ่ม ให้แผนที่หมุนกลับทิศเหนืออย่างนุ่มนวล
           const pitch = m.getPitch();
           m.easeTo({ bearing: 0, pitch: pitch < 5 ? cfg().pitch : pitch, duration: 800 });
         } else {
-          // โหมดปกติ กดปุ่มเข็มทิศก็หมุนกลับทิศเหนือ
           const pitch = m.getPitch();
           m.easeTo({ bearing: 0, pitch: pitch < 5 ? cfg().pitch : pitch, duration: 600 });
         }
