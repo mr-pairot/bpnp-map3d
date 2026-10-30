@@ -335,8 +335,8 @@
         right: right(0), 
         display: 'none',
         // ปรับขนาดเข็มทิศให้โต 1.2 เท่า ชดเชย margin ขวาเพื่อให้ยังคงดูจัดกึ่งกลาง
-        width: 'calc(var(--map-btn-size) * 1.2)',
-        height: 'calc(var(--map-btn-size) * 1.2)',
+        width: 'calc(var(--map-btn-size) * 1.5)',
+        height: 'calc(var(--map-btn-size) * 1.5)',
         marginRight: 'calc(var(--map-btn-size) * -0.1)'
       },
       title: 'เข็มทิศ (กดค้างเพื่อใช้เข็มทิศเซ็นเซอร์)',
