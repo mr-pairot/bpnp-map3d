@@ -73,23 +73,16 @@
     updateNeedle();
   }
 
-  /*
-  function updateNeedle() {
-    if (!compass) return;
-    const n = compass.querySelector('.compass-needle');
-    if (n) n.style.transform = `rotate(${-map().getBearing()}deg)`;   // หมุนตามทิศเท่านั้น ไม่เอียงตามแผนที่
-  }
-  */
-///// ทดสอบการหมุนทิศตามอุปกรณ์
+  ///// ทดสอบการหมุนทิศตามอุปกรณ์
   function updateNeedle() {
     if (!compass || isRealCompassMode) return; // หากอยู่ในโหมดเข็มทิศจริง ให้ข้ามการอัปเดตตามแผนที่
     const n = compass.querySelector('.compass-needle');
     if (n) n.style.transform = `rotate(${-map().getBearing()}deg)`;
   }
 
- // ─── ระบบเข็มทิศจริง (Device Orientation) ───
+  // ─── ระบบเข็มทิศจริง (Device Orientation) ───
   let isRealCompassMode = false;
-  let isLongPressFired = false;
+  let lastLongPressTime = 0; // เปลี่ยนจาก isLongPressFired มาเก็บ Timestamp แทน
   let pressStartTime = 0;
   let orientationRAF = null; // ตัวแปรสำหรับคุมเฟรมเรตไม่ให้แผนที่กระตุก
 
@@ -178,8 +171,7 @@
     toast('เปิดโหมดเข็มทิศจริง (แผนที่หมุนตามโทรศัพท์)');
   }
 
-/////
-
+  /////
 
   // enable: เข้า/ออก 3D · opts.tilt: เอียงไปมุม 3D (ปุ่ม/โหลดหน้า) — เข้าด้วยท่าทางไม่ต้องเอียงเพิ่ม
   function setMode(enable, opts = {}) {
@@ -238,7 +230,7 @@
       onClick: () => setTerrain(!terrainPref)
     });
 
-        compass = BPNP.ui.createStandardButton({
+    compass = BPNP.ui.createStandardButton({
       id: 'compassBtn',
       html: `<svg viewBox="0 0 48 48" width="100%" height="100%" aria-hidden="true">
         <style>
@@ -289,10 +281,9 @@
       </svg>`,
       style: { bottom: row(2), right: right(0), display: 'none' },
       title: 'เข็มทิศ (กดค้างเพื่อใช้เข็มทิศเซ็นเซอร์)',
-      onClick: () => {
-        // หากผู้ใช้เพิ่งปล่อยนิ้วจากการกดค้าง (โดนดักจับไปแล้ว) ให้ยกเลิกการคลิกนี้
-        if (isLongPressFired) {
-          isLongPressFired = false;
+      onClick: (e) => {
+        // บล็อก Click ซ้อน (Ghost Click) ที่ตามมาภายใน 1 วินาทีหลังจากการกดค้าง
+        if (Date.now() - lastLongPressTime < 1000) {
           return;
         }
         
@@ -307,30 +298,36 @@
       }
     });
 
-    // --- ตรวจจับการกดค้าง (Long Press) ---
-    const startPress = () => { pressStartTime = Date.now(); };
-    const endPress = () => {
+    // --- ตรวจจับการกดค้าง (Long Press) พร้อมป้องกัน Event ทะลุ ---
+    const startPress = (e) => { 
+      if (e && e.stopPropagation) e.stopPropagation(); // ป้องกันแผนที่ขยับเวลากดค้าง
+      pressStartTime = Date.now(); 
+    };
+    
+    const endPress = (e) => {
       if (!pressStartTime) return;
+      if (e && e.stopPropagation) e.stopPropagation();
       const duration = Date.now() - pressStartTime;
+      
       if (duration >= 600) {
-        // ผู้ใช้กดค้างเกิน 0.6 วินาที
-        isLongPressFired = true;
+        lastLongPressTime = Date.now(); // บันทึกเวลาที่ปล่อยนิ้วจากการกดค้าง
+        if (e && e.preventDefault && e.cancelable) e.preventDefault(); // ตัดตอน Ghost Click ตั้งแต่ต้นทาง
         if (!isRealCompassMode) toggleRealCompass(true);
       }
       pressStartTime = 0;
     };
+    
     const cancelPress = () => { pressStartTime = 0; };
 
-    // ผูก Event ให้กับตัวปุ่ม
+    // ผูก Event ให้กับตัวปุ่ม (ปรับ passive: false เพื่อให้ preventDefault ทำงานได้สมบูรณ์)
     if (compass) {
-      compass.addEventListener('touchstart', startPress, { passive: true });
-      compass.addEventListener('touchend', endPress, { passive: true });
+      compass.addEventListener('touchstart', startPress, { passive: false });
+      compass.addEventListener('touchend', endPress, { passive: false });
       compass.addEventListener('touchcancel', cancelPress, { passive: true });
       compass.addEventListener('mousedown', startPress);
       compass.addEventListener('mouseup', endPress);
       compass.addEventListener('mouseleave', cancelPress);
     }
-
 
     enableGestures();
     m.on('rotatestart', onUserTiltOrRotate);
