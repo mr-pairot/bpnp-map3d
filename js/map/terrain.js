@@ -335,12 +335,10 @@
         right: right(0), 
         display: 'none',
         // ปรับขนาดเข็มทิศให้โต 1.5 เท่า
-        width: 'calc(var(--map-btn-size) * 1.5)',
-        height: 'calc(var(--map-btn-size) * 1.5)',
-        // ชดเชยแกน X: ดึงปุ่มกลับไปทางขวา 25% ของขนาดเดิม เพื่อให้แกนกลางตรงกัน
-        marginRight: 'calc(var(--map-btn-size) * -0.25)',
-        // ชดเชยแกน Y: ดึงปุ่มลงมาด้านล่าง 25% เพื่อไม่ให้มันดูลอยห่างจากปุ่ม 3D มากเกินไป (รักษาช่องว่างให้เท่าเดิม)
-        marginBottom: 'calc(var(--map-btn-size) * -0.25)'
+      //  width: 'calc(var(--map-btn-size) * 1.5)',
+      //  height: 'calc(var(--map-btn-size) * 1.5)',
+      //  marginRight: 'calc(var(--map-btn-size) * -0.25)',
+      //  marginBottom: 'calc(var(--map-btn-size) * -0.25)'
       },
 
       title: 'เข็มทิศ (กดค้างเพื่อใช้เข็มทิศเซ็นเซอร์)',
