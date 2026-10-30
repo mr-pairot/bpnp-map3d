@@ -73,11 +73,85 @@
     updateNeedle();
   }
 
+  /*
   function updateNeedle() {
     if (!compass) return;
     const n = compass.querySelector('.compass-needle');
     if (n) n.style.transform = `rotate(${-map().getBearing()}deg)`;   // หมุนตามทิศเท่านั้น ไม่เอียงตามแผนที่
   }
+  */
+///// ทดสอบการหมุนทิศตามอุปกรณ์
+  function updateNeedle() {
+    if (!compass || isRealCompassMode) return; // หากอยู่ในโหมดเข็มทิศจริง ให้ข้ามการอัปเดตตามแผนที่
+    const n = compass.querySelector('.compass-needle');
+    if (n) n.style.transform = `rotate(${-map().getBearing()}deg)`;
+  }
+
+    // ─── ระบบเข็มทิศจริง (Device Orientation) ───
+  let isRealCompassMode = false;
+  let isLongPressFired = false;
+  let pressStartTime = 0;
+
+  function handleOrientation(event) {
+    if (!isRealCompassMode || !compass) return;
+    let heading = null;
+    // ดึงค่าทิศเหนือ (Apple ใช้ webkitCompassHeading ส่วน Android ใช้ค่า alpha)
+    if (event.webkitCompassHeading !== undefined) {
+      heading = event.webkitCompassHeading;
+    } else if (event.alpha !== null) {
+      heading = 360 - event.alpha;
+    }
+    
+    if (heading !== null) {
+      const n = compass.querySelector('.compass-needle');
+      if (n) n.style.transform = `rotate(${-heading}deg)`;
+    }
+  }
+
+  function toggleRealCompass(enable) {
+    if (enable) {
+      // ตรวจสอบและขอ Permission สำหรับ iOS 13+
+      if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+        DeviceOrientationEvent.requestPermission()
+          .then(permissionState => {
+            if (permissionState === 'granted') startSensors();
+            else toast('กรุณาอนุญาตสิทธิ์การเข้าถึงเข็มทิศ');
+          })
+          .catch(console.error);
+      } else {
+        // สำหรับ Android และอุปกรณ์อื่นๆ ทำงานได้ทันที
+        startSensors();
+      }
+    } else {
+      // ยกเลิกการทำงาน
+      isRealCompassMode = false;
+      window.removeEventListener('deviceorientationabsolute', handleOrientation);
+      window.removeEventListener('deviceorientation', handleOrientation);
+      const dot = compass.querySelector('#realCompassDot');
+      if (dot) dot.style.display = 'none';
+      updateNeedle(); // สแนปเข็มทิศกลับให้ตรงกับแผนที่ทันที
+      toast('ปิดโหมดเข็มทิศจริง');
+    }
+  }
+
+  function startSensors() {
+    if (!window.DeviceOrientationEvent) {
+      toast('อุปกรณ์ของคุณไม่รองรับเข็มทิศ');
+      return;
+    }
+    isRealCompassMode = true;
+    // Android ส่วนใหญ่ใช้ absolute ถึงจะตรงทิศโลกจริง
+    if ('ondeviceorientationabsolute' in window) {
+      window.addEventListener('deviceorientationabsolute', handleOrientation);
+    } else {
+      window.addEventListener('deviceorientation', handleOrientation);
+    }
+    const dot = compass.querySelector('#realCompassDot');
+    if (dot) dot.style.display = '';
+    toast('เปิดโหมดเข็มทิศจริง');
+  }
+/////
+
 
   // enable: เข้า/ออก 3D · opts.tilt: เอียงไปมุม 3D (ปุ่ม/โหลดหน้า) — เข้าด้วยท่าทางไม่ต้องเอียงเพิ่ม
   function setMode(enable, opts = {}) {
@@ -135,16 +209,19 @@
       title: '',
       onClick: () => setTerrain(!terrainPref)
     });
-    compass = BPNP.ui.createStandardButton({
-      id: 'compassBtn',
-    /*  html: `<svg class="compass-needle" viewBox="0 0 24 24" width="26" height="26" aria-hidden="true">
-               <polygon points="12,2 16,12 12,10.5 8,12" fill="#e53935"/>
-               <polygon points="12,22 16,12 12,13.5 8,12" fill="#90a4ae"/>
-             </svg>`, */
 
-html: `<svg viewBox="0 0 48 48" width="100%" height="100%" aria-hidden="true">
+        compass = BPNP.ui.createStandardButton({
+      id: 'compassBtn',
+      html: `<svg viewBox="0 0 48 48" width="100%" height="100%" aria-hidden="true">
+        <style>
+          /* แอนิเมชันจุดไฟสีเขียวกระพริบ */
+          @keyframes compassDotPulse {
+            0% { opacity: 0.3; transform: scale(0.7); }
+            50% { opacity: 1; transform: scale(1.3); }
+            100% { opacity: 0.3; transform: scale(0.7); }
+          }
+        </style>
         <defs>
-          <!-- เกรเดียนต์ไล่สีโลหะ (สำหรับขอบวงแหวน) -->
           <linearGradient id="metalGrad" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stop-color="#ffffff"/>
             <stop offset="25%" stop-color="#94a3b8"/>
@@ -152,50 +229,80 @@ html: `<svg viewBox="0 0 48 48" width="100%" height="100%" aria-hidden="true">
             <stop offset="75%" stop-color="#64748b"/>
             <stop offset="100%" stop-color="#94a3b8"/>
           </linearGradient>
-          
-          <!-- เงาตกกระทบให้ดูนูนเป็น 3D (สำหรับขอบและเข็ม) -->
           <filter id="dropShadow" x="-20%" y="-20%" width="140%" height="140%">
             <feDropShadow dx="1" dy="2" stdDeviation="1.5" flood-color="#000000" flood-opacity="0.35"/>
           </filter>
         </defs>
 
-        <!-- วงแหวนรอบนอกสุด (ใช้สีโลหะ + มีเงา) -->
         <circle cx="24" cy="24" r="21" fill="none" stroke="url(#metalGrad)" stroke-width="3" filter="url(#dropShadow)"/>
 
-        <!-- ขีดสเกล (ปรับให้สีด้านและแบนติดหน้าปัด ไม่มีเงา) -->
+        <!-- สเกลหน้าปัด (แบนราบ ไม่มีเงา) -->
         <g fill="#94a3b8">
-          <!-- ทิศหลัก N, E, S, W -->
           <rect x="22.5" y="3.5" width="3" height="5" rx="1.5" />
           <rect x="22.5" y="3.5" width="3" height="5" rx="1.5" transform="rotate(90 24 24)" />
           <rect x="22.5" y="3.5" width="3" height="5" rx="1.5" transform="rotate(180 24 24)" />
           <rect x="22.5" y="3.5" width="3" height="5" rx="1.5" transform="rotate(270 24 24)" />
-          
-          <!-- ทิศรอง NE, SE, SW, NW -->
-          <rect x="23" y="4" width="2" height="3" rx="1" transform="rotate(45 24 24)" />
-          <rect x="23" y="4" width="2" height="3" rx="1" transform="rotate(135 24 24)" />
-          <rect x="23" y="4" width="2" height="3" rx="1" transform="rotate(225 24 24)" />
-          <rect x="23" y="4" width="2" height="3" rx="1" transform="rotate(315 24 24)" />
+          <rect x="23" y="4" width="2" height="4" rx="1" transform="rotate(45 24 24)" />
+          <rect x="23" y="4" width="2" height="4" rx="1" transform="rotate(135 24 24)" />
+          <rect x="23" y="4" width="2" height="4" rx="1" transform="rotate(225 24 24)" />
+          <rect x="23" y="4" width="2" height="4" rx="1" transform="rotate(315 24 24)" />
         </g>
         
-        <!-- เข็มทิศสีแดงน้ำเงิน (ลอยอยู่เหนือหน้าปัด เลยต้องมีเงา) -->
         <g class="compass-needle" style="transform-origin: 24px 24px; transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);" filter="url(#dropShadow)">
           <polygon points="24,8 30,24 24,24" fill="#ff2a2a"/>
           <polygon points="24,8 18,24 24,24" fill="#cc0000"/>
           <polygon points="24,40 30,24 24,24" fill="#2962ff"/>
           <polygon points="24,40 18,24 24,24" fill="#0039cb"/>
-          
-          <!-- หมุดโลหะจุดกึ่งกลางเข็ม -->
           <circle cx="24" cy="24" r="2.5" fill="url(#metalGrad)" />
         </g>
+
+        <!-- ไฟสีเขียวมุมขวาบน ซ่อนไว้โดยค่าเริ่มต้น -->
+        <circle id="realCompassDot" cx="40" cy="8" r="3.5" fill="#00e676" filter="drop-shadow(0 0 3px #00e676)" style="display: none; transform-origin: 40px 8px; animation: compassDotPulse 1.5s infinite ease-in-out;" />
       </svg>`,
-      
       style: { bottom: row(2), right: right(0), display: 'none' },
-      title: 'หันทิศเหนือขึ้น (คงมุมมอง 3D)',
+      title: 'เข็มทิศ (กดค้างเพื่อใช้เข็มทิศเซ็นเซอร์)',
       onClick: () => {
-        const pitch = m.getPitch();
-        m.easeTo({ bearing: 0, pitch: pitch < 5 ? cfg().pitch : pitch, duration: 600 });
+        // หากผู้ใช้เพิ่งปล่อยนิ้วจากการกดค้าง (โดนดักจับไปแล้ว) ให้ยกเลิกการคลิกนี้
+        if (isLongPressFired) {
+          isLongPressFired = false;
+          return;
+        }
+        
+        // ถ้าเป็นการคลิกปกติ (แตะแล้วปล่อยทันที)
+        if (isRealCompassMode) {
+          toggleRealCompass(false); // แตะครั้งแรกปิดเซ็นเซอร์
+        } else {
+          // หมุนกลับทิศเหนือปกติ
+          const pitch = m.getPitch();
+          m.easeTo({ bearing: 0, pitch: pitch < 5 ? cfg().pitch : pitch, duration: 600 });
+        }
       }
     });
+
+    // --- ตรวจจับการกดค้าง (Long Press) ---
+    const startPress = () => { pressStartTime = Date.now(); };
+    const endPress = () => {
+      if (!pressStartTime) return;
+      const duration = Date.now() - pressStartTime;
+      if (duration >= 600) {
+        // ผู้ใช้กดค้างเกิน 0.6 วินาที
+        isLongPressFired = true;
+        if (!isRealCompassMode) toggleRealCompass(true);
+      }
+      pressStartTime = 0;
+    };
+    const cancelPress = () => { pressStartTime = 0; };
+
+    // ผูก Event ให้กับตัวปุ่ม
+    if (compass) {
+      compass.addEventListener('touchstart', startPress, { passive: true });
+      compass.addEventListener('touchend', endPress, { passive: true });
+      compass.addEventListener('touchcancel', cancelPress, { passive: true });
+      compass.addEventListener('mousedown', startPress);
+      compass.addEventListener('mouseup', endPress);
+      compass.addEventListener('mouseleave', cancelPress);
+    }
+
 
     enableGestures();
     m.on('rotatestart', onUserTiltOrRotate);
