@@ -137,10 +137,27 @@
     });
     compass = BPNP.ui.createStandardButton({
       id: 'compassBtn',
-      html: `<svg class="compass-needle" viewBox="0 0 24 24" width="26" height="26" aria-hidden="true">
+    /*  html: `<svg class="compass-needle" viewBox="0 0 24 24" width="26" height="26" aria-hidden="true">
                <polygon points="12,2 16,12 12,10.5 8,12" fill="#e53935"/>
                <polygon points="12,22 16,12 12,13.5 8,12" fill="#90a4ae"/>
-             </svg>`,
+             </svg>`, */
+
+html: `<svg viewBox="0 0 48 48" width="48" height="48" aria-hidden="true" style="position: absolute;">
+  <rect x="23" y="4" width="2" height="4" rx="1" fill="#b0bec5"/>
+  <rect x="23" y="40" width="2" height="4" rx="1" fill="#b0bec5"/>
+  <rect x="40" y="23" width="4" height="2" rx="1" fill="#b0bec5"/>
+  <rect x="4" y="23" width="4" height="2" rx="1" fill="#b0bec5"/>
+  <rect x="34.5" y="9.5" width="2" height="4" rx="1" fill="#b0bec5" transform="rotate(45 35.5 11.5)"/>
+  <rect x="34.5" y="34.5" width="2" height="4" rx="1" fill="#b0bec5" transform="rotate(-45 35.5 36.5)"/>
+  <rect x="9.5" y="34.5" width="2" height="4" rx="1" fill="#b0bec5" transform="rotate(45 10.5 36.5)"/>
+  <rect x="9.5" y="9.5" width="2" height="4" rx="1" fill="#b0bec5" transform="rotate(-45 10.5 11.5)"/>
+</svg>
+<svg class="compass-needle" viewBox="0 0 48 48" width="48" height="48" aria-hidden="true" style="transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);">
+  <polygon points="24,8 30,24 24,24" fill="#ff2a2a"/>
+  <polygon points="24,8 18,24 24,24" fill="#cc0000"/>
+  <polygon points="24,40 30,24 24,24" fill="#2962ff"/>
+  <polygon points="24,40 18,24 24,24" fill="#0039cb"/>
+</svg>`,
       style: { bottom: row(2), right: right(0), display: 'none' },
       title: 'หันทิศเหนือขึ้น (คงมุมมอง 3D)',
       onClick: () => {
