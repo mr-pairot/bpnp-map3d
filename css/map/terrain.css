@@ -27,7 +27,6 @@
   width: calc(var(--map-btn-size) * 1.2) !important;
   height: calc(var(--map-btn-size) * 1.2) !important;
   margin-right: calc(var(--map-btn-size) * -0.1) !important;
-/*  margin-bottom: calc(var(--map-btn-size) * -0.25) !important; */
 }
 #compassBtn .compass-needle { transition: transform 0.15s linear; }
 
