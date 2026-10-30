@@ -73,7 +73,6 @@
     updateNeedle();
   }
 
-  ///// ทดสอบการหมุนทิศตามอุปกรณ์
   function updateNeedle() {
     if (!compass || isRealCompassMode) return; // หากอยู่ในโหมดเข็มทิศจริง ให้ข้ามการอัปเดตตามแผนที่
     const n = compass.querySelector('.compass-needle');
@@ -82,13 +81,18 @@
 
   // ─── ระบบเข็มทิศจริง (Device Orientation) ───
   let isRealCompassMode = false;
-  let lastLongPressTime = 0; // เปลี่ยนจาก isLongPressFired มาเก็บ Timestamp แทน
+  let lastLongPressTime = 0;     // เวลาที่เพิ่งปล่อยนิ้วจากการกดค้างสำเร็จ
+  let compassActivatedTime = 0;  // เวลาที่ระบบเซ็นเซอร์เข็มทิศเพิ่งถูกเปิด
   let pressStartTime = 0;
-  let orientationRAF = null; // ตัวแปรสำหรับคุมเฟรมเรตไม่ให้แผนที่กระตุก
+  let orientationRAF = null;
 
   // หากผู้ใช้เริ่มหมุนหรือเลื่อนแผนที่เอง ให้ปิดโหมดเข็มทิศจริงอัตโนมัติ
-  function autoCancelRealCompass() {
-    if (isRealCompassMode) {
+  function autoCancelRealCompass(e) {
+    // ต้องเป็นการกระทำที่มี originalEvent (เกิดจากนิ้วผู้ใช้สัมผัสแผนที่จริงๆ)
+    if (isRealCompassMode && e && e.originalEvent) {
+      // 🛡️ เกราะป้องกัน: หากเพิ่งเปิดโหมดนี้มาไม่ถึง 1.5 วินาที ให้ข้ามไป (ป้องกันจังหวะนิ้วแฉลบตอนปล่อยปุ่ม)
+      if (Date.now() - compassActivatedTime < 1500) return;
+      
       toggleRealCompass(false);
     }
   }
@@ -97,7 +101,6 @@
     if (!isRealCompassMode || !compass) return;
     
     let heading = null;
-    // ดึงค่าทิศเหนือ (Apple ใช้ webkitCompassHeading ส่วน Android ใช้ค่า alpha)
     if (event.webkitCompassHeading !== undefined) {
       heading = event.webkitCompassHeading;
     } else if (event.alpha !== null) {
@@ -105,13 +108,9 @@
     }
     
     if (heading !== null) {
-      // ใช้ requestAnimationFrame จัดการให้การอัปเดตแผนที่เนียนตาที่สุดและไม่ค้าง
       if (orientationRAF) cancelAnimationFrame(orientationRAF);
       orientationRAF = requestAnimationFrame(() => {
-        // 1. หมุนหน้าจอแผนที่ให้ตรงกับทิศที่โทรศัพท์หันไป
         map().setBearing(heading);
-        
-        // 2. หมุนเฉพาะเข็มให้สีแดงชี้ไปที่ทิศเหนือโลกเสมอ
         const n = compass.querySelector('.compass-needle');
         if (n) n.style.transform = `rotate(${-heading}deg)`;
       });
@@ -137,13 +136,12 @@
       window.removeEventListener('deviceorientation', handleOrientation);
       if (orientationRAF) cancelAnimationFrame(orientationRAF);
       
-      // ถอด Event เลิกติดตามการสัมผัสแผนที่
       m.off('dragstart', autoCancelRealCompass);
       m.off('rotatestart', autoCancelRealCompass);
       
       const dot = compass.querySelector('#realCompassDot');
       if (dot) dot.style.display = 'none';
-      updateNeedle(); // สแนปเข็มกลับให้ตรงแผนที่ทันที
+      updateNeedle(); 
       toast('ปิดโหมดเข็มทิศจริง');
     }
   }
@@ -154,9 +152,9 @@
       return;
     }
     isRealCompassMode = true;
-    const m = map();
+    compassActivatedTime = Date.now(); // บันทึกเวลาเริ่มต้นการทำงาน
     
-    // ดักจับ: ถ้าผู้ใช้ใช้นิ้วเลื่อนหรือหมุนแผนที่เอง ให้ยกเลิกโหมดนี้อัตโนมัติเพื่อไม่ให้ขัดแย้งกัน
+    const m = map();
     m.on('dragstart', autoCancelRealCompass);
     m.on('rotatestart', autoCancelRealCompass);
 
@@ -171,7 +169,6 @@
     toast('เปิดโหมดเข็มทิศจริง (แผนที่หมุนตามโทรศัพท์)');
   }
 
-  /////
 
   // enable: เข้า/ออก 3D · opts.tilt: เอียงไปมุม 3D (ปุ่ม/โหลดหน้า) — เข้าด้วยท่าทางไม่ต้องเอียงเพิ่ม
   function setMode(enable, opts = {}) {
@@ -234,7 +231,6 @@
       id: 'compassBtn',
       html: `<svg viewBox="0 0 48 48" width="100%" height="100%" aria-hidden="true">
         <style>
-          /* แอนิเมชันจุดไฟสีเขียวกระพริบ */
           @keyframes compassDotPulse {
             0% { opacity: 0.3; transform: scale(0.7); }
             50% { opacity: 1; transform: scale(1.3); }
@@ -253,10 +249,7 @@
             <feDropShadow dx="1" dy="2" stdDeviation="1.5" flood-color="#000000" flood-opacity="0.35"/>
           </filter>
         </defs>
-
         <circle cx="24" cy="24" r="21" fill="none" stroke="url(#metalGrad)" stroke-width="3" filter="url(#dropShadow)"/>
-
-        <!-- สเกลหน้าปัด (แบนราบ ไม่มีเงา) -->
         <g fill="#94a3b8">
           <rect x="22.5" y="3.5" width="3" height="5" rx="1.5" />
           <rect x="22.5" y="3.5" width="3" height="5" rx="1.5" transform="rotate(90 24 24)" />
@@ -267,7 +260,6 @@
           <rect x="23" y="4" width="2" height="3" rx="1" transform="rotate(225 24 24)" />
           <rect x="23" y="4" width="2" height="3" rx="1" transform="rotate(315 24 24)" />
         </g>
-        
         <g class="compass-needle" style="transform-origin: 24px 24px; transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);" filter="url(#dropShadow)">
           <polygon points="24,8 30,24 24,24" fill="#ff2a2a"/>
           <polygon points="24,8 18,24 24,24" fill="#cc0000"/>
@@ -275,53 +267,54 @@
           <polygon points="24,40 18,24 24,24" fill="#0039cb"/>
           <circle cx="24" cy="24" r="2.5" fill="url(#metalGrad)" />
         </g>
-
-        <!-- ไฟสีเขียวมุมขวาบน ซ่อนไว้โดยค่าเริ่มต้น -->
         <circle id="realCompassDot" cx="40" cy="8" r="3.5" fill="#00e676" filter="drop-shadow(0 0 3px #00e676)" style="display: none; transform-origin: 40px 8px; animation: compassDotPulse 1.5s infinite ease-in-out;" />
       </svg>`,
       style: { bottom: row(2), right: right(0), display: 'none' },
       title: 'เข็มทิศ (กดค้างเพื่อใช้เข็มทิศเซ็นเซอร์)',
       onClick: (e) => {
-        // บล็อก Click ซ้อน (Ghost Click) ที่ตามมาภายใน 1 วินาทีหลังจากการกดค้าง
-        if (Date.now() - lastLongPressTime < 1000) {
+        // 🛡️ เกราะป้องกัน Ghost Click: ถ้าเพิ่งปล่อยนิ้วจากการกดค้างไปไม่ถึง 1.5 วินาที ให้ข้าม Event นี้ไปเลย
+        if (Date.now() - lastLongPressTime < 1500) {
           return;
         }
         
-        // ถ้าเป็นการคลิกปกติ (แตะแล้วปล่อยทันที)
         if (isRealCompassMode) {
-          toggleRealCompass(false); // แตะครั้งแรกปิดเซ็นเซอร์
+          toggleRealCompass(false); 
         } else {
-          // หมุนกลับทิศเหนือปกติ
           const pitch = m.getPitch();
           m.easeTo({ bearing: 0, pitch: pitch < 5 ? cfg().pitch : pitch, duration: 600 });
         }
       }
     });
 
-    // --- ตรวจจับการกดค้าง (Long Press) พร้อมป้องกัน Event ทะลุ ---
-    const startPress = (e) => { 
-      if (e && e.stopPropagation) e.stopPropagation(); // ป้องกันแผนที่ขยับเวลากดค้าง
-      pressStartTime = Date.now(); 
-    };
-    
-    const endPress = (e) => {
-      if (!pressStartTime) return;
-      if (e && e.stopPropagation) e.stopPropagation();
-      const duration = Date.now() - pressStartTime;
-      
-      if (duration >= 600) {
-        lastLongPressTime = Date.now(); // บันทึกเวลาที่ปล่อยนิ้วจากการกดค้าง
-        if (e && e.preventDefault && e.cancelable) e.preventDefault(); // ตัดตอน Ghost Click ตั้งแต่ต้นทาง
-        if (!isRealCompassMode) toggleRealCompass(true);
-      }
-      pressStartTime = 0;
-    };
-    
-    const cancelPress = () => { pressStartTime = 0; };
-
-    // ผูก Event ให้กับตัวปุ่ม (ปรับ passive: false เพื่อให้ preventDefault ทำงานได้สมบูรณ์)
     if (compass) {
-      compass.addEventListener('touchstart', startPress, { passive: false });
+      // ตัดระบบเลือกข้อความ (Text Selection) ที่รบกวนการทัชค้างบนมือถือ
+      compass.style.userSelect = 'none';
+      compass.style.webkitUserSelect = 'none';
+      compass.style.webkitTouchCallout = 'none';
+
+      const startPress = (e) => {
+        // ป้องกันไม่ให้ mouse event ทริกเกอร์ซ้ำซ้อนกับ touch event
+        if (e.type === 'mousedown' && pressStartTime > 0) return;
+        pressStartTime = Date.now();
+      };
+      
+      const endPress = (e) => {
+        if (!pressStartTime) return;
+        const duration = Date.now() - pressStartTime;
+        pressStartTime = 0; // เคลียร์ค่าทันที
+        
+        // ถ้าแตะค้างเกิน 500ms ให้ถือเป็นการกดค้าง
+        if (duration >= 500) {
+          lastLongPressTime = Date.now();
+          if (e.cancelable) e.preventDefault();
+          if (!isRealCompassMode) toggleRealCompass(true);
+        }
+      };
+      
+      const cancelPress = () => { pressStartTime = 0; };
+
+      // ผูก Event Listeners ด้วย Passive ควบคุมเพื่ออนุญาตให้ preventDefault ทำงานได้ตอนปล่อยนิ้ว
+      compass.addEventListener('touchstart', startPress, { passive: true });
       compass.addEventListener('touchend', endPress, { passive: false });
       compass.addEventListener('touchcancel', cancelPress, { passive: true });
       compass.addEventListener('mousedown', startPress);
@@ -341,10 +334,8 @@
   });
 
   // ── ความสูงที่จุด (ม. เหนือระดับทะเลปานกลาง โดยประมาณ) ──
-  // อ่านค่าจากภาพความสูงแบบ Terrarium โดยตรง (ไม่ใช่ queryTerrainElevation ซึ่งรวมการขยายความสูง 1.5 เท่า)
-  // height = R·256 + G + B/256 − 32768 · ประมาณค่าแบบ bilinear 4 พิกเซล · เก็บภาพไว้ 24 แผ่นล่าสุด
   const tileCache = new Map();
-  const ELEV_ZOOM = 14;   // ~9.5 ม./พิกเซล ที่ละติจูดไทย ละเอียดกว่าข้อมูลต้นทาง (~30 ม.)
+  const ELEV_ZOOM = 14;   
   function loadTile(z, x, y) {
     const key = `${z}/${x}/${y}`;
     if (tileCache.has(key)) return tileCache.get(key);
