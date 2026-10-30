@@ -101,6 +101,7 @@
   
   let targetHeading = null;
   let currentHeading = 0;
+  let lastSensorHeading = null; // เพิ่มตัวแปรสำหรับเก็บค่าเซ็นเซอร์ที่ถูกนำไปใช้ล่าสุด
 
   function lerpAngle(start, end, factor) {
     const delta = ((((end - start) % 360) + 540) % 360) - 180;
@@ -111,16 +112,29 @@
     if (!isRealCompassMode) return;
     
     if (targetHeading !== null) {
-      currentHeading = lerpAngle(currentHeading, targetHeading, 0.08);
+      const delta = ((((targetHeading - currentHeading) % 360) + 540) % 360) - 180;
       
-      map().setBearing(currentHeading);
-      
-      const n = compass.querySelector('.compass-needle');
-      if (n) {
-        n.style.transform = `rotate(${-currentHeading}deg)`;
+      // หากมุมต่างกันมากกว่า 0.1 องศา ให้ค่อยๆ หมุน (Lerp)
+      if (Math.abs(delta) > 0.1) {
+        currentHeading = lerpAngle(currentHeading, targetHeading, 0.08);
+        
+        map().setBearing(currentHeading);
+        
+        const n = compass.querySelector('.compass-needle');
+        if (n) {
+          n.style.transform = `rotate(${-currentHeading}deg)`;
+        }
+        
+        updateCompassDial(currentHeading);
+      } else if (currentHeading !== targetHeading) {
+        // หากมุมใกล้กันมากแล้ว ให้ snap ไปที่เป้าหมายเลย เพื่อลดการสั่ง setBearing ย้ำๆ ตอนเครื่องนิ่ง
+        currentHeading = targetHeading;
+        map().setBearing(currentHeading);
+        
+        const n = compass.querySelector('.compass-needle');
+        if (n) n.style.transform = `rotate(${-currentHeading}deg)`;
+        updateCompassDial(currentHeading);
       }
-      
-      updateCompassDial(currentHeading);
     }
     
     orientationRAF = requestAnimationFrame(updateCompassFrame);
@@ -144,7 +158,18 @@
     }
     
     if (heading !== null) {
-      targetHeading = heading;
+      // สร้าง Deadzone กรองค่าเซ็นเซอร์ที่แกว่งเล็กน้อย (Sensor Noise)
+      if (lastSensorHeading === null) {
+        targetHeading = heading;
+        lastSensorHeading = heading;
+      } else {
+        const diff = Math.abs(((((heading - lastSensorHeading) % 360) + 540) % 360) - 180);
+        // จะอัปเดตมุมแผนที่ก็ต่อเมื่อเซ็นเซอร์ขยับเกิน 0.8 องศาแล้วเท่านั้น
+        if (diff > 0.8) {
+          targetHeading = heading;
+          lastSensorHeading = heading;
+        }
+      }
     }
   }
 
@@ -166,6 +191,8 @@
       window.removeEventListener('deviceorientationabsolute', handleOrientation);
       window.removeEventListener('deviceorientation', handleOrientation);
       if (orientationRAF) cancelAnimationFrame(orientationRAF);
+      
+      lastSensorHeading = null; // รีเซ็ตค่าเมื่อปิดโหมด
       
       m.off('dragstart', autoCancelRealCompass);
       m.off('rotatestart', autoCancelRealCompass);
@@ -197,6 +224,7 @@
 
     currentHeading = m.getBearing();
     targetHeading = currentHeading;
+    lastSensorHeading = null; // รีเซ็ตจุดเริ่มต้นเมื่อเริ่มใช้งานใหม่
 
     if ('ondeviceorientationabsolute' in window) {
       window.addEventListener('deviceorientationabsolute', handleOrientation);
