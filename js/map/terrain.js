@@ -27,7 +27,6 @@
   function ensureSources() {
     const m = map(), c = cfg();
     const dem = { type: 'raster-dem', tiles: [c.tiles], tileSize: 256, maxzoom: c.maxzoom, encoding: c.encoding, attribution: c.attribution };
-    // ภูมิประเทศกับเงาเนินเขาใช้ source แยกกัน (MapLibre แนะนำ — คุณภาพดีกว่าใช้ร่วม)
     if (!m.getSource(SRC_TERRAIN)) m.addSource(SRC_TERRAIN, dem);
     if (!m.getSource(SRC_SHADE)) m.addSource(SRC_SHADE, Object.assign({}, dem));
     if (!m.getLayer(LYR_SHADE)) {
@@ -37,7 +36,6 @@
     }
   }
 
-  // ภูมิประเทศทำงานจริงเมื่ออยู่ 3D และผู้ใช้เลือกเปิด
   function applyTerrain() {
     const m = map(), c = cfg(), active = on && terrainPref;
     if (active) {
@@ -74,25 +72,50 @@
   }
 
   function updateNeedle() {
-    if (!compass || isRealCompassMode) return; // หากอยู่ในโหมดเข็มทิศจริง ให้ข้ามการอัปเดตตามแผนที่
+    if (!compass || isRealCompassMode) return; 
     const n = compass.querySelector('.compass-needle');
     if (n) n.style.transform = `rotate(${-map().getBearing()}deg)`;
   }
 
   // ─── ระบบเข็มทิศจริง (Device Orientation) ───
   let isRealCompassMode = false;
-  let lastLongPressTime = 0;     // เวลาที่เพิ่งปล่อยนิ้วจากการกดค้างสำเร็จ
-  let compassActivatedTime = 0;  // เวลาที่ระบบเซ็นเซอร์เข็มทิศเพิ่งถูกเปิด
+  let lastLongPressTime = 0;     
+  let compassActivatedTime = 0;  
   let pressStartTime = 0;
   let orientationRAF = null;
+  
+  // ตัวแปรสำหรับทำอนิเมชันให้ลื่นไหล (Smooth Lerp)
+  let targetHeading = null;
+  let currentHeading = 0;
 
-  // หากผู้ใช้เริ่มหมุนหรือเลื่อนแผนที่เอง ให้ปิดโหมดเข็มทิศจริงอัตโนมัติ
-  function autoCancelRealCompass(e) {
-    // ต้องเป็นการกระทำที่มี originalEvent (เกิดจากนิ้วผู้ใช้สัมผัสแผนที่จริงๆ)
-    if (isRealCompassMode && e && e.originalEvent) {
-      // 🛡️ เกราะป้องกัน: หากเพิ่งเปิดโหมดนี้มาไม่ถึง 1.5 วินาที ให้ข้ามไป (ป้องกันจังหวะนิ้วแฉลบตอนปล่อยปุ่ม)
-      if (Date.now() - compassActivatedTime < 1500) return;
+  // ฟังก์ชันคำนวณการหมุนไปในทิศที่ใกล้ที่สุด (ไม่ให้หมุนย้อนกลับทางไกล)
+  function lerpAngle(start, end, factor) {
+    const delta = ((((end - start) % 360) + 540) % 360) - 180;
+    return start + delta * factor;
+  }
+
+  // ลูปแสดงผลให้แผนที่และเข็มทิศหมุนตามเซ็นเซอร์อย่างนุ่มนวล
+  function updateCompassFrame() {
+    if (!isRealCompassMode) return;
+    
+    if (targetHeading !== null) {
+      // ค่อยๆ หมุน (Lerp) มุมปัจจุบันเข้าหามุมเป้าหมาย (ความเร็ว 0.08 ต่อเฟรม ทำให้ดูนุ่มนวล)
+      currentHeading = lerpAngle(currentHeading, targetHeading, 0.08);
       
+      map().setBearing(currentHeading);
+      
+      const n = compass.querySelector('.compass-needle');
+      if (n) {
+        n.style.transform = `rotate(${-currentHeading}deg)`;
+      }
+    }
+    
+    orientationRAF = requestAnimationFrame(updateCompassFrame);
+  }
+
+  function autoCancelRealCompass(e) {
+    if (isRealCompassMode && e && e.originalEvent) {
+      if (Date.now() - compassActivatedTime < 1500) return; // 🛡️ เกราะป้องกันนิ้วแฉลบ
       toggleRealCompass(false);
     }
   }
@@ -108,12 +131,7 @@
     }
     
     if (heading !== null) {
-      if (orientationRAF) cancelAnimationFrame(orientationRAF);
-      orientationRAF = requestAnimationFrame(() => {
-        map().setBearing(heading);
-        const n = compass.querySelector('.compass-needle');
-        if (n) n.style.transform = `rotate(${-heading}deg)`;
-      });
+      targetHeading = heading; // อัปเดตมุมเป้าหมายให้ตัว Lerp ดึงไปหา
     }
   }
 
@@ -141,6 +159,13 @@
       
       const dot = compass.querySelector('#realCompassDot');
       if (dot) dot.style.display = 'none';
+
+      // คืนค่า CSS Transition ให้เข็มทิศ เพื่อรองรับการคลิกหมุนแผนที่ปกติ
+      const n = compass.querySelector('.compass-needle');
+      if (n) {
+        n.style.transition = 'transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)';
+      }
+      
       updateNeedle(); 
       toast('ปิดโหมดเข็มทิศจริง');
     }
@@ -152,11 +177,15 @@
       return;
     }
     isRealCompassMode = true;
-    compassActivatedTime = Date.now(); // บันทึกเวลาเริ่มต้นการทำงาน
+    compassActivatedTime = Date.now();
     
     const m = map();
     m.on('dragstart', autoCancelRealCompass);
     m.on('rotatestart', autoCancelRealCompass);
+
+    // ดึงมุมเดิมมาเป็นจุดเริ่มต้น เพื่อให้การหมุนแอนิเมชันเริ่มจากหน้าจอที่ดูอยู่ปัจจุบัน
+    currentHeading = m.getBearing();
+    targetHeading = currentHeading;
 
     if ('ondeviceorientationabsolute' in window) {
       window.addEventListener('deviceorientationabsolute', handleOrientation);
@@ -166,6 +195,14 @@
     
     const dot = compass.querySelector('#realCompassDot');
     if (dot) dot.style.display = '';
+
+    // ปิด CSS Transition ชั่วคราว เพราะเราใช้ JS (requestAnimationFrame) ในการทำภาพสมูทระดับ 60fps แล้ว
+    const n = compass.querySelector('.compass-needle');
+    if (n) n.style.transition = 'none';
+    
+    if (orientationRAF) cancelAnimationFrame(orientationRAF);
+    updateCompassFrame(); // เริ่มลูปเข็มทิศ
+    
     toast('เปิดโหมดเข็มทิศจริง (แผนที่หมุนตามโทรศัพท์)');
   }
 
@@ -182,7 +219,7 @@
     }
     updateButtons();
     BPNP.storage.set(KEY_3D, on ? '1' : '0');
-    if (BPNP.events) BPNP.events.emit('map:3d', on);     // ชั้นข้อมูลที่มีรูป 3D (structure_3d) ฟังเหตุการณ์นี้
+    if (BPNP.events) BPNP.events.emit('map:3d', on);
     if (!opts.silent) {
       toast(on ? 'มุมมอง 3D' : 'มุมมอง 2D');
       if (BPNP.auth) BPNP.auth.logUserEvent('Map 3D', on ? (opts.gesture ? 'เปิด 3D (ท่าทาง)' : 'เปิด 3D') : 'ปิด 3D');
@@ -193,12 +230,11 @@
     terrainPref = !!enable;
     BPNP.storage.set(KEY_TERRAIN, terrainPref ? '1' : '0');
     applyTerrain();
-    if (BPNP.events) BPNP.events.emit('map:terrain', terrainPref);   // สะพาน 3D ยกตามพื้นดินใหม่
+    if (BPNP.events) BPNP.events.emit('map:terrain', terrainPref);
     toast(terrainPref ? 'ภูมิประเทศ: เปิด' : 'ภูมิประเทศ: ปิด');
     if (BPNP.auth) BPNP.auth.logUserEvent('Map Terrain', terrainPref ? 'เปิด' : 'ปิด');
   }
 
-  // ผู้ใช้เริ่มหมุน/เอียงเอง (มี originalEvent) ขณะอยู่ 2D → เข้า 3D ที่มุมนั้น
   function onUserTiltOrRotate(e) {
     if (on || !e || !e.originalEvent) return;
     setMode(true, { gesture: true });
@@ -272,14 +308,18 @@
       style: { bottom: row(2), right: right(0), display: 'none' },
       title: 'เข็มทิศ (กดค้างเพื่อใช้เข็มทิศเซ็นเซอร์)',
       onClick: (e) => {
-        // 🛡️ เกราะป้องกัน Ghost Click: ถ้าเพิ่งปล่อยนิ้วจากการกดค้างไปไม่ถึง 1.5 วินาที ให้ข้าม Event นี้ไปเลย
+        // 🛡️ ข้าม Event ถ้าเพิ่งปล่อยนิ้วไม่ถึง 1.5 วินาที
         if (Date.now() - lastLongPressTime < 1500) {
           return;
         }
         
         if (isRealCompassMode) {
           toggleRealCompass(false); 
+          // เมื่อกดปิดโหมดเข็มทิศด้วยปุ่ม ให้แผนที่หมุนกลับทิศเหนืออย่างนุ่มนวล
+          const pitch = m.getPitch();
+          m.easeTo({ bearing: 0, pitch: pitch < 5 ? cfg().pitch : pitch, duration: 800 });
         } else {
+          // โหมดปกติ กดปุ่มเข็มทิศก็หมุนกลับทิศเหนือ
           const pitch = m.getPitch();
           m.easeTo({ bearing: 0, pitch: pitch < 5 ? cfg().pitch : pitch, duration: 600 });
         }
@@ -287,13 +327,11 @@
     });
 
     if (compass) {
-      // ตัดระบบเลือกข้อความ (Text Selection) ที่รบกวนการทัชค้างบนมือถือ
       compass.style.userSelect = 'none';
       compass.style.webkitUserSelect = 'none';
       compass.style.webkitTouchCallout = 'none';
 
       const startPress = (e) => {
-        // ป้องกันไม่ให้ mouse event ทริกเกอร์ซ้ำซ้อนกับ touch event
         if (e.type === 'mousedown' && pressStartTime > 0) return;
         pressStartTime = Date.now();
       };
@@ -301,9 +339,8 @@
       const endPress = (e) => {
         if (!pressStartTime) return;
         const duration = Date.now() - pressStartTime;
-        pressStartTime = 0; // เคลียร์ค่าทันที
+        pressStartTime = 0; 
         
-        // ถ้าแตะค้างเกิน 500ms ให้ถือเป็นการกดค้าง
         if (duration >= 500) {
           lastLongPressTime = Date.now();
           if (e.cancelable) e.preventDefault();
@@ -313,7 +350,6 @@
       
       const cancelPress = () => { pressStartTime = 0; };
 
-      // ผูก Event Listeners ด้วย Passive ควบคุมเพื่ออนุญาตให้ preventDefault ทำงานได้ตอนปล่อยนิ้ว
       compass.addEventListener('touchstart', startPress, { passive: true });
       compass.addEventListener('touchend', endPress, { passive: false });
       compass.addEventListener('touchcancel', cancelPress, { passive: true });
