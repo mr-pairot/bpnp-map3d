@@ -111,7 +111,7 @@ flowchart TB
 | `tools/tool_utils.js` | ตัวช่วยร่วมของเครื่องมือ (หมุด, บิน, ซูมพอดี, วงกระเพื่อม, popup, ดาวน์โหลด, กันคลิกทะลุ) | — | (แทนคำสั่ง Leaflet) |
 | `tools/search_km.js` | ค้นหา กม. + หมุด + วงกระเพื่อม | alignment 20 ม. | search_sta.js |
 | `tools/search/hub.js` | แผงค้นหา/พิกัด 5 โหมด + เส้นทาง OSRM + ที่อยู่จากพิกัด | OSRM, Longdo | routing_main.js, routing_ui.js |
-| `tools/search/address.js` | ค้นหาพิกัดจากที่อยู่ | kongvut/thai-province-data, Longdo | search_address.js |
+| `tools/search/address.js` | ค้นหาพิกัดจากที่อยู่ (กลางตำบลจากข้อมูล / Longdo) | data/json/thai_address.json (tools/build-address-data.js), Longdo | search_address.js |
 | `tools/search/utm_convert.js` | แปลง UTM ↔ Lat/Lng ทีละจุด | core/geo_utils | convertUTM.js |
 | `tools/search/utm_multi.js` | แปลงหลายแถว + วางจาก Excel + หมุดเลขแถว | core/geo_utils | convertUTM_MultiRow.js |
 | `tools/measure/lcompat.js` | Leaflet ชุดย่อยบน MapLibre (เฉพาะเครื่องมือวัด ไม่ประกาศ window.L) | — | (ใหม่) |
