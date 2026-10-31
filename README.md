@@ -27,6 +27,8 @@ python3 -m http.server 8080      # หรือ npx serve
 > `node tools/build.js` จะเขียนเลข build ลงใน `index.html` และ `version.json` ด้วย
 > ก่อน commit ให้คืนบรรทัด `window.APP_VERSION = '__APP_BUILD__';` (หรือไม่ต้อง commit 2 ไฟล์นี้หลังรันบนเครื่อง)
 
+อัปเดตข้อมูลจังหวัด/อำเภอ/ตำบล (ไม่ต้องทำทุก deploy): `node tools/build-address-data.js` แล้ว commit `data/json/thai_address.json`
+
 ทดสอบป้ายภาษาไทย: `http://localhost:8080/tools/thai-label-test.html`
 
 ## งานประจำ
@@ -61,7 +63,7 @@ css/                โครงเดียวกับ js/
 data/kml|json/      ข้อมูลเลเยอร์ (data/geojson/ สร้างอัตโนมัติ ไม่ต้อง commit)
 assets/             ไอคอน รูปปุ่ม หมุด รูปแปลงที่ดิน
 backend/gas/        ต้นฉบับ GAS (ไม่เปิดให้เข้าถึงจากเว็บ)
-tools/              build.js, kml2geojson.js, หน้าทดสอบ
+tools/              build.js, kml2geojson.js, build-address-data.js, หน้าทดสอบ
 ```
 
 ## สถานะเฟส
