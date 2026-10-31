@@ -58,7 +58,7 @@ window.BPNP_CONFIG = {
 
   // คีย์ฝั่งหน้าเว็บ (เปิดเผยได้โดยธรรมชาติ) — ค่าเดิมจาก v2.4.01 (longdo/tomtom ว่างเหมือนเดิม)
   keys: {
-    tracestrack: 'd576a80f46520757074dce91f3ee2130',
+    tracestrack: '3722a54920e9a20d2d3bfc9ffc0b8d44976f35d1d22470ce',
     longdo:      '',
     tomtom:      '',
     // Longdo API (ค้นหาที่อยู่ ↔ พิกัด) — ค่าเดิมจาก routing_main.js / search_address.js
