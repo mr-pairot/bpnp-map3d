@@ -17,6 +17,9 @@
  *   setOpacity(id, 0..1)
  *   bringToFront(id)      ย้ายขึ้นบนสุดของ slot ตัวเอง
  *   order(ids)            เรียงตามลำดับ (ตัวท้าย = บนสุด)
+ *   pinTop(slot, layerId) ปักเลเยอร์ (เช่น custom layer 3D) ให้อยู่บนสุดของ slot เสมอ — เหนือเลเยอร์ 2D ทุกชั้นของ slot นั้น
+ *                         ถูกยกกลับอัตโนมัติหลัง build() / bringToFront() / order() จึงไม่ถูกเลเยอร์ 2D ที่ถูกสร้าง/ย้ายทีหลังทับ
+ *   raisePins(slot)       ยกเลเยอร์ที่ปักไว้ของ slot ไปบนสุดอีกครั้ง
  *   isVisible(id) / has(id) / layerIds(id) / attributions()
  *   อีเวนต์: BPNP.events 'layers:change' ({ id, visible })
  * ───────────────────────────────────────────────────────────────────────── */
@@ -25,6 +28,7 @@
 
   const SLOTS = ['raster-overlay', 'general', 'structure', 'progress', 'tools', 'labels'];
   const entries = new Map();
+  const pins = {};   // slot → [layerId] เลเยอร์ที่ต้องอยู่บนสุดของ slot (เรียงตามลำดับที่ปัก)
   let map = null;
 
   // property ความทึบตามชนิดเลเยอร์
@@ -51,6 +55,20 @@
   function beforeIdFor(slot) {
     const i = SLOTS.indexOf(slot);
     return (i >= 0 && i < SLOTS.length - 1) ? 'slot-' + SLOTS[i + 1] : undefined;
+  }
+
+  // ปักเลเยอร์ให้อยู่บนสุดของ slot (ใช้กับ custom layer 3D ที่ต้องอยู่เหนือเลเยอร์ 2D ของ slot เดียวกันเสมอ)
+  function pinTop(slot, layerId) {
+    if (SLOTS.indexOf(slot) === -1) return;
+    const list = pins[slot] || (pins[slot] = []);
+    if (list.indexOf(layerId) === -1) list.push(layerId);
+    raisePins(slot);
+  }
+
+  function raisePins(slot) {
+    if (!map) return;
+    const before = beforeIdFor(slot);
+    (pins[slot] || []).forEach(lid => { if (map.getLayer(lid)) map.moveLayer(lid, before); });
   }
 
   function register(id, def) {
@@ -92,6 +110,7 @@
           e.baseOpacity[layer.id + '|' + p] = (typeof v === 'number') ? v : 1;
         });
       });
+      raisePins(e.def.slot);   // เลเยอร์ 2D ที่เพิ่งสร้างต้องไม่อยู่เหนือรูป 3D ของ slot เดียวกัน
       e.built = true;
       // ผูก click / hover หลังเลเยอร์มีอยู่จริงแล้วเท่านั้น
       if (e.def.afterBuild) e.def.afterBuild(map, e.layerIds.slice());
@@ -135,14 +154,25 @@
     if (e.built && map) applyOpacity(e);
   }
 
-  function bringToFront(id) {
+  // ย้ายเลเยอร์ของ id ขึ้นบนสุดของ slot (ยังไม่ยกเลเยอร์ที่ปักไว้กลับ — ผู้เรียกต้อง raisePins เอง)
+  function moveToTop(id) {
     const e = entries.get(id);
-    if (!e || !e.built || !map) return;
+    if (!e || !e.built || !map) return null;
     const before = beforeIdFor(e.def.slot);
     e.layerIds.forEach(lid => { if (map.getLayer(lid)) map.moveLayer(lid, before); });
+    return e.def.slot;
   }
 
-  function order(ids) { ids.forEach(bringToFront); }
+  function bringToFront(id) {
+    const slot = moveToTop(id);
+    if (slot) raisePins(slot);
+  }
+
+  function order(ids) {
+    const touched = new Set();
+    ids.forEach(id => { const slot = moveToTop(id); if (slot) touched.add(slot); });
+    touched.forEach(raisePins);   // รูป 3D ที่ปักไว้กลับไปอยู่บนสุดของ slot หลังเรียงเสร็จ
+  }
 
   function attributions() {
     const out = [];
@@ -152,7 +182,7 @@
 
   BPNP.map.registry = {
     SLOTS, init, register, setVisible, setOpacity, bringToFront, order, attributions,
-    beforeIdFor,
+    beforeIdFor, pinTop, raisePins,
     has:       id => entries.has(id),
     isVisible: id => !!(entries.get(id) && entries.get(id).visible),
     getOpacity: id => (entries.get(id) ? entries.get(id).opacity : 1),
