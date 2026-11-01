@@ -4,6 +4,9 @@
  *
  *   ตัวท่อ  : ขนาด "จำนวนช่อง-กว้าง×สูง" (Box) · Underpass ใช้ช่อง H / W · "4x2-…" = 4×2 = 8 ช่องเรียงกัน
  *             ยาวตาม Length · ผนัง/พื้นบนหนา t = max(0.20, กว้างช่อง/10) · ขอบล่างเสมอดินเดิม · ปากท่อเปิดสองด้าน
+ *             ท่อเอียง (skew): ปลายท่อตัดขนานแนวราง (รูป 2D เป็นสี่เหลี่ยมด้านขนาน — ด้านข้างยาว L ตามแกนท่อ)
+ *                     ใช้ shear y' = y + K·x (K = cot(มุมระหว่างแนวรางกับแกนท่อ)) กับทุกชิ้น → ผนัง พื้น ขอบกั้นดิน กำแพงปีก
+ *                     ปลายพับ (Underpass) จึงขนานแนวราง · ถ้าไม่มี skew ในข้อมูล เลือก K (ตามแนวราง / 0) และมุมละเอียดจากการทับรูป 2D
  *             กึ่งกลาง: กึ่งกลางกรอบรูป 2D (ช่อง Coordinate เป็นจุดบนแนวราง ใช้ไม่ได้กับท่อด้านข้าง LT/RT)
  *             แนวท่อ: ตั้งฉากกับแนวราง ณ กม. นั้น ± skew (skew_side LT = หมุนทวนเข็ม)
  *                     หรือขนานแนวราง — เลือกทิศที่ตัวท่อทับรูป 2D มากที่สุด (ท่อใต้ถนนข้างทางรถไฟ)
@@ -52,18 +55,42 @@
     return Math.abs(a / 2);
   }
 
-  // สัดส่วนของตัวท่อ (กว้าง Wt × ยาว L ที่ทิศ ax) ที่ตกอยู่ในรูป 2D (even-odd ต่อชิ้น)
-  function coverage(polys, c, ax, Wt, L) {
+  const inRing = (pt, r) => { let k = false; for (let i = 0, j = r.length - 1; i < r.length; j = i++) { const [xi, yi] = r[i], [xj, yj] = r[j]; if ((yi > pt[1]) !== (yj > pt[1]) && pt[0] < (xj - xi) * (pt[1] - yi) / (yj - yi) + xi) k = !k; } return k; };
+  const inPolys = (pt, polys) => polys.some(pp => pp.reduce((m, r) => m + (inRing(pt, r) ? 1 : 0), 0) % 2 === 1);
+  const IOU_N = 48;            // ความละเอียดตารางสุ่มตอนปรับมุมละเอียด
+  const REFINE_MAX_VERTS = 600;   // รูป 2D ซับซ้อนเกินนี้ (หลายร้อยชิ้น) ข้ามการปรับมุมละเอียด — กันค้าง
+  const K_MAX = 1.73;          // tan 60° — แกนท่อเฉียงกว่านี้ถือว่าไม่ใช่ท่อเอียงจากแนวราง (ไม่ shear)
+
+  // สัดส่วนของตัวท่อ (กว้าง Wt × ยาว L ที่ทิศ ax, ปลายเฉียง K) ที่ตกอยู่ในรูป 2D (even-odd ต่อชิ้น) — สุ่มรวมบริเวณมุมปลาย
+  function coverage(polys, c, ax, Wt, L, K) {
     if (!polys.length) return 0;
+    K = K || 0;
     const SX = 111320 * Math.cos(c[1] * Math.PI / 180), SY = 110574;
-    const toLL = (x, y) => [c[0] + (y * Math.sin(ax) + x * Math.cos(ax)) / SX, c[1] + (y * Math.cos(ax) - x * Math.sin(ax)) / SY];
-    const inRing = (pt, r) => { let k = false; for (let i = 0, j = r.length - 1; i < r.length; j = i++) { const [xi, yi] = r[i], [xj, yj] = r[j]; if ((yi > pt[1]) !== (yj > pt[1]) && pt[0] < (xj - xi) * (pt[1] - yi) / (yj - yi) + xi) k = !k; } return k; };
+    const toLL = (x, y) => { const yy = y + K * x; return [c[0] + (yy * Math.sin(ax) + x * Math.cos(ax)) / SX, c[1] + (yy * Math.cos(ax) - x * Math.sin(ax)) / SY]; };
     let hit = 0, tot = 0;
-    for (let u = -0.4; u <= 0.41; u += 0.2) for (let v = -0.45; v <= 0.46; v += 0.1) {
-      const pt = toLL(u * Wt, v * L); tot++;
-      if (polys.some(pp => pp.reduce((m, r) => m + (inRing(pt, r) ? 1 : 0), 0) % 2 === 1)) hit++;
+    for (let u = -0.45; u <= 0.451; u += 0.15) for (let v = -0.46; v <= 0.461; v += 0.092) {
+      tot++; if (inPolys(toLL(u * Wt, v * L), polys)) hit++;
     }
     return hit / tot;
+  }
+
+  // IoU ของตัวท่อ (สี่เหลี่ยมด้านขนาน) กับรูป 2D — ใช้ปรับมุมละเอียด · รูป 2D คงที่ทุกมุม จึงสุ่มครั้งเดียวเก็บไว้ที่ bb.mask
+  function iou(polys, c, ax, Wt, L, K, bb) {
+    const SX = 111320 * Math.cos(c[1] * Math.PI / 180), SY = 110574;
+    const toLL = (x, y) => { const yy = y + K * x; return [c[0] + (yy * Math.sin(ax) + x * Math.cos(ax)) / SX, c[1] + (yy * Math.cos(ax) - x * Math.sin(ax)) / SY]; };
+    const q = [[-Wt / 2, -L / 2], [Wt / 2, -L / 2], [Wt / 2, L / 2], [-Wt / 2, L / 2]].map(([x, y]) => toLL(x, y));
+    q.push(q[0]);
+    const N = IOU_N, pt = [0, 0];
+    if (!bb.mask) {
+      bb.mask = new Uint8Array(N * N); bb.area = 0;
+      for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) if (inPolys([bb[0] + (bb[2] - bb[0]) * (i + 0.5) / N, bb[1] + (bb[3] - bb[1]) * (j + 0.5) / N], polys)) { bb.mask[i * N + j] = 1; bb.area++; }
+    }
+    let b = 0, both = 0;
+    for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) {
+      pt[0] = bb[0] + (bb[2] - bb[0]) * (i + 0.5) / N; pt[1] = bb[1] + (bb[3] - bb[1]) * (j + 0.5) / N;
+      if (inRing(pt, q)) { b++; if (bb.mask[i * N + j]) both++; }
+    }
+    return both / Math.max(1, bb.area + b - both);
   }
 
   function build(feature, opts) {
@@ -92,18 +119,46 @@
     if (largest) centers.push(BPNP.layers.utils.bboxCenter({ type: 'Polygon', coordinates: largest }));
     const Wt0 = n * w + (n + 1) * (Math.max(0.2, Math.round(w / 10 * 100) / 100));
     // แนวท่อ: ตั้งฉากกับแนวราง ± skew — ท่อด้านข้างอาจวางขนานแนวราง จึงเลือกทิศที่ทับรูป 2D มากที่สุด
-    // เลือกกึ่งกลาง × ทิศ ที่ตัวท่อทับรูป 2D มากที่สุด (ทิศตามแนวรางมาก่อน)
+    // K = ความเฉียงของปลายท่อ: ปลายขนานแนวราง → K = cot(heading − ax) (ex. skew 20° LT → K = −tan 20°)
+    const kTrack = ax => { const d = ap.heading * Math.PI / 180 - ax, t = Math.tan(d); const k = Math.abs(t) < 1e-6 ? 0 : 1 / t; return Math.abs(k) > K_MAX || Math.abs(k) < 0.01 ? 0 : k; };
+    // ประเมินทิศ ax ที่กึ่งกลาง cc: ท่อมี skew ในข้อมูล → ปลายขนานแนวราง (เว้นแต่ K=0 ทับรูป 2D ดีกว่าชัดเจน) · ไม่มี → เลือกตามที่ทับรูป 2D
+    const evalAt = (cc, ax) => {
+      const kt = kTrack(ax), c0 = coverage(polys0, cc, ax, Wt0, L, 0);
+      if (!kt || c0 < 0.4) return { cov: c0, K: 0 };      // ทับรูป 2D น้อยมาก (ทิศผิดชัดเจน) ไม่ต้องลอง shear — ประหยัดเวลาตอนกวาดทิศ
+      const c1 = coverage(polys0, cc, ax, Wt0, L, kt);
+      return (skew > 0 ? c1 >= c0 - 0.03 : c1 > c0 + 0.02) ? { cov: c1, K: kt } : { cov: c0, K: 0 };
+    };
     let best = { cov: -1 };
     centers.forEach(cc => [(ap.heading + 90 + sgn * skew), (ap.heading + sgn * skew)].forEach(d => {
-      const ax = d * Math.PI / 180, cov = coverage(polys0, cc, ax, Wt0, L);
-      if (cov > best.cov + 0.05) best = { ax, cov, c: cc };
+      const ax = d * Math.PI / 180, e = evalAt(cc, ax);
+      if (e.cov > best.cov + 0.05) best = { ax, cov: e.cov, K: e.K, c: cc };
     }));
     // ไม่มี skew ในข้อมูลแต่รูป 2D วางเฉียง → กวาดหาทิศทุก 2° แล้วเลือกที่ทับรูป 2D มากที่สุด
     if (best.cov < 0.8) {
       centers.forEach(cc => { for (let d = 0; d < 180; d += 2) {
-        const ax = d * Math.PI / 180, cov = coverage(polys0, cc, ax, Wt0, L);
-        if (cov > best.cov + 0.02) best = { ax, cov, c: cc };
+        const ax = d * Math.PI / 180, e = evalAt(cc, ax);
+        if (e.cov > best.cov + 0.02) best = { ax, cov: e.cov, K: e.K, c: cc };
       } });
+    }
+    const vertCount = polys0.reduce((m, pp) => m + pp.reduce((a, r) => a + r.length, 0), 0);
+    // ปรับมุมละเอียด (±3° ทุก 0.5°) ให้ตัวท่อทับรูป 2D มากที่สุด — เฉพาะท่อที่ไม่มี skew ในข้อมูล หรือยังทับไม่ถึง 97%
+    if (best.cov >= 0.8 && (skew <= 0 || best.cov < 0.97) && polys0.length && vertCount <= REFINE_MAX_VERTS) {
+      let bx0 = Infinity, by0 = Infinity, bx1 = -Infinity, by1 = -Infinity;
+      polys0.forEach(pp => pp.forEach(r => r.forEach(([x, y]) => { if (x < bx0) bx0 = x; if (x > bx1) bx1 = x; if (y < by0) by0 = y; if (y > by1) by1 = y; })));
+      const bb = [bx0, by0, bx1, by1], cc = best.c;
+      // รูป 2D ที่ใช้เทียบ: ชิ้นที่พื้นที่ใกล้ Wt×L (ตัวท่อล้วน) ถ้ามี — กำแพงปีกที่แยกเป็นชิ้นอื่นจะไม่ดึงมุม · ไม่มีก็ใช้ทุกชิ้น
+      const target = Wt0 * L, barrel = polys0.filter(pp => Math.abs(ringArea(pp[0]) - target) <= 0.3 * target)
+        .sort((a, b2) => Math.abs(ringArea(a[0]) - target) - Math.abs(ringArea(b2[0]) - target))[0];
+      const ref = barrel ? [barrel] : polys0;
+      let bi = iou(ref, cc, best.ax, Wt0, L, best.K, bb), pick = { ax: best.ax, K: best.K };
+      for (let da = -3; da <= 3.001; da += 0.5) {
+        const ax = best.ax + da * Math.PI / 180, kt = kTrack(ax);
+        (skew > 0 ? [kt] : (kt ? [kt, 0] : [0])).forEach(K => {
+          const v = iou(ref, cc, ax, Wt0, L, K, bb);
+          if (v > bi + 0.02) { bi = v; pick = { ax, K }; }   // ต้องดีขึ้นชัดเจน (≥ 0.02) จึงเปลี่ยน — ไม่กระทบท่อที่ทับดีอยู่แล้ว
+        });
+      }
+      best.ax = pick.ax; best.K = pick.K;
     }
     const c = best.c;
     // ยังไม่ตรงรูป 2D (เช่น รางระบายยาวโค้งตามถนน) → ยกรูป 2D ชิ้นใหญ่สุดขึ้นเป็นแท่งสูงเท่าท่อ ให้โค้งตามแบบ
@@ -111,12 +166,13 @@
       const Hs = h + Math.max(0.2, Math.round(w / 10 * 100) / 100);
       return [{ type: 'Feature', properties: { base: 0, top: Hs, part: 'outline', color: opts.color }, geometry: { type: 'Polygon', coordinates: largest } }];
     }
-    const axis = best.ax;
+    const axis = best.ax, K = best.K || 0, SK = Math.sqrt(1 + K * K);   // K: ปลายท่อเฉียง (ขนานแนวราง) · SK แปลงความหนา/ความยาวให้วัดตามหน้าปลาย
 
     // พิกัดท้องถิ่น (ม.): x = ตามกว้าง, y = ตามยาวท่อ
     const SX = 111320 * Math.cos(c[1] * Math.PI / 180), SY = 110574;
-    const toLL = (x, y) => [c[0] + (y * Math.sin(axis) + x * Math.cos(axis)) / SX, c[1] + (y * Math.cos(axis) - x * Math.sin(axis)) / SY];
-    const toXY = ([lng, lat]) => { const dx = (lng - c[0]) * SX, dy = (lat - c[1]) * SY; return [dx * Math.cos(axis) - dy * Math.sin(axis), dx * Math.sin(axis) + dy * Math.cos(axis)]; };
+    // (x, y) = พิกัดท่อสี่เหลี่ยม (ปลายตั้งฉากแกน) → shear y' = y + K·x ให้ปลายขนานแนวราง · toXY คือขั้นย้อนกลับ (หากำแพงปีกในพิกัดที่ถอด shear แล้ว)
+    const toLL = (x, y) => { const yy = y + K * x; return [c[0] + (yy * Math.sin(axis) + x * Math.cos(axis)) / SX, c[1] + (yy * Math.cos(axis) - x * Math.sin(axis)) / SY]; };
+    const toXY = ([lng, lat]) => { const dx = (lng - c[0]) * SX, dy = (lat - c[1]) * SY; const x = dx * Math.cos(axis) - dy * Math.sin(axis); return [x, dx * Math.sin(axis) + dy * Math.cos(axis) - K * x]; };
     const poly = pts => ({ type: 'Polygon', coordinates: [pts.concat([pts[0]]).map(([x, y]) => toLL(x, y))] });
     const out = [];
     const add = (pts, base, top, part, color) => out.push({ type: 'Feature', properties: { base, top, part, color }, geometry: poly(pts) });
@@ -131,8 +187,9 @@
     }
     add([[-Wt / 2, -L / 2], [Wt / 2, -L / 2], [Wt / 2, L / 2], [-Wt / 2, L / 2]], floor + h, H, 'slab', col);
     const topCurb = H + CURB_H;
-    add([[-Wt / 2, -L / 2], [Wt / 2, -L / 2], [Wt / 2, -L / 2 + CURB_T], [-Wt / 2, -L / 2 + CURB_T]], H, topCurb, 'curb', col);
-    add([[-Wt / 2, L / 2 - CURB_T], [Wt / 2, L / 2 - CURB_T], [Wt / 2, L / 2], [-Wt / 2, L / 2]], H, topCurb, 'curb', col);
+    const curbY = CURB_T * SK;                                          // หนา 0.30 ม. วัดตั้งฉากหน้าปลาย (ท่อเอียงยืดตามแกน)
+    add([[-Wt / 2, -L / 2], [Wt / 2, -L / 2], [Wt / 2, -L / 2 + curbY], [-Wt / 2, -L / 2 + curbY]], H, topCurb, 'curb', col);
+    add([[-Wt / 2, L / 2 - curbY], [Wt / 2, L / 2 - curbY], [Wt / 2, L / 2], [-Wt / 2, L / 2]], H, topCurb, 'curb', col);
 
     // ── กำแพงปีก: ทิศ/ความยาวจากรูป 2D รายตัว · รูปทรงตามไฟล์แนบ ──
     //   หนา 0.30 ม. เริ่มด้านในผนังนอก · ขอบบนลาดจากยอดขอบกั้นดินลงถึง 1.0 ม. ที่ปลาย (ขั้นละ 0.05 ม.)
@@ -142,7 +199,7 @@
     polys.forEach(pp => pp.forEach(r => r.forEach(ll => pts.push(toXY(ll)))));
     (opts.outlines || []).forEach(line => line.forEach(ll => pts.push(toXY(ll))));
     const outside = pts.filter(([, y]) => Math.abs(y) >= L / 2 + 0.3);
-    const innerX = Wt / 2 - t, outerX = innerX + WING_T;
+    const innerX = Wt / 2 - t, outerX = innerX + WING_T, TY = WING_T * SK;   // TY: ความหนาปลายพับ/ปลายกำแพงปีกตามแกน (ตั้งฉากหน้าปลาย = 0.30)
     const lerp = (p1, p2, a) => [p1[0] + (p2[0] - p1[0]) * a, p1[1] + (p2[1] - p1[1]) * a];
 
     [-1, 1].forEach(end => {
@@ -156,10 +213,14 @@
           const tip = cand.reduce((a, b2) => (Math.abs(b2[0]) > Math.abs(a[0]) ? b2 : a));
           vx = tip[0] - cx0; vy = tip[1] - cy0;
         }
-        if (vx === undefined || Math.hypot(vx, vy) < 0.5 || Math.abs(vy) < WING_T + 0.1) { vx = s * WING_DEFAULT; vy = end * WING_DEFAULT; }
+        if (vx === undefined || Math.hypot(vx, vy) < 0.5 || Math.abs(vy) < TY + 0.1) {
+          // ไม่พบปลายในรูป 2D: ยาว 3 ม. กาง 45° จากแกนท่อ (ในพิกัดจริง) แล้วถอด shear ให้อยู่ในพิกัดสี่เหลี่ยม
+          vx = s * WING_DEFAULT; vy = end * WING_DEFAULT - K * vx;
+          if (Math.sign(vy) !== end || Math.abs(vy) < TY + 0.1) vy = end * (TY + 0.1);
+        }
         const P1 = [s * outerX, end * L / 2], P2 = [s * innerX, end * L / 2];
         const P3 = [P1[0] + vx, P1[1] + vy];
-        const k = isUP ? (Math.abs(vy) - WING_T) / Math.abs(vy) : 1;          // Underpass: ด้านในสั้นลงเท่าความหนา ไปชนปลายพับ
+        const k = isUP ? (Math.abs(vy) - TY) / Math.abs(vy) : 1;          // Underpass: ด้านในสั้นลงเท่าความหนา ไปชนปลายพับ
         const Pin = [P2[0] + vx * k, P2[1] + vy * k];
         const len = Math.hypot(vx, vy), steps = Math.max(1, Math.ceil(len / STEP_LEN));
         const baseZ = isUP ? floor : 0;
@@ -169,7 +230,8 @@
           add([lerp(P1, P3, a0), lerp(P2, Pin, a0), lerp(P2, Pin, a1), lerp(P1, P3, a1)], baseZ, top, 'wing', wingColor);
         }
         if (isUP) {
-          const P5 = [P3[0] + s * RETURN_L, P3[1]], P6 = [P5[0], P3[1] - end * WING_T];
+          // ปลายพับยาว 1.0 ม. ขนานแนวราง (= ตามหน้าปลาย): shear ทำให้ทิศ x ขนานหน้าปลาย จึงหารด้วย SK ให้ยาวจริง 1.0 ม.
+          const P5 = [P3[0] + s * RETURN_L / SK, P3[1]], P6 = [P5[0], P3[1] - end * TY];
           add([P3, Pin, P6, P5], 0, Math.max(TIP_H, floor + 0.1), 'return_wing', wingColor);
         }
         tips[s] = P3;
