@@ -21,6 +21,8 @@
  *   - ซูมผลหลายจุดไม่เกินระดับ 15 (เดิม 10)
  *   - ตำบลไม่มีพิกัดและ Longdo ไม่เจอ → ใช้กลางอำเภอ (ค่าเฉลี่ยพิกัดตำบลในอำเภอ)
  *   - กรองอำเภอที่ไม่มีตำบลย่อยออกจากข้อมูล · เคลียร์ timer popup เมื่อล้างหมุด/ปิดแผง
+ *   - ปุ่ม ✕ ท้ายแต่ละช่อง ล้างแบบลดหลั่น (จังหวัด→ล้างอำเภอ/ตำบล/อื่นๆ ด้วย) + ล้างหมุด/รายการผลทุกครั้ง · ✕ แสดงเมื่อเลือกถูกต้องแล้ว (อื่นๆ = มีข้อความ)
+ *   - ปุ่มค้นหา disable เมื่อค่าในช่องไม่ต่างจากการค้นครั้งล่าสุด (ค้นล้มเหลวไม่นับ ลองใหม่ได้)
  * CSS: css/tools/search_address.css (ใช้คลาสเดิม)
  * ───────────────────────────────────────────────────────────────────────── */
 (function () {
@@ -133,16 +135,26 @@
         <button id="closeAddressPanel" type="button" aria-label="ปิด">✖</button>
       </div>
       <div class="address-body">
-        <input type="text" id="provinceInput" list="provinceList" placeholder="พิมพ์จังหวัด" autocomplete="off" />
+        <div class="addr-row">
+          <input type="text" id="provinceInput" list="provinceList" placeholder="พิมพ์จังหวัด" autocomplete="off" />
+          <button type="button" class="addr-clear" id="clearProvince" aria-label="ล้างจังหวัด" disabled>✕</button>
+        </div>
         <datalist id="provinceList"></datalist>
-        <input type="text" id="districtInput" list="districtList" placeholder="พิมพ์อำเภอ" autocomplete="off" />
+        <div class="addr-row">
+          <input type="text" id="districtInput" list="districtList" placeholder="พิมพ์อำเภอ" autocomplete="off" />
+          <button type="button" class="addr-clear" id="clearDistrict" aria-label="ล้างอำเภอ" disabled>✕</button>
+        </div>
         <datalist id="districtList"></datalist>
-        <input type="text" id="subdistrictInput" list="subdistrictList" placeholder="พิมพ์ตำบล" autocomplete="off" />
+        <div class="addr-row">
+          <input type="text" id="subdistrictInput" list="subdistrictList" placeholder="พิมพ์ตำบล" autocomplete="off" />
+          <button type="button" class="addr-clear" id="clearSubdistrict" aria-label="ล้างตำบล" disabled>✕</button>
+        </div>
         <datalist id="subdistrictList"></datalist>
       </div>
       <div class="address-footer">
         <label for="manualAddress">อื่นๆ :</label>
         <input type="text" id="manualAddress" placeholder="หมู่บ้าน สถานที่ (ไม่บังคับ)" />
+        <button type="button" class="addr-clear" id="clearManual" aria-label="ล้างอื่นๆ" disabled>✕</button>
       </div>
       <div class="address-search">
         <button id="searchAddressBtn" type="button">ค้นหา</button>
@@ -155,7 +167,9 @@
     const provList = $('provinceList'), distList = $('districtList'), subList = $('subdistrictList');
     const box = $('villageResult');
     const searchBtn = $('searchAddressBtn');
+    const clr = { prov: $('clearProvince'), dist: $('clearDistrict'), sub: $('clearSubdistrict'), manual: $('clearManual') };
     let searching = false;
+    let lastKey = null;   // คีย์ของการค้นล่าสุดที่สำเร็จ — ค่าในช่องเท่าเดิมแล้วปุ่มค้นหาไม่ active
     panel.querySelectorAll('input').forEach((i) => i.addEventListener('keydown', (e) => e.stopPropagation()));
 
     box.textContent = 'กำลังโหลดข้อมูลจังหวัด...';
@@ -179,7 +193,7 @@
       searchSeq++;
       if (searchAbort) { searchAbort.abort(); searchAbort = null; }
       if (searching) { searching = false; box.textContent = ''; }
-      searchBtn.disabled = false;
+      refreshSearchBtn();
     }
 
     // sync* แค่อัปเดตสถานะ/รายการ — ไม่ย้ายโฟกัส (เดิมย้ายทันทีที่ชื่อตรงเป๊ะ ทำให้พิมพ์ชื่อที่เป็นคำขึ้นต้นของอีกชื่อไม่ได้)
@@ -215,17 +229,52 @@
     }
     // ย้ายโฟกัสเมื่อผู้ใช้ "เลือก/ยืนยัน" แล้วเท่านั้น (change = เลือกจากรายการ/Enter/ออกจากช่อง) และเฉพาะตอนที่ช่องนั้นยังโฟกัสอยู่
     function advanceOnChange(input, sync, ready, next) {
-      input.addEventListener('change', () => { sync(); if (ready() && document.activeElement === input) next.focus(); });
+      input.addEventListener('change', () => { sync(); refreshUi(); if (ready() && document.activeElement === input) next.focus(); });
     }
 
-    provIn.addEventListener('input', syncProvince);
-    distIn.addEventListener('input', syncDistrict);
-    subIn.addEventListener('input', syncSub);
+    /* ---------- ปุ่ม ✕ / ปุ่มค้นหา ---------- */
+    const currentKey = () => JSON.stringify([province && province.name, district && district.name, subdistrict && subdistrict.name, manual.value.trim()]);
+    function updateClear() {
+      clr.prov.disabled = !province;          // แสดงเมื่อเลือกถูกต้องแล้วเท่านั้น (disabled = ซ่อน ดู CSS)
+      clr.dist.disabled = !district;
+      clr.sub.disabled = !subdistrict;
+      clr.manual.disabled = !manual.value;    // อื่นๆ ไม่มีรายการให้ตรวจ → มีข้อความก็แสดง
+    }
+    function refreshSearchBtn() {
+      searchBtn.disabled = searching || (lastKey !== null && lastKey === currentKey());
+    }
+    function refreshUi() { updateClear(); refreshSearchBtn(); }
+
+    function clearResults() {
+      cancelSearch();
+      clearMarkers();
+      T().stopRipple();
+      box.innerHTML = '';
+      lastKey = null;
+    }
+    // ล้างแบบลดหลั่น: ล้างช่องที่กด + ทุกช่องที่อยู่ถัดลงไป พร้อมล้างผลลัพธ์
+    function clearField(which) {
+      clearResults();
+      if (which === 'prov') { provIn.value = ''; manual.value = ''; syncProvince(); provIn.focus(); }
+      else if (which === 'dist') { distIn.value = ''; manual.value = ''; syncDistrict(); distIn.focus(); }
+      else if (which === 'sub') { subIn.value = ''; manual.value = ''; syncSub(); subIn.focus(); }
+      else { manual.value = ''; manual.focus(); }
+      refreshUi();
+    }
+
+    provIn.addEventListener('input', () => { syncProvince(); refreshUi(); });
+    distIn.addEventListener('input', () => { syncDistrict(); refreshUi(); });
+    subIn.addEventListener('input', () => { syncSub(); refreshUi(); });
+    manual.addEventListener('input', refreshUi);
+    clr.prov.addEventListener('click', () => clearField('prov'));
+    clr.dist.addEventListener('click', () => clearField('dist'));
+    clr.sub.addEventListener('click', () => clearField('sub'));
+    clr.manual.addEventListener('click', () => clearField('manual'));
     advanceOnChange(provIn, syncProvince, () => province, distIn);
     advanceOnChange(distIn, syncDistrict, () => district, subIn);
     advanceOnChange(subIn, syncSub, () => subdistrict, manual);
     // Enter ในช่องตำบล → ค้นหา (เมื่อเลือกตำบลถูกต้องแล้ว)
-    subIn.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); syncSub(); if (subdistrict) search(); } });
+    subIn.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); syncSub(); refreshUi(); if (subdistrict) search(); } });
     provIn.addEventListener('focus', () => { if (addressData) fillList(addressData, provIn, provList); });
     distIn.addEventListener('focus', () => { if (province) fillList(province.districts, distIn, distList); });
     subIn.addEventListener('focus', () => { if (district) fillList(district.subs, subIn, subList); });
@@ -287,9 +336,9 @@
     }
 
     async function search() {
-      if (searching) return;
+      if (searching || searchBtn.disabled) return;
       if (!addressData) { BPNP.ui.showAlert('ข้อมูลจังหวัดยังโหลดไม่เสร็จ'); return; }
-      syncProvince(); syncDistrict(); syncSub();
+      syncProvince(); syncDistrict(); syncSub(); refreshUi();
       if (!province || !district || !subdistrict) {
         const miss = !province ? 'จังหวัด' : !district ? (province.bangkok ? 'เขต' : 'อำเภอ') : (province.bangkok ? 'แขวง' : 'ตำบล');
         BPNP.ui.showAlert(`กรุณาเลือก${miss}จากรายการ`);
@@ -298,12 +347,14 @@
       const prov = province, dist = district, sub = subdistrict;   // snapshot ณ เวลากดค้น
       const extra = manual.value.trim();
       const hasLatLng = hasCoord(sub);
+      const key = JSON.stringify([prov.name, dist.name, sub.name, extra]);
       const place = `${sub.label} ${dist.label} ${prov.label}`;
       const keyword = extra ? `${extra} ${place}` : place;
 
       // 1) ไม่กรอก "อื่นๆ" และมีพิกัดในข้อมูล → กลางตำบลทันที
       if (!extra && hasLatLng) {
         showResults([centroidResult(sub, dist, prov)], { single: true });
+        lastKey = key; refreshSearchBtn();
         BPNP.auth && BPNP.auth.logUserEvent('Search Address', place);
         return;
       }
@@ -313,7 +364,7 @@
       const ctrl = new AbortController();
       searchAbort = ctrl;
       searching = true;
-      searchBtn.disabled = true;
+      refreshSearchBtn();
       box.innerHTML = `🔎 กำลังค้นหา "${esc(keyword)}"...`;
       let pts = [];
       let failed = false;
@@ -328,8 +379,8 @@
       }
       if (seq !== searchSeq) return;   // ถูกยกเลิก (เปลี่ยนที่อยู่/ปิดแผง/ค้นใหม่) → ทิ้งผลเก่า
       searching = false;
-      searchBtn.disabled = false;
       searchAbort = null;
+      let shown = false;
 
       // กรอง/เรียง/จำกัดผล Longdo เทียบกับจุดอ้างอิง (กลางตำบล ไม่มี → กลางอำเภอ)
       const dc = districtCentroid(dist);
@@ -344,6 +395,7 @@
       pts = pts.slice(0, MAX_GEOCODE_RESULTS);
 
       if (pts.length) {
+        shown = true;
         // ไม่ใส่รหัสไปรษณีย์ตำบลให้ผล Longdo — จุดอาจอยู่คนละตำบล
         showResults(pts.map((p, i) => ({
           lat: p.lat, lng: p.lng,
@@ -356,9 +408,11 @@
             : `ไม่พบ "${target}"`;
         if (hasLatLng) {
           // 3) ไม่พบ/ผิดพลาด → ใช้กลางตำบลแทน
+          shown = true;
           showResults([centroidResult(sub, dist, prov, `${why} จึงแสดงกลาง${sub.prefix}โดยประมาณ`)], { single: true });
         } else if (dc) {
           // 4) ตำบลไม่มีพิกัดในข้อมูล → ใช้กลางอำเภอ (ค่าเฉลี่ยพิกัดตำบลที่มี)
+          shown = true;
           showResults([{
             lat: dc.lat, lng: dc.lng, zip: sub.zip, title: place,
             note: `${why} และไม่มีพิกัด${sub.prefix}ในข้อมูล จึงแสดงกลาง${dist.prefix}โดยประมาณ, รหัสไปรษณีย์ ${sub.zip || '-'}`
@@ -368,8 +422,12 @@
           box.textContent = failed ? '⚠️ เกิดข้อผิดพลาดในการค้นหา' : '❌ ไม่พบข้อมูล';
         }
       }
+      if (shown && !failed) lastKey = key;   // ค้นล้มเหลวไม่นับ → ปุ่มค้นหายังกดลองใหม่ได้
+      refreshSearchBtn();
       BPNP.auth && BPNP.auth.logUserEvent('Search Address', keyword);
     }
+
+    refreshUi();
   }
 
   function close() {
