@@ -101,6 +101,7 @@ flowchart TB
 | `layers/structure/bridge_gen.js` | ตัวสร้างชิ้นส่วนสะพาน (Three.js) — พอร์ตจาก Map_demo_001 | — | mr-pairot/Map_demo_001 bridge-gen.js |
 | `layers/structure/bridge_3d.js` | สะพาน CB/SB 3 มิติ วางตาม กม. (custom layer) | Span/Length/Skew + `json/bridge_3d.json` | (ใหม่ เฟส 3D-B) |
 | `layers/structure/structure_3d.js` | สร้างรูป 3 มิติ Box Culvert / Underpass (ช่อง, กำแพงปีกลาด, ปลายพับ) | ข้อมูล KML + alignment | (ใหม่ เฟส 3D-B) |
+| `layers/structure/structure_3d_layer.js` | วาดรูป 3D Box Culvert/Underpass ด้วย Three.js (custom layer) วางทั้งโครงสร้างที่ระดับพื้นดินค่าเดียว (Underpass = จุดสูงสุดในกรอบ · Box Culvert = กึ่งกลาง) | ผลจาก structure_3d.js + `elevationAt` | (ใหม่) |
 | `layers/structure/height_signs.js` | ป้ายความสูง (กลุ่ม underpass, bridge, field) + กล่องอธิบาย | `json/height_signs.json` (กลุ่ม field) | HeightSignManager.js, HeightSignAlert.js, mark_Sign.js |
 | `layers/structure/bridge.js` | สะพานเหล็ก/คอนกรีต/Overpass + การ์ดความคืบหน้า | `kml/structure/bridge_sb`, `bridge_cb`, `overpass`, `json/bridge_progress.json` | BridgeLayerManager3.js |
 | `layers/structure/bridge_panel.js` | ตารางความก้าวหน้างานสะพาน | — | BridgeBottomPanel.js |
