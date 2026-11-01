@@ -46,6 +46,7 @@ BPNP.boot.LAYER_SCRIPTS = [
   'js/layers/parcel/parcel_search.js',
   'js/layers/structure/height_signs.js',
   'js/layers/structure/structure_3d.js',
+  'js/layers/structure/structure_3d_layer.js',
   'js/layers/structure/underpass_box.js',
   'js/layers/structure/bridge.js',
   'js/layers/structure/bridge_panel.js',
