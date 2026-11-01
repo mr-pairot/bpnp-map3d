@@ -144,35 +144,31 @@ Menu Button Display
 }
 }
 
-#exitBtn {
-  position: absolute;     
-  top: -5px;
-  right: -5px;
-  font-size: 11px;
-  padding: 5px 10px;
-  cursor: pointer;
-  color: gray;
-  font-weight: bold;
-  height: 15px;
-  background-color: transparent;
-  border: none;
-}
-
-
-/* ── ปุ่มย่อ(−)/ขยาย(V) — อยู่ซ้ายปุ่ม ✖ ── */
+/* ── ปุ่มปิด(✖) และปุ่มย่อ(➖)/ขยาย(⌄) — กล่องขนาดเท่ากัน ฟอนต์/น้ำหนัก/สีเหมือนกัน ──
+   ปุ่มย่อวางชิดซ้ายปุ่มปิด: right = ความกว้างปุ่ม − 5px (ระยะคงที่ ไม่ขึ้นกับความกว้างตัวอักษร) */
+#exitBtn,
 #minBtn {
   position: absolute;
   top: -5px;
-  right: 25px;
+  width: 28px;
+  height: 20px;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  font-family: 'Sarabun', sans-serif;
   font-size: 11px;
-  padding: 5px 9px;
-  cursor: pointer;
-  color: gray;
   font-weight: bold;
-  height: 15px;
+  line-height: 1;
+  color: gray;
   background-color: transparent;
   border: none;
+  cursor: pointer;
 }
+#exitBtn { right: -5px; }
+#minBtn  { right: 23px; }
 @media (hover: hover) and (pointer: fine) {
 #minBtn:hover { color: #444; }
 }
