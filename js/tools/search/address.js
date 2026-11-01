@@ -250,7 +250,9 @@
       Object.keys(wait).forEach((k) => wait[k].classList.toggle('on', k === next));
     }
     function refreshSearchBtn() {
-      searchBtn.disabled = searching || (lastKey !== null && lastKey === currentKey());
+      // กดค้นได้เมื่อเลือก จังหวัด/อำเภอ/ตำบล ถูกต้องครบทั้ง 3 แล้วเท่านั้น · ค่าเท่าเดิมกับการค้นล่าสุด/กำลังค้น → กดไม่ได้
+      const complete = !!(province && district && subdistrict);
+      searchBtn.disabled = searching || !complete || (lastKey !== null && lastKey === currentKey());
     }
     function refreshUi() { updateClear(); refreshSearchBtn(); }
 
