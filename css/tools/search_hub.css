@@ -1,4 +1,4 @@
-/* css/tools/search_hub.css — แผงค้นหา/พิกัด (เดิม css/routing_style.css) */
+/* css/tools/search_hub.css — แผงค้นหา/พิกัด  */
 /* routing_style.css */
     fieldset {
       border: 2px solid #3a6fa5;
@@ -156,6 +156,55 @@ Menu Button Display
   height: 15px;
   background-color: transparent;
   border: none;
+}
+
+
+/* ── ปุ่มย่อ(−)/ขยาย(V) — อยู่ซ้ายปุ่ม ✖ ── */
+#minBtn {
+  position: absolute;
+  top: -5px;
+  right: 25px;
+  font-size: 11px;
+  padding: 5px 9px;
+  cursor: pointer;
+  color: gray;
+  font-weight: bold;
+  height: 15px;
+  background-color: transparent;
+  border: none;
+}
+@media (hover: hover) and (pointer: fine) {
+#minBtn:hover { color: #444; }
+}
+
+/* ── ย่อ/ขยายแผง: เนื้อหาในแผงยุบขึ้นบน/คลี่ลงล่างด้วย height (ตั้งค่าจาก hub.js) ── */
+.panel-body {
+  display: flow-root;      /* กัน margin ของ fieldset สุดท้ายทะลุออก → ความสูงไม่กระโดดตอนเริ่ม/จบ */
+  transition: height 0.3s ease;
+}
+.panel-body.is-animating,
+#control-panel.collapsed .panel-body {
+  overflow: hidden;        /* ซ่อนเนื้อหาที่ล้นขณะยุบ (ปกติไม่ตั้ง เพื่อไม่ตัดเงาของ fieldset) */
+}
+/* ชื่อโหมดบนแถบตอนย่อ — คลี่ออกพร้อมกับที่เนื้อหายุบ */
+.panel-title {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: bold;
+  color: #2f4f6f;
+  transition: max-height 0.3s ease, opacity 0.3s ease;
+}
+#control-panel.collapsed .panel-title {
+  max-height: 16px;
+  opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .panel-body, .panel-title { transition: none; }
 }
 
 
