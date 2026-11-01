@@ -15,7 +15,7 @@
  *   sync(typeId, items)  items = [{ key, parts, mode }]  parts = ผลของ structure3d.build() — ส่ง [] เพื่อล้างชนิดนั้น
  *   pick({x, y})         → { typeId, key } | null  (ยิงรังสีจากจุดบนจอ ใช้เปิดการ์ดข้อมูล/เปลี่ยนเคอร์เซอร์)
  *
- * ลำดับเลเยอร์: เลเยอร์ 3D ถูกยกให้อยู่บนสุดของ slot 'structure' ทุกครั้งที่มีรูปใหม่ (raise)
+ * ลำดับเลเยอร์: เลเยอร์ 3D ถูกปักไว้บนสุดของ slot 'structure' ผ่าน registry.pinTop (ยกกลับทุกครั้งที่ 2D ถูกสร้าง/จัดลำดับใหม่)
  *   → เส้น/พื้นที่ 2D ของชั้นโครงสร้างอยู่ใต้รูป 3D เสมอ ไม่ทับรูป 3D (ไม่ว่าเลเยอร์ 2D จะสร้างก่อนหรือหลัง)
  * ───────────────────────────────────────────────────────────────────────── */
 (function () {
@@ -153,6 +153,7 @@
     };
     const before = BPNP.map.registry.beforeIdFor ? BPNP.map.registry.beforeIdFor('structure') : undefined;
     m.addLayer(layer, before && m.getLayer(before) ? before : undefined);
+    if (BPNP.map.registry.pinTop) BPNP.map.registry.pinTop('structure', LAYER_ID);   // อยู่บนสุดของ slot เสมอ แม้ registry จัดลำดับ 2D ใหม่
     // เคอร์เซอร์มือเมื่อชี้โครงสร้าง 3D (ยิงรังสีหนึ่งครั้งต่อเฟรม)
     m.on('mousemove', e => {
       if (hoverQueued) return;
@@ -167,7 +168,9 @@
   }
 
   // ยกเลเยอร์ 3D ไปบนสุดของ slot 'structure' (ก่อนหมุดของ slot ถัดไป) — เลเยอร์ 2D ที่ถูกสร้างหลังเลเยอร์ 3D จะได้ไม่อยู่เหนือ
+  //   (ปักไว้กับ registry ด้วย pinTop — registry ยกกลับเองหลัง build / order ของ 2D จึงเรียกซ้ำที่นี่เป็นเพียงตัวสำรอง)
   function raise() {
+    if (BPNP.map.registry.raisePins) { BPNP.map.registry.raisePins('structure'); return; }
     const m = map(), before = BPNP.map.registry.beforeIdFor ? BPNP.map.registry.beforeIdFor('structure') : undefined;
     if (m.getLayer(LAYER_ID) && before && m.getLayer(before)) m.moveLayer(LAYER_ID, before);
   }

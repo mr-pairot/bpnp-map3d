@@ -201,6 +201,7 @@
     };
     const before = BPNP.map.registry.beforeIdFor ? BPNP.map.registry.beforeIdFor('structure') : undefined;
     m.addLayer(layer, before && m.getLayer(before) ? before : undefined);
+    if (BPNP.map.registry.pinTop) BPNP.map.registry.pinTop('structure', LAYER_ID);   // อยู่เหนือเลเยอร์ 2D ของ slot เสมอ
   }
 
   // วางทุกสะพานเทียบจุดอ้างอิง (กึ่งกลางจอ) — เมตร ณ จุดอ้างอิง · สเกลตามละติจูดของแต่ละสะพาน
