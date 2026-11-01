@@ -440,14 +440,16 @@
   }
 
   function close() {
+    const wasOpen = !!panel;
     searchSeq++;   // ทิ้งผลค้นที่ยังค้างอยู่
     if (searchAbort) { searchAbort.abort(); searchAbort = null; }
     clearMarkers();
     T().stopRipple();
     if (panel) { panel.remove(); panel = null; }
     province = district = subdistrict = null;
+    if (wasOpen && typeof api.onClose === 'function') api.onClose();   // แจ้งแผงหลัก (hub.js) ให้รีเซ็ตโหมด
   }
 
-  BPNP.tools.addressSearch = { open, close };
+  const api = BPNP.tools.addressSearch = { open, close, onClose: null };
   window.createAddressPanel = open;   // ชื่อเดิม
 })();

@@ -9,7 +9,8 @@
  *     5. แปลงค่าหลายแถว    : utm_multi.js
  *   ขณะอยู่ในโหมดเส้นทาง: การคลิกแผนที่ใช้วางจุด (ชั้นข้อมูล/ดูพิกัด ไม่เปิด popup — BPNP.tools.isBusy)
  *   เส้นทาง: เดิมใช้ Leaflet Routing Machine → เรียก OSRM โดยตรง (เซิร์ฟเวอร์เดิม, alternatives เหมือนเดิม)
- *   แผงหลักมีปุ่มย่อ(ขีด)/ขยาย(ลูกศรลง) แบบ SVG ซ้ายปุ่มปิด: ยุบขึ้นบน/คลี่ลงล่างแบบเคลื่อนไหว · ย่อแล้วโหมด/ข้อมูลยังอยู่ แถบแสดงชื่อโหมดปัจจุบัน · เปิดใหม่/ปิดแผงจะกลับเป็นแบบเต็ม
+ *   แผงหลักมีปุ่มย่อ(ขีด)/ขยาย(ลูกศรลง) แบบ SVG ซ้ายปุ่มปิด: ยุบขึ้นบน/คลี่ลงล่างแบบเคลื่อนไหว · ย่อแล้วโหมด/ข้อมูลยังอยู่ แถบแสดงชื่อโหมดปัจจุบัน + เรดาร์หมุน(ขวาสุด)
+ *   โหมด 3 (ค้นหาพิกัดตามที่อยู่): กดแล้วแผงหลักย่ออัตโนมัติ และไม่แสดงปุ่มย่อ/ขยาย · ปิดแผงที่อยู่ (✖) → รีเซ็ตและกลับเป็นแบบเต็ม · เปิดใหม่/ปิดแผงจะกลับเป็นแบบเต็ม
  * CSS: css/tools/search_hub.css
  * ───────────────────────────────────────────────────────────────────────── */
 (function () {
@@ -43,7 +44,23 @@
   function updateTitle() {
     if (el.panelTitle) el.panelTitle.textContent = MODE_TITLES[mode] || MODE_TITLES.idle;
   }
-  function setMode(m) { mode = m; updateTitle(); }
+  function setMode(m) {
+    mode = m;
+    updateTitle();
+    if (panel) panel.classList.toggle('no-min', m === 'findAddress');   // โหมดที่อยู่: ซ่อนปุ่มย่อ/ขยาย
+  }
+
+  // เรดาร์ 30px ในแถบย่อ: จุดเป้า 3 จุดสุ่มตำแหน่งครั้งเดียวตอนสร้างแผง (วาบเมื่อลำแสงผ่าน — จังหวะอยู่ใน CSS)
+  function radarHTML() {
+    const C = 14, minR = 3, maxR = 11;   // วงในพื้นที่ 28px (หักขอบ 1px) · จุดกึ่งกลาง 14
+    let blips = '';
+    for (let i = 0; i < 3; i++) {
+      const ang = Math.random() * 360, r = minR + Math.random() * (maxR - minR), rad = ang * Math.PI / 180;
+      const x = (C + r * Math.sin(rad)).toFixed(1), y = (C - r * Math.cos(rad)).toFixed(1);
+      blips += `<i class="radar-blip" style="left:${x}px;top:${y}px;--d:${(ang / 360 * 3).toFixed(2)}s"></i>`;
+    }
+    return `<div class="radar" aria-hidden="true"><i class="radar-cross"></i><i class="radar-scan"></i>${blips}</div>`;
+  }
 
   // next=true ยุบขึ้นบน · false คลี่ลงล่าง · instant=ไม่เคลื่อนไหว (เปิดใหม่/ปิดแผง/ตั้งค่าลดการเคลื่อนไหว)
   function setCollapsed(next, instant) {
@@ -55,7 +72,7 @@
     el.minBtn.innerHTML = next ? ICON_EXPAND : ICON_MIN;
     el.minBtn.setAttribute('aria-label', next ? 'ขยายแผง' : 'ย่อแผง');
     el.minBtn.setAttribute('aria-expanded', String(!next));
-    el.panelTitle.setAttribute('aria-hidden', String(!next));
+    el.panelHead.setAttribute('aria-hidden', String(!next));
     body.toggleAttribute('inert', next);   // ย่อแล้วโฟกัส/อ่านเนื้อหาด้านในไม่ได้
     updateTitle();
     const finish = () => { body.classList.remove('is-animating'); if (!collapsed) body.style.height = ''; };
@@ -76,7 +93,10 @@
     if (panel) return;
     document.body.insertAdjacentHTML('beforeend', `
       <div class="floating-panel" id="control-panel">
-        <div id="panelTitle" class="panel-title" aria-hidden="true"></div>
+        <div id="panelHead" class="panel-head" aria-hidden="true">
+          <div id="panelTitle" class="panel-title"></div>
+          ${radarHTML()}
+        </div>
         <div id="panelBody" class="panel-body">
         <fieldset class="button-group" id="group-route">
           <legend>ค้นหาเส้นทาง</legend>
@@ -104,7 +124,7 @@
       </div>`);
     panel = document.getElementById('control-panel');
     ['routeBtn', 'findLocationBtn', 'findAddressBtn', 'convertUTMBtn', 'convertUTM_MultiBtn', 'coord-inputs',
-     'find-location-inputs', 'latlngInput', 'searchLatLngBtn', 'showInstruction', 'exitBtn', 'minBtn', 'panelBody', 'panelTitle', 'group-route', 'group-location', 'group-convert']
+     'find-location-inputs', 'latlngInput', 'searchLatLngBtn', 'showInstruction', 'exitBtn', 'minBtn', 'panelBody', 'panelHead', 'panelTitle', 'group-route', 'group-location', 'group-convert']
       .forEach(id => { el[id] = document.getElementById(id); });
     T().blockMap(panel);
 
@@ -193,7 +213,18 @@
   function activateFindAddress() {
     if (mode === 'findAddress') { resetAll(); return; }
     setMode('findAddress');
-    if (BPNP.tools.addressSearch) BPNP.tools.addressSearch.open();
+    setCollapsed(true);   // แผงที่อยู่เปิดแยก → ย่อแผงหลักอัตโนมัติ (ไม่มีปุ่มขยายในโหมดนี้)
+    if (BPNP.tools.addressSearch) {
+      BPNP.tools.addressSearch.onClose = onAddressClosed;
+      BPNP.tools.addressSearch.open();
+    }
+  }
+
+  // แผงที่อยู่ถูกปิดจากปุ่ม ✖ ของตัวมันเอง → รีเซ็ตโหมดและกลับเป็นแบบเต็ม (ถ้ารีเซ็ตมาจากแผงหลัก mode เป็น idle แล้ว จึงไม่ทำซ้ำ)
+  function onAddressClosed() {
+    if (mode !== 'findAddress') return;
+    resetAll();
+    setCollapsed(false);
   }
 
   function activateConvertUTM() {
