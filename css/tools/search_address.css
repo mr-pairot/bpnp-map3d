@@ -1,5 +1,4 @@
 /* search_address.css */
-
 #addressPanel {
   position: fixed;
   top: 10px;
@@ -58,6 +57,52 @@
 .addr-clear:hover:not(:disabled) { background: #cbd5e0; }
 }
 
+/* ช่องที่ยังไม่ถึงคิว (แถวบนยังไม่ถูกต้อง) → สีจาง กรอกไม่ได้ */
+.address-body input[type="text"]:disabled,
+#manualAddress:disabled {
+  opacity: 0.5;
+  background-color: #eef1f4;
+  cursor: not-allowed;
+}
+
+/* ช่องที่ปุ่ม ✕ กับจุดเด้งใช้ร่วมกัน (24px) */
+.addr-slot {
+  position: relative;
+  flex: none;
+  width: 24px;
+  height: 24px;
+}
+.addr-slot > * {
+  position: absolute;
+  inset: 0;
+}
+
+/* จุดเด้ง "รอคำตอบ" */
+.addr-wait {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  pointer-events: none;
+}
+.addr-wait.on { display: flex; }
+.addr-wait i {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #00b4d8;
+  animation: addr-wait-bounce 1s infinite ease-in-out;
+}
+.addr-wait i:nth-child(2) { animation-delay: 0.15s; }
+.addr-wait i:nth-child(3) { animation-delay: 0.3s; }
+@keyframes addr-wait-bounce {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.45; }
+  30% { transform: translateY(-4px); opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .addr-wait i { animation: none; opacity: 0.7; }
+}
+
 /* โฟกัสแล้วเปลี่ยนสี */
 .address-body input[type="text"]:focus {
   outline: none;
@@ -102,6 +147,8 @@ datalist option {
 
 #manualAddress {
   flex: 1;
+  min-width: 0;            /* ให้หดได้ ไม่ดันปุ่ม ✕ ล้น panel */
+  box-sizing: border-box;
   margin-right: 0; 
   padding: 6px;
   border-radius: 5px;
