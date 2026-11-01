@@ -9,7 +9,7 @@
  *     5. แปลงค่าหลายแถว    : utm_multi.js
  *   ขณะอยู่ในโหมดเส้นทาง: การคลิกแผนที่ใช้วางจุด (ชั้นข้อมูล/ดูพิกัด ไม่เปิด popup — BPNP.tools.isBusy)
  *   เส้นทาง: เดิมใช้ Leaflet Routing Machine → เรียก OSRM โดยตรง (เซิร์ฟเวอร์เดิม, alternatives เหมือนเดิม)
- *   แผงหลักมีปุ่มย่อ(➖)/ขยาย(⌄) ซ้ายปุ่มปิด: ยุบขึ้นบน/คลี่ลงล่างแบบเคลื่อนไหว · ย่อแล้วโหมด/ข้อมูลยังอยู่ แถบแสดงชื่อโหมดปัจจุบัน · เปิดใหม่/ปิดแผงจะกลับเป็นแบบเต็ม
+ *   แผงหลักมีปุ่มย่อ(ขีด)/ขยาย(ลูกศรลง) แบบ SVG ซ้ายปุ่มปิด: ยุบขึ้นบน/คลี่ลงล่างแบบเคลื่อนไหว · ย่อแล้วโหมด/ข้อมูลยังอยู่ แถบแสดงชื่อโหมดปัจจุบัน · เปิดใหม่/ปิดแผงจะกลับเป็นแบบเต็ม
  * CSS: css/tools/search_hub.css
  * ───────────────────────────────────────────────────────────────────────── */
 (function () {
@@ -34,7 +34,9 @@
     idle: 'ค้นหา/พิกัด', route: 'ค้นหาเส้นทาง', findLocation: 'ค้นหาที่อยู่ตามพิกัด',
     findAddress: 'ค้นหาพิกัดตามที่อยู่', convertUTM: 'แปลงค่าและค้นหา', convertUTMMulti: 'แปลงค่าหลายแถว'
   };
-  const ICON_MIN = '\u2796\uFE0E', ICON_EXPAND = '\u2304';   // ➖ (บังคับแบบตัวอักษร ไม่ให้เป็นอีโมจิสี) / ⌄
+  const SVG_OPEN = '<svg viewBox="0 0 14 14" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">';
+  const ICON_MIN = SVG_OPEN + '<path d="M2.5 7h9"/></svg>';              // ปุ่มย่อ: ขีดแนวนอน
+  const ICON_EXPAND = SVG_OPEN + '<path d="M2.5 5l4.5 4.5L11.5 5"/></svg>'; // ปุ่มขยาย: ลูกศรชี้ลง
   const COLLAPSE_MS = 340;   // ให้มากกว่า transition ใน CSS (0.3s) เล็กน้อย
   let collapsed = false, collapseTimer = null;
 
@@ -50,13 +52,18 @@
     const body = el.panelBody;
     clearTimeout(collapseTimer);
     panel.classList.toggle('collapsed', next);
-    el.minBtn.textContent = next ? ICON_EXPAND : ICON_MIN;
+    el.minBtn.innerHTML = next ? ICON_EXPAND : ICON_MIN;
     el.minBtn.setAttribute('aria-label', next ? 'ขยายแผง' : 'ย่อแผง');
     el.minBtn.setAttribute('aria-expanded', String(!next));
     el.panelTitle.setAttribute('aria-hidden', String(!next));
     body.toggleAttribute('inert', next);   // ย่อแล้วโฟกัส/อ่านเนื้อหาด้านในไม่ได้
+    if (!next) body.style.visibility = ''; // ขยาย: แสดงเนื้อหาก่อนเริ่มคลี่
     updateTitle();
-    const finish = () => { body.classList.remove('is-animating'); if (!collapsed) body.style.height = ''; };
+    const finish = () => {
+      body.classList.remove('is-animating');
+      if (!collapsed) body.style.height = '';
+      else body.style.visibility = 'hidden';   // ย่อเสร็จ: ซ่อนเนื้อหาจริง กันตัวหนังสือโผล่ที่ขอบล่าง
+    };
     if (instant || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       body.style.height = next ? '0px' : '';
       finish();
