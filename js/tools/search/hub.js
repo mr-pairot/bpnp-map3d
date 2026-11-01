@@ -9,6 +9,7 @@
  *     5. แปลงค่าหลายแถว    : utm_multi.js
  *   ขณะอยู่ในโหมดเส้นทาง: การคลิกแผนที่ใช้วางจุด (ชั้นข้อมูล/ดูพิกัด ไม่เปิด popup — BPNP.tools.isBusy)
  *   เส้นทาง: เดิมใช้ Leaflet Routing Machine → เรียก OSRM โดยตรง (เซิร์ฟเวอร์เดิม, alternatives เหมือนเดิม)
+ *   แผงหลักมีปุ่มย่อ(−)/ขยาย(V) ซ้ายปุ่มปิด: ยุบขึ้นบน/คลี่ลงล่างแบบเคลื่อนไหว · ย่อแล้วโหมด/ข้อมูลยังอยู่ แถบแสดงชื่อโหมดปัจจุบัน · เปิดใหม่/ปิดแผงจะกลับเป็นแบบเต็ม
  * CSS: css/tools/search_hub.css
  * ───────────────────────────────────────────────────────────────────────── */
 (function () {
@@ -28,11 +29,52 @@
   let mode = 'idle';
   let waypoints = [], markers = [], findMarker = null, routePopups = [], routeReq = 0, lastRoutes = null;
 
+  // ── ย่อ/ขยายแผง ──
+  const MODE_TITLES = {
+    idle: 'ค้นหา/พิกัด', route: 'ค้นหาเส้นทาง', findLocation: 'ค้นหาที่อยู่ตามพิกัด',
+    findAddress: 'ค้นหาพิกัดตามที่อยู่', convertUTM: 'แปลงค่าและค้นหา', convertUTMMulti: 'แปลงค่าหลายแถว'
+  };
+  const COLLAPSE_MS = 340;   // ให้มากกว่า transition ใน CSS (0.3s) เล็กน้อย
+  let collapsed = false, collapseTimer = null;
+
+  function updateTitle() {
+    if (el.panelTitle) el.panelTitle.textContent = MODE_TITLES[mode] || MODE_TITLES.idle;
+  }
+  function setMode(m) { mode = m; updateTitle(); }
+
+  // next=true ยุบขึ้นบน · false คลี่ลงล่าง · instant=ไม่เคลื่อนไหว (เปิดใหม่/ปิดแผง/ตั้งค่าลดการเคลื่อนไหว)
+  function setCollapsed(next, instant) {
+    if (!panel || next === collapsed) return;
+    collapsed = next;
+    const body = el.panelBody;
+    clearTimeout(collapseTimer);
+    panel.classList.toggle('collapsed', next);
+    el.minBtn.textContent = next ? 'V' : '−';
+    el.minBtn.setAttribute('aria-label', next ? 'ขยายแผง' : 'ย่อแผง');
+    el.minBtn.setAttribute('aria-expanded', String(!next));
+    el.panelTitle.setAttribute('aria-hidden', String(!next));
+    body.toggleAttribute('inert', next);   // ย่อแล้วโฟกัส/อ่านเนื้อหาด้านในไม่ได้
+    updateTitle();
+    const finish = () => { body.classList.remove('is-animating'); if (!collapsed) body.style.height = ''; };
+    if (instant || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      body.style.height = next ? '0px' : '';
+      finish();
+      return;
+    }
+    body.classList.add('is-animating');
+    body.style.height = body.offsetHeight + 'px';          // จุดเริ่ม (ความสูงปัจจุบัน — รองรับกดสลับกลางทาง)
+    void body.offsetHeight;                                  // บังคับ reflow ก่อนตั้งปลายทาง
+    body.style.height = (next ? 0 : body.scrollHeight) + 'px';
+    collapseTimer = setTimeout(finish, COLLAPSE_MS);         // เสร็จแล้วคืน height:auto ให้เนื้อหาปรับขนาดเองได้
+  }
+
   // ── แผง ──
   function build() {
     if (panel) return;
     document.body.insertAdjacentHTML('beforeend', `
       <div class="floating-panel" id="control-panel">
+        <div id="panelTitle" class="panel-title" aria-hidden="true"></div>
+        <div id="panelBody" class="panel-body">
         <fieldset class="button-group" id="group-route">
           <legend>ค้นหาเส้นทาง</legend>
           <button id="routeBtn" type="button">ค้นหาเส้นทาง</button>
@@ -53,15 +95,19 @@
           <button id="searchLatLngBtn" type="button">ค้นหา</button>
         </div>
         <div id="showInstruction" class="instruction"></div>
+        </div>
+        <button id="minBtn" type="button" aria-label="ย่อแผง" aria-expanded="true">−</button>
         <button id="exitBtn" type="button">✖</button>
       </div>`);
     panel = document.getElementById('control-panel');
     ['routeBtn', 'findLocationBtn', 'findAddressBtn', 'convertUTMBtn', 'convertUTM_MultiBtn', 'coord-inputs',
-     'find-location-inputs', 'latlngInput', 'searchLatLngBtn', 'showInstruction', 'exitBtn', 'group-route', 'group-location', 'group-convert']
+     'find-location-inputs', 'latlngInput', 'searchLatLngBtn', 'showInstruction', 'exitBtn', 'minBtn', 'panelBody', 'panelTitle', 'group-route', 'group-location', 'group-convert']
       .forEach(id => { el[id] = document.getElementById(id); });
     T().blockMap(panel);
 
-    el.exitBtn.addEventListener('click', e => { e.stopPropagation(); panel.classList.remove('show'); resetAll(); });
+    el.exitBtn.addEventListener('click', e => { e.stopPropagation(); panel.classList.remove('show'); setCollapsed(false, true); resetAll(); });
+    el.minBtn.addEventListener('click', e => { e.stopPropagation(); setCollapsed(!collapsed); });
+    updateTitle();
     el.routeBtn.addEventListener('click', activateRoute);
     el.findLocationBtn.addEventListener('click', activateFindLocation);
     el.findAddressBtn.addEventListener('click', activateFindAddress);
@@ -77,6 +123,7 @@
   function openPanel(e) {
     if (e) { e.stopPropagation(); e.preventDefault(); }
     build();
+    setCollapsed(false, true);   // เปิดแผงใหม่ = แบบเต็มเสมอ
     panel.classList.add('show');
     ['group-route', 'group-location', 'group-convert'].forEach(id => { el[id].style.display = 'block'; });
     ['routeBtn', 'findLocationBtn', 'findAddressBtn', 'convertUTMBtn', 'convertUTM_MultiBtn'].forEach(id => { el[id].style.display = 'inline-block'; });
@@ -96,7 +143,7 @@
   function resetAll() {
     if (!panel) return;
     T().stopRipple();
-    mode = 'idle';
+    setMode('idle');
     ['group-route', 'group-location', 'group-convert'].forEach(id => { el[id].style.display = 'block'; });
     el.routeBtn.textContent = 'ค้นหาเส้นทาง';
     el.findLocationBtn.textContent = 'ค้นหาที่อยู่ตามพิกัด';
@@ -118,7 +165,7 @@
   // ── โหมด ──
   function activateRoute() {
     if (mode === 'route') { resetAll(); return; }
-    mode = 'route';
+    setMode('route');
     hideAll();
     el['group-route'].style.display = 'block';
     el.routeBtn.textContent = 'รีเซ็ต';
@@ -131,7 +178,7 @@
 
   function activateFindLocation() {
     if (mode === 'findLocation') { resetAll(); return; }
-    mode = 'findLocation';
+    setMode('findLocation');
     hideAll();
     el['group-location'].style.display = 'block';
     el.findLocationBtn.textContent = 'รีเซ็ต';
@@ -142,13 +189,13 @@
 
   function activateFindAddress() {
     if (mode === 'findAddress') { resetAll(); return; }
-    mode = 'findAddress';
+    setMode('findAddress');
     if (BPNP.tools.addressSearch) BPNP.tools.addressSearch.open();
   }
 
   function activateConvertUTM() {
     if (mode === 'convertUTM') { resetAll(); return; }
-    mode = 'convertUTM';
+    setMode('convertUTM');
     hideAll();
     el['group-convert'].style.display = 'block';
     el.convertUTMBtn.textContent = 'รีเซ็ต';
@@ -159,7 +206,7 @@
 
   function activateConvertUTMMulti() {
     if (mode === 'convertUTMMulti') { resetAll(); return; }
-    mode = 'convertUTMMulti';
+    setMode('convertUTMMulti');
     hideAll();
     el['group-convert'].style.display = 'block';
     el.convertUTM_MultiBtn.textContent = 'รีเซ็ต';
