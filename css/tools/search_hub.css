@@ -49,9 +49,9 @@
   position: absolute;
   top: 5px;
   left: -200px;
-  width: 174px;
+  width: 187px;             /* ความกว้างรวมเท่าเดิม (187+7+7 = 201) แต่ padding ซ้าย/ขวาเท่ากัน เนื้อหากว้างขึ้น */
   background: white;
-  padding: 17px 20px 7px 7px;
+  padding: 17px 7px 7px 7px;
   border-radius: 5px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
   z-index: 1000;
@@ -133,7 +133,8 @@ Menu Button Display
   font-size: 14px;
   width: 100%;              /* เต็มความกว้างกล่อง (เดิม 138px ตายตัวทำให้ล้นแผง) */
   height: 34px;
-  padding: 5px 10px;
+  padding: 5px 4px;
+  white-space: nowrap;      /* ข้อความไม่ตัดบรรทัดจนล้นปุ่ม */
   cursor: pointer;
 
   border: 1px solid #ccc;   /* เทาบาง */
@@ -181,7 +182,13 @@ Menu Button Display
 /* ── ย่อ/ขยายแผง: เนื้อหาในแผงยุบขึ้นบน/คลี่ลงล่างด้วย height (ตั้งค่าจาก hub.js) ── */
 .panel-body {
   display: flow-root;      /* กัน margin ของ fieldset สุดท้ายทะลุออก → ความสูงไม่กระโดดตอนเริ่ม/จบ */
-  transition: height 0.3s ease;
+  transition: height 0.3s ease, opacity 0.2s ease 0.1s;   /* ขยาย: เนื้อหาค่อยๆ ปรากฏหลังเริ่มคลี่ */
+}
+/* ย่อ: เนื้อหาจางหายและซ่อนจริง (visibility) ภายใน 0.15 วินาที ก่อนความสูงยุบเสร็จ — ไม่มีตัวหนังสือโผล่ปลายแอนิเมชัน */
+#control-panel.collapsed .panel-body {
+  opacity: 0;
+  visibility: hidden;
+  transition: height 0.3s ease, opacity 0.15s ease, visibility 0s linear 0.15s;
 }
 .panel-body.is-animating,
 #control-panel.collapsed .panel-body {
@@ -205,7 +212,7 @@ Menu Button Display
   opacity: 1;
 }
 @media (prefers-reduced-motion: reduce) {
-  .panel-body, .panel-title { transition: none; }
+  .panel-body, #control-panel.collapsed .panel-body, .panel-title { transition: none; }
 }
 
 
