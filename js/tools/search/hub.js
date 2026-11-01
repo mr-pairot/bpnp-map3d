@@ -57,13 +57,8 @@
     el.minBtn.setAttribute('aria-expanded', String(!next));
     el.panelTitle.setAttribute('aria-hidden', String(!next));
     body.toggleAttribute('inert', next);   // ย่อแล้วโฟกัส/อ่านเนื้อหาด้านในไม่ได้
-    if (!next) body.style.visibility = ''; // ขยาย: แสดงเนื้อหาก่อนเริ่มคลี่
     updateTitle();
-    const finish = () => {
-      body.classList.remove('is-animating');
-      if (!collapsed) body.style.height = '';
-      else body.style.visibility = 'hidden';   // ย่อเสร็จ: ซ่อนเนื้อหาจริง กันตัวหนังสือโผล่ที่ขอบล่าง
-    };
+    const finish = () => { body.classList.remove('is-animating'); if (!collapsed) body.style.height = ''; };
     if (instant || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       body.style.height = next ? '0px' : '';
       finish();
