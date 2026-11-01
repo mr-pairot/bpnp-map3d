@@ -10,6 +10,8 @@
  *   คลิกรูปหรือจุด → การ์ดข้อมูล (กม., ขนาด, ความยาว) + ปุ่ม YouTube ถ้ามีวิดีโอ
  *
  * Underpass: สีตามขนาดช่องลอด + legend มุมขวาบน + ป้ายความสูง (height_signs.js)
+ * รูป 3D: วาดด้วย Three.js ผ่าน structure_3d_layer.js — วางทั้งโครงสร้างที่ระดับพื้นดินค่าเดียว
+ *          Underpass = จุดสูงสุดของพื้นดินในกรอบ (ไม่จมดิน) · Box Culvert = พื้นดินที่กึ่งกลาง
  * ───────────────────────────────────────────────────────────────────────── */
 (function () {
   'use strict';
@@ -172,12 +174,14 @@
 
   function registerType(map, id) {
     const T = TYPES[id];
-    const src = 'src-' + T.key, srcPt = 'src-' + T.key + '-pt', src3d = 'src-' + T.key + '-3d';
+    const src = 'src-' + T.key, srcPt = 'src-' + T.key + '-pt';
     let labels = null, built3d = null;
 
     // ── รูป 3D (เฟส 3D-B): แสดงเฉพาะโหมด 3D · สร้างเฉพาะรายการในจอ (v3.10.01) ──
     //   รูปทรงละเอียด (กำแพงปีกขั้นละ 0.05 ม.) จึงไม่สร้างทั้งโครงการพร้อมกัน:
     //   สร้างเมื่อรายการเข้ามาในจอ (+ ขอบ 30%) แล้วเก็บไว้ · ส่งให้แผนที่เฉพาะที่อยู่ในจอ · ซูมไกลกว่าระดับรูป 2D ไม่ส่งเลย
+    const GROUND_MODE = id === 'layer_underpass' ? 'max' : 'center';   // ระดับวางบนภูมิประเทศ (ดู structure_3d_layer.js)
+    let show3dOn = false;
     const cache3d = new Map();          // idx → ชิ้นส่วน 3D ของรายการนั้น
     const CACHE_MAX = 150;
     let data3d = null;
@@ -192,13 +196,12 @@
       return built3d.then(d => { if (d) update3dView(); return d; });
     }
     function update3dView() {
-      const s3 = map.getSource(src3d);
-      if (!data3d || !s3) return;
-      const visible = map.getLayoutProperty(src3d + '-ext', 'visibility') === 'visible';
-      if (!visible || map.getZoom() < Z_PATH) { s3.setData({ type: 'FeatureCollection', features: [] }); return; }
+      const L3 = BPNP.layers.structure3dLayer;
+      if (!data3d || !L3) return;
+      if (!show3dOn || map.getZoom() < Z_PATH) { L3.sync(id, []).catch(() => {}); return; }
       const b = map.getBounds(), px = (b.getEast() - b.getWest()) * 0.3, py = (b.getNorth() - b.getSouth()) * 0.3;
       const W = b.getWest() - px, E = b.getEast() + px, S = b.getSouth() - py, N = b.getNorth() + py;
-      const S3 = BPNP.layers.structure3d, feats = [], inView = new Set();
+      const S3 = BPNP.layers.structure3d, items = [], inView = new Set();
       data3d.raw.forEach((r, idx) => {
         const c = r.center3d;
         if (!c || c[0] < W || c[0] > E || c[1] < S || c[1] > N) return;
@@ -209,22 +212,24 @@
           parts.forEach(f => { f.properties._idx = idx; });
           cache3d.set(idx, parts);
         }
-        cache3d.get(idx).forEach(f => feats.push(f));
+        items.push({ key: idx, parts: cache3d.get(idx), mode: GROUND_MODE });
       });
       // คืนหน่วยความจำ: เก็บไว้ไม่เกิน CACHE_MAX รายการ (ทิ้งรายการที่อยู่นอกจอก่อน)
       if (cache3d.size > CACHE_MAX) for (const k of [...cache3d.keys()]) { if (!inView.has(k)) cache3d.delete(k); if (cache3d.size <= CACHE_MAX) break; }
-      s3.setData({ type: 'FeatureCollection', features: feats });
+      L3.sync(id, items).catch(err => console.error('[3D] แสดงรูป 3D ไม่สำเร็จ:', T.name, err));
     }
     map.on('moveend', () => { if (data3d) update3dView(); });
     function apply3d() {
-      if (!map.getLayer(src3d + '-ext')) return;
       // config.features.structure3d (true / false / ['editor']) — ไม่ผ่าน = ไม่แสดงและไม่สร้างรูป 3D เลย
       const enabled = !!(BPNP.features && BPNP.features.isOn('structure3d'));
       const show = enabled && BPNP.map.registry.isVisible(id) && BPNP.map.terrain && BPNP.map.terrain.isOn();
-      map.setLayoutProperty(src3d + '-ext', 'visibility', show ? 'visible' : 'none');
+      show3dOn = !!show;
       if (show) build3d(); else update3dView();
     }
-    if (BPNP.events) { BPNP.events.on('map:3d', apply3d); BPNP.events.on('features:change', apply3d); }   // role เปลี่ยนระหว่างใช้งาน
+    if (BPNP.events) {
+      BPNP.events.on('map:3d', apply3d); BPNP.events.on('features:change', apply3d);   // role เปลี่ยนระหว่างใช้งาน
+      BPNP.events.on('map:terrain', () => { if (show3dOn && data3d) update3dView(); });   // เปิด/ปิดภูมิประเทศ → วางระดับใหม่
+    }
 
     BPNP.map.registry.register(id, {
       slot: 'structure',
@@ -243,7 +248,6 @@
         });
         return {
           sources: {
-            [src3d]: { type: 'geojson', data: { type: 'FeatureCollection', features: [] } },
             [src]:   { type: 'geojson', data: { type: 'FeatureCollection', features: polys } },
             [srcPt]: { type: 'geojson', data: { type: 'FeatureCollection', features: points } }
           },
@@ -252,23 +256,20 @@
             { id: src + '-line', type: 'line', source: src, minzoom: Z_PATH, filter: ['!=', ['get', '_fillOnly'], true],
               paint: { 'line-color': ['get', '_line'], 'line-width': 2, 'line-opacity': T.lineOpacity } },
             { id: srcPt + '-sq', type: 'symbol', source: srcPt, minzoom: Z_NAME,
-              layout: { 'icon-image': ['get', '_icon'], 'icon-allow-overlap': true, 'icon-ignore-placement': true } },
-            // รูป 3D (แสดงเฉพาะโหมด 3D — apply3d) ซูมเดียวกับรูป 2D
-            { id: src3d + '-ext', type: 'fill-extrusion', source: src3d, minzoom: Z_PATH,
-              paint: { 'fill-extrusion-color': ['get', 'color'], 'fill-extrusion-base': ['get', 'base'],
-                       'fill-extrusion-height': ['get', 'top'], 'fill-extrusion-opacity': 0.95 } }
+              layout: { 'icon-image': ['get', '_icon'], 'icon-allow-overlap': true, 'icon-ignore-placement': true } }
           ]
         };
       },
       afterBuild: () => {
         map.on('click', src + '-fill', e => { if (!BPNP.tools.isBusy()) openPopup(T, e.features[0].properties, [e.lngLat.lng, e.lngLat.lat]); });
         map.on('click', srcPt + '-sq', e => { if (!BPNP.tools.isBusy()) openPopup(T, e.features[0].properties, e.features[0].geometry.coordinates); });
-        map.on('click', src3d + '-ext', e => {
+        // คลิกรูป 3D: ยิงรังสีจากจุดบนจอ (รูป 3D เป็น custom layer ไม่มี feature ให้ MapLibre ตรวจ)
+        map.on('click', e => {
           if (BPNP.tools.isBusy() || !built3d) return;
-          built3d.then(d => { const r = d && d.raw[e.features[0].properties._idx]; if (r) openPopup(T, r.props, [e.lngLat.lng, e.lngLat.lat]); });
+          const L3 = BPNP.layers.structure3dLayer, hit = L3 && L3.pick(e.point);
+          if (!hit || hit.typeId !== id) return;
+          built3d.then(d => { const r = d && d.raw[hit.key]; if (r) openPopup(T, r.props, [e.lngLat.lng, e.lngLat.lat]); });
         });
-        map.on('mouseenter', src3d + '-ext', () => { map.getCanvas().style.cursor = 'pointer'; });
-        map.on('mouseleave', src3d + '-ext', () => { map.getCanvas().style.cursor = ''; });
         [src + '-fill', srcPt + '-sq'].forEach(lid => {
           map.on('mouseenter', lid, () => { map.getCanvas().style.cursor = 'pointer'; });
           map.on('mouseleave', lid, () => { map.getCanvas().style.cursor = ''; });
@@ -282,6 +283,7 @@
         BPNP.auth && BPNP.auth.logUserEvent('Open Layer', T.name);
       },
       onHide: () => {
+        show3dOn = false; update3dView();          // ซ่อนรูป 3D พร้อมชั้น
         if (labels) labels.setEnabled(false);
         if (id === 'layer_underpass' && upLegend) upLegend.remove();
       }
