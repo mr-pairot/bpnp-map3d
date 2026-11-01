@@ -14,6 +14,9 @@
  * BPNP.layers.structure3dLayer
  *   sync(typeId, items)  items = [{ key, parts, mode }]  parts = ผลของ structure3d.build() — ส่ง [] เพื่อล้างชนิดนั้น
  *   pick({x, y})         → { typeId, key } | null  (ยิงรังสีจากจุดบนจอ ใช้เปิดการ์ดข้อมูล/เปลี่ยนเคอร์เซอร์)
+ *
+ * ลำดับเลเยอร์: เลเยอร์ 3D ถูกยกให้อยู่บนสุดของ slot 'structure' ทุกครั้งที่มีรูปใหม่ (raise)
+ *   → เส้น/พื้นที่ 2D ของชั้นโครงสร้างอยู่ใต้รูป 3D เสมอ ไม่ทับรูป 3D (ไม่ว่าเลเยอร์ 2D จะสร้างก่อนหรือหลัง)
  * ───────────────────────────────────────────────────────────────────────── */
 (function () {
   'use strict';
@@ -163,6 +166,12 @@
     });
   }
 
+  // ยกเลเยอร์ 3D ไปบนสุดของ slot 'structure' (ก่อนหมุดของ slot ถัดไป) — เลเยอร์ 2D ที่ถูกสร้างหลังเลเยอร์ 3D จะได้ไม่อยู่เหนือ
+  function raise() {
+    const m = map(), before = BPNP.map.registry.beforeIdFor ? BPNP.map.registry.beforeIdFor('structure') : undefined;
+    if (m.getLayer(LAYER_ID) && before && m.getLayer(before)) m.moveLayer(LAYER_ID, before);
+  }
+
   // จุดบนจอ → โครงสร้างที่ถูกชี้ (ใช้เมทริกซ์ของเฟรมล่าสุด)
   function pick(pt) {
     if (!THREE || !layer || !layer.scene || !layer.rendered || !pt) return null;
@@ -184,6 +193,7 @@
     ensureLayer();
     const T = types[typeId] || (types[typeId] = { recs: new Map(), seq: 0 });
     const seq = ++T.seq, now = terrainOn(), keep = new Set(items.map(i => i.key));
+    let added = false;
     T.recs.forEach((rec, k) => { if (!keep.has(k) || rec.terr !== now) { disposeRec(rec); T.recs.delete(k); } });   // เปิด/ปิดภูมิประเทศ → วางใหม่
     for (const it of items) {
       if (T.recs.has(it.key)) continue;
@@ -194,7 +204,9 @@
       T.recs.set(it.key, rec);
       layer.scene.add(rec.group);
       placeAll();                                          // วางทันที (กันชิ้นที่ยังไม่ได้วางไปโผล่ที่จุดอ้างอิง)
+      added = true;
     }
+    if (added) raise();
     placeAll();
     map().triggerRepaint();
   }

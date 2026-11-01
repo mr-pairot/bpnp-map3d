@@ -161,11 +161,16 @@
             return;
           }
           if (!/Polygon/.test(f.geometry.type)) return;
+          p._ri = raw.length;                    // ลำดับรายการ (ตรงกับ idx ของรูป 3D) — ใช้ซ่อนรูป 2D ของรายการที่มีรูป 3D
           raw.push({ feature: f, props: p });
           const center = U.bboxCenter(f.geometry);
           polys.push({ type: 'Feature', properties: p, geometry: f.geometry });
           points.push({ type: 'Feature', properties: p, geometry: { type: 'Point', coordinates: center } });
         });
+        // เส้นขอบแยก (_outline) ใช้ลำดับรายการของ กม. เดียวกัน
+        const riBySta = {};
+        raw.forEach((r, i) => { const k = r.props['Sta.']; if (!(k in riBySta)) riBySta[k] = i; });
+        polys.forEach(f => { if (f.properties._outline && f.properties['Sta.'] in riBySta) f.properties._ri = riBySta[f.properties['Sta.']]; });
         return { polys, points, raw, outlinesBySta };
       }).catch(err => { delete dataCache[id]; throw err; });
     }
@@ -181,7 +186,17 @@
     //   รูปทรงละเอียด (กำแพงปีกขั้นละ 0.05 ม.) จึงไม่สร้างทั้งโครงการพร้อมกัน:
     //   สร้างเมื่อรายการเข้ามาในจอ (+ ขอบ 30%) แล้วเก็บไว้ · ส่งให้แผนที่เฉพาะที่อยู่ในจอ · ซูมไกลกว่าระดับรูป 2D ไม่ส่งเลย
     const GROUND_MODE = id === 'layer_underpass' ? 'max' : 'center';   // ระดับวางบนภูมิประเทศ (ดู structure_3d_layer.js)
-    let show3dOn = false;
+    let show3dOn = false, hideSeq = 0;
+    // รายการที่มีรูป 3D แสดงอยู่: ซ่อนพื้นที่เติมสี 2D และลดเส้นขอบ 2D เหลือเส้นบาง (ราย กม. — รายการที่สร้างรูป 3D ไม่ได้ยังเห็น 2D เต็มรูปแบบ)
+    //   เส้นบางอยู่ใต้รูป 3D: structure_3d_layer.js ยกเลเยอร์ 3D ให้อยู่เหนือเลเยอร์ 2D ของ slot นี้เสมอ เส้นจึงไม่ทับรูป 3D
+    function set2dHidden(ids) {
+      const inIds = ['in', ['get', '_ri'], ['literal', ids]];
+      if (map.getLayer(src + '-fill')) {
+        const base = ['!=', ['get', '_outline'], true];
+        map.setFilter(src + '-fill', ids.length ? ['all', base, ['!', inIds]] : base);
+      }
+      if (map.getLayer(src + '-line')) map.setPaintProperty(src + '-line', 'line-width', ids.length ? ['case', inIds, 1, 2] : 2);
+    }
     const cache3d = new Map();          // idx → ชิ้นส่วน 3D ของรายการนั้น
     const CACHE_MAX = 150;
     let data3d = null;
@@ -198,7 +213,7 @@
     function update3dView() {
       const L3 = BPNP.layers.structure3dLayer;
       if (!data3d || !L3) return;
-      if (!show3dOn || map.getZoom() < Z_PATH) { L3.sync(id, []).catch(() => {}); return; }
+      if (!show3dOn || map.getZoom() < Z_PATH) { hideSeq++; set2dHidden([]); L3.sync(id, []).catch(() => {}); return; }
       const b = map.getBounds(), px = (b.getEast() - b.getWest()) * 0.3, py = (b.getNorth() - b.getSouth()) * 0.3;
       const W = b.getWest() - px, E = b.getEast() + px, S = b.getSouth() - py, N = b.getNorth() + py;
       const S3 = BPNP.layers.structure3d, items = [], inView = new Set();
@@ -216,7 +231,11 @@
       });
       // คืนหน่วยความจำ: เก็บไว้ไม่เกิน CACHE_MAX รายการ (ทิ้งรายการที่อยู่นอกจอก่อน)
       if (cache3d.size > CACHE_MAX) for (const k of [...cache3d.keys()]) { if (!inView.has(k)) cache3d.delete(k); if (cache3d.size <= CACHE_MAX) break; }
-      L3.sync(id, items).catch(err => console.error('[3D] แสดงรูป 3D ไม่สำเร็จ:', T.name, err));
+      const seq = ++hideSeq;
+      L3.sync(id, items).then(() => {
+        if (seq !== hideSeq) return;                                   // มีรอบใหม่กว่า — ให้รอบนั้นตั้งตัวกรอง
+        set2dHidden(items.filter(it => it.parts.length).map(it => it.key));
+      }).catch(err => console.error('[3D] แสดงรูป 3D ไม่สำเร็จ:', T.name, err));
     }
     map.on('moveend', () => { if (data3d) update3dView(); });
     function apply3d() {
