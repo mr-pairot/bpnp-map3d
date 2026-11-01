@@ -194,25 +194,88 @@ Menu Button Display
 #control-panel.collapsed .panel-body {
   overflow: hidden;        /* ซ่อนเนื้อหาที่ล้นขณะยุบ (ปกติไม่ตั้ง เพื่อไม่ตัดเงาของ fieldset) */
 }
-/* ชื่อโหมดบนแถบตอนย่อ — คลี่ออกพร้อมกับที่เนื้อหายุบ */
-.panel-title {
+/* แถบย่อ: ชื่อโหมด (ซ้าย) + เรดาร์ 30px (ขวาสุด) แถวเดียวกัน — คลี่ออกพร้อมกับที่เนื้อหายุบ */
+.panel-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   max-height: 0;
   opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, opacity 0.3s ease;
+}
+#control-panel.collapsed .panel-head {
+  max-height: 32px;
+  opacity: 1;
+}
+.panel-title {
+  flex: 1 1 auto;
+  min-width: 0;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
   font-size: 12px;
-  line-height: 16px;
+  line-height: 22px;        /* เดิม 16px — สูงพอให้วรรณยุกต์/สระบนไม่ถูกตัด */
   font-weight: bold;
   color: #2f4f6f;
-  transition: max-height 0.3s ease, opacity 0.3s ease;
 }
-#control-panel.collapsed .panel-title {
-  max-height: 16px;
-  opacity: 1;
+
+/* ── เรดาร์ (ตัวบ่งชี้กำลังสแกน) — CSS animation ล้วน ทำงานเฉพาะตอนย่อ (ตอนขยายแถบถูกซ่อน) ──
+   ลำแสงหมุน 3 วินาที/รอบ · จุดเป้า 3 จุดวาบเมื่อลำแสงผ่าน (animation-delay = มุม/360 × 3s) */
+.radar {
+  position: relative;
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  box-sizing: border-box;
+  border: 1px solid #9ca3af;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.05), inset 0 0 6px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  clip-path: circle(50% at 50% 50%);
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
+  transform: translateZ(0);
 }
+.radar-cross { position: absolute; inset: 0; z-index: 1; }
+.radar-cross::before, .radar-cross::after { content: ''; position: absolute; background: rgba(0, 0, 0, 0.1); }
+.radar-cross::before { top: 0; bottom: 0; left: 50%; width: 1px; transform: translateX(-50%); }
+.radar-cross::after  { left: 0; right: 0; top: 50%; height: 1px; transform: translateY(-50%); }
+.radar-scan {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, transparent 70%, rgba(0, 0, 0, 0.25) 100%);
+  animation: radarSpin 3s linear infinite;
+}
+.radar-blip {
+  position: absolute;
+  z-index: 3;
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: #6b7280;
+  box-shadow: 0 0 3px rgba(107, 114, 128, 0.6);
+  opacity: 0;
+  transform: translate(-50%, -50%);
+  animation: radarBlip 3s linear infinite;
+  animation-delay: var(--d, 0s);
+}
+@keyframes radarSpin { to { transform: rotate(360deg); } }
+@keyframes radarBlip {
+  0%   { opacity: 1; transform: translate(-50%, -50%) scale(1.5); }
+  5%   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  50%  { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+}
+
+/* โหมด "ค้นหาพิกัดตามที่อยู่": ไม่แสดงปุ่มย่อ/ขยาย */
+#control-panel.no-min #minBtn { display: none; }
+
 @media (prefers-reduced-motion: reduce) {
-  .panel-body, #control-panel.collapsed .panel-body, .panel-title { transition: none; }
+  .panel-body, #control-panel.collapsed .panel-body, .panel-head { transition: none; }
+  .radar-scan, .radar-blip { animation: none; }
 }
 
 
