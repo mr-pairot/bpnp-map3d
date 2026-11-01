@@ -18,7 +18,8 @@
  *   รูปทรง (v3.10.01 ตามไฟล์แนบ create3D/box-builder.js — ตำแหน่ง/ทิศยังใช้วิธีเดิมของแอป):
  *     Underpass: พื้นล่าง 0.30 ม. · ผนังบนพื้น · พื้นบน · ขอบกั้นดิน 0.30×0.30 สองปลาย · กำแพงปีกบนพื้น
  *                + พื้นปากท่อระหว่างกำแพงปีก + ปลายพับ 1.0 ม. สูง 1.0 ม.
- *     Box Culvert: ไม่มีพื้น · ผนังบนดิน · พื้นบน · ขอบกั้นดิน · กำแพงปีกบนดิน (ไม่มีปลายพับ)
+ *     Box Culvert: พื้นล่าง 0.25 ม. · ผนังบนพื้น · พื้นบน · ขอบกั้นดิน · กำแพงปีกบนพื้น
+ *                  + พื้นปากท่อระหว่างกำแพงปีก (ไม่มีปลายพับ)
  *   กำแพงปีก: ทิศ/ความยาวจากรูป 2D รายตัว (ไม่พบ → 3 ม. กาง 45°) · หนา 0.30 · ขอบบนลาดจากยอดขอบกั้นดินลงถึง 1.0 ม.
  *             ขั้นละ 0.05 ม. (แต่ละชิ้นเป็นปริซึมที่มีระดับบนเดียว จึงทำความลาดด้วยขั้นเล็ก)
  *
@@ -32,7 +33,8 @@
   'use strict';
   // รูปทรงตามไฟล์แนบ create3D/box-builder.js (v3.10.01)
   const STEP_LEN = 0.05;       // ความยาวต่อขั้นของกำแพงปีกลาด (ม.) — ละเอียด (สร้างเฉพาะรายการในจอ)
-  const FLOOR_T = 0.30;        // พื้นล่าง / พื้นปากท่อ (เฉพาะ Underpass)
+  const FLOOR_T = 0.30;        // พื้นล่าง / พื้นปากท่อ ของ Underpass
+  const FLOOR_BOX_T = 0.25;    // พื้นล่าง / พื้นปากท่อ ของ Box Culvert
   const CURB_T = 0.30, CURB_H = 0.30;   // ขอบกั้นดินบนหัวท่อ
   const WING_T = 0.30;         // ความหนากำแพงปีก
   const TIP_H = 1.0;           // ความสูงปลายกำแพงปีก
@@ -109,7 +111,7 @@
     const n = sz.n, L = +p.Length;
     if (!(n > 0 && w > 0 && h > 0 && L > 0)) return [];
     const isUP = opts.kind === 'underpass';
-    const floor = isUP ? FLOOR_T : 0;                                  // Box Culvert ไม่มีพื้น
+    const floor = isUP ? FLOOR_T : FLOOR_BOX_T;                        // Underpass 0.30 ม. · Box Culvert 0.25 ม.
     const t = Math.max(0.2, Math.round(w / 10 * 100) / 100), H = h + t + floor;
 
     // กึ่งกลาง: ชิ้นที่ใหญ่ที่สุดของรูป 2D (= ตัวท่อ)
@@ -169,7 +171,7 @@
     const c = best.c;
     // ยังไม่ตรงรูป 2D (เช่น รางระบายยาวโค้งตามถนน) → ยกรูป 2D ชิ้นใหญ่สุดขึ้นเป็นแท่งสูงเท่าท่อ ให้โค้งตามแบบ
     if (best.cov < 0.8 && largest) {
-      const Hs = h + Math.max(0.2, Math.round(w / 10 * 100) / 100);
+      const Hs = h + Math.max(0.2, Math.round(w / 10 * 100) / 100) + (isUP ? 0 : floor);   // Box: รวมพื้นล่าง 0.25 ม. ให้สูงเท่าตัวท่อ
       return [{ type: 'Feature', properties: { base: 0, top: Hs, part: 'outline', color: opts.color }, geometry: { type: 'Polygon', coordinates: largest } }];
     }
     const axis = best.ax, K = best.K || 0, SK = Math.sqrt(1 + K * K);   // K: ปลายท่อเฉียง (ขนานแนวราง) · SK แปลงความหนา/ความยาวให้วัดตามหน้าปลาย
@@ -183,10 +185,10 @@
     const out = [];
     const add = (pts, base, top, part, color) => out.push({ type: 'Feature', properties: { base, top, part, color }, geometry: poly(pts) });
 
-    // ── ตัวท่อ (ตามไฟล์แนบ): พื้นล่าง (Underpass) · ผนัง n+1 แผงบนพื้น · พื้นบน · ขอบกั้นดินสองปลาย ──
+    // ── ตัวท่อ (ตามไฟล์แนบ): พื้นล่าง · ผนัง n+1 แผงบนพื้น · พื้นบน · ขอบกั้นดินสองปลาย ──
     const Wt = n * w + (n + 1) * t;
     const col = opts.color, wingColor = opts.wingColor || darker(opts.color);
-    if (isUP) add([[-Wt / 2, -L / 2], [Wt / 2, -L / 2], [Wt / 2, L / 2], [-Wt / 2, L / 2]], 0, floor, 'bottom_slab', col);
+    add([[-Wt / 2, -L / 2], [Wt / 2, -L / 2], [Wt / 2, L / 2], [-Wt / 2, L / 2]], 0, floor, 'bottom_slab', col);
     for (let i = 0; i <= n; i++) {
       const x0 = -Wt / 2 + i * (w + t);
       add([[x0, -L / 2], [x0 + t, -L / 2], [x0 + t, L / 2], [x0, L / 2]], floor, H, 'wall', col);
@@ -199,7 +201,8 @@
 
     // ── กำแพงปีก: ทิศ/ความยาวจากรูป 2D รายตัว · รูปทรงตามไฟล์แนบ ──
     //   หนา 0.30 ม. เริ่มด้านในผนังนอก · ขอบบนลาดจากยอดขอบกั้นดินลงถึง 1.0 ม. ที่ปลาย (ขั้นละ 0.05 ม.)
-    //   Underpass: ตั้งบนพื้น 0.30 ม. + พื้นปากท่อระหว่างกำแพงปีก + ปลายพับ 1.0 ม. (ตั้งฉากแนวท่อ สูง 1.0 ม. จากพื้นดิน)
+    //   กำแพงปีกตั้งบนพื้น (Underpass 0.30 ม. · Box 0.25 ม.) + พื้นปากท่อระหว่างกำแพงปีก
+    //   Underpass เพิ่มปลายพับ 1.0 ม. (ตั้งฉากแนวท่อ สูง 1.0 ม. จากพื้นดิน) · Box Culvert ไม่มีปลายพับ
     const g = feature.geometry, polys = g.type === 'Polygon' ? [g.coordinates] : (g.type === 'MultiPolygon' ? g.coordinates : []);
     const pts = [];
     polys.forEach(pp => pp.forEach(r => r.forEach(ll => pts.push(toXY(ll)))));
@@ -229,7 +232,7 @@
         const k = isUP ? (Math.abs(vy) - TY) / Math.abs(vy) : 1;          // Underpass: ด้านในสั้นลงเท่าความหนา ไปชนปลายพับ
         const Pin = [P2[0] + vx * k, P2[1] + vy * k];
         const len = Math.hypot(vx, vy), steps = Math.max(1, Math.ceil(len / STEP_LEN));
-        const baseZ = isUP ? floor : 0;
+        const baseZ = floor;
         for (let i = 0; i < steps; i++) {
           const a0 = i / steps, a1 = (i + 1) / steps;
           const top = topCurb - (topCurb - TIP_H) * (i / steps);
@@ -242,8 +245,8 @@
         }
         tips[s] = P3;
       });
-      // พื้นปากท่อ (Underpass): ระหว่างปลายกำแพงปีกสองข้าง ไม่รวมปลายพับ
-      if (isUP) add([[-Wt / 2, end * L / 2], [Wt / 2, end * L / 2], tips[1], tips[-1]], 0, floor, 'headwall_floor', col);
+      // พื้นปากท่อ: ระหว่างปลายกำแพงปีกสองข้าง ไม่รวมปลายพับ
+      add([[-Wt / 2, end * L / 2], [Wt / 2, end * L / 2], tips[1], tips[-1]], 0, floor, 'headwall_floor', col);
     });
     return out;
   }
