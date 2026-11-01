@@ -1,6 +1,8 @@
 /* css/tools/search_hub.css — แผงค้นหา/พิกัด  */
 /* routing_style.css */
-    fieldset {
+    #control-panel fieldset {
+      box-sizing: border-box;
+      min-width: 0;
       border: 2px solid #3a6fa5;
       border-radius: 6px;
       padding: 4px;
@@ -8,7 +10,7 @@
       background: #ffffff;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
-    legend {
+    #control-panel legend {
       font-weight: bold;
       color: #2f4f6f;
       padding: 0px 8px;
@@ -62,6 +64,7 @@
   margin-bottom: 8px;
 }
 .floating-panel input {
+  box-sizing: border-box;   /* width:100% รวม padding/ขอบ ไม่ล้นแผง */
   width: 100%;
   margin-bottom: 8px;
   padding: 2px 0px 2px 4px;
@@ -126,8 +129,9 @@ Menu Button Display
 #findAddressBtn,
 #convertUTMBtn,
 #convertUTM_MultiBtn{
+  box-sizing: border-box;
   font-size: 14px;
-  width: 138px;
+  width: 100%;              /* เต็มความกว้างกล่อง (เดิม 138px ตายตัวทำให้ล้นแผง) */
   height: 34px;
   padding: 5px 10px;
   cursor: pointer;
@@ -144,7 +148,7 @@ Menu Button Display
 }
 }
 
-/* ── ปุ่มปิด(✖) และปุ่มย่อ(➖)/ขยาย(⌄) — กล่องขนาดเท่ากัน ฟอนต์/น้ำหนัก/สีเหมือนกัน ──
+/* ── ปุ่มปิด(✖) และปุ่มย่อ/ขยาย (SVG) — กล่องขนาดเท่ากัน สีเหมือนกัน ──
    ปุ่มย่อวางชิดซ้ายปุ่มปิด: right = ความกว้างปุ่ม − 5px (ระยะคงที่ ไม่ขึ้นกับความกว้างตัวอักษร) */
 #exitBtn,
 #minBtn {
@@ -169,6 +173,7 @@ Menu Button Display
 }
 #exitBtn { right: -5px; }
 #minBtn  { right: 23px; }
+#minBtn svg { display: block; width: 14px; height: 14px; pointer-events: none; }
 @media (hover: hover) and (pointer: fine) {
 #minBtn:hover { color: #444; }
 }
