@@ -14,6 +14,13 @@
  *   - เปลี่ยนจังหวัด/อำเภอแล้วล้างช่องถัดไป · แตะช่องแล้วแสดงรายการทันที
  *   - พิมพ์คำนำหน้ามาด้วยได้ (จ. อ. อำเภอ เขต ต. ตำบล แขวง)
  *   - คำค้น Longdo ใช้คำนำหน้าถูกตามประเภท (ตำบล/อำเภอ/จังหวัด หรือ แขวง/เขต/กรุงเทพมหานคร)
+ * แก้ล่าสุด (ตรวจโค้ด):
+ *   - พิมพ์ชื่อที่เป็นคำขึ้นต้นของอีกชื่อ (เช่น สำโรง/สำโรงกลาง) ไม่หลุดไปช่องถัดไปแล้ว — ย้ายโฟกัสเมื่อ change/Enter เท่านั้น · Enter ในช่องตำบลค้นหาได้
+ *   - ผล Longdo: เช็ก res.ok · จำกัด 8 รายการ · ตัดผลที่ไกลจากพื้นที่เลือกเกิน 30 กม. · เรียงตามระยะ · ใช้ชื่อจาก API ถ้ามี · ไม่ใส่รหัสไปรษณีย์ตำบลให้ผล Longdo
+ *   - กันค้นซ้อน/ผลเก่าทับผลใหม่ (request token + timeout 8 วินาที + ปิดปุ่มระหว่างค้น + ยกเลิกเมื่อเปลี่ยนที่อยู่/ปิดแผง)
+ *   - ซูมผลหลายจุดไม่เกินระดับ 15 (เดิม 10)
+ *   - ตำบลไม่มีพิกัดและ Longdo ไม่เจอ → ใช้กลางอำเภอ (ค่าเฉลี่ยพิกัดตำบลในอำเภอ)
+ *   - กรองอำเภอที่ไม่มีตำบลย่อยออกจากข้อมูล · เคลียร์ timer popup เมื่อล้างหมุด/ปิดแผง
  * CSS: css/tools/search_address.css (ใช้คลาสเดิม)
  * ───────────────────────────────────────────────────────────────────────── */
 (function () {
@@ -23,10 +30,16 @@
   const DATA_URL = 'data/json/thai_address.json';
   const MAX_OPTIONS = 5;          // จำนวนรายการแนะนำขณะพิมพ์ (ช่องว่าง = แสดงทั้งหมด)
   const ZOOM_SUBDISTRICT = 13;    // ซูมเมื่อแสดงกลางตำบล
+  const ZOOM_DISTRICT = 12;       // ซูมเมื่อแสดงกลางอำเภอ (ไม่มีพิกัดตำบล)
+  const ZOOM_MAX_MULTI = 15;      // ซูมสูงสุดเมื่อแสดงหลายผลลัพธ์ (Leaflet zoom)
+  const FETCH_TIMEOUT_MS = 8000;  // timeout ค้น Longdo
+  const MAX_GEOCODE_RESULTS = 8;  // จำนวนผล Longdo สูงสุดที่แสดง
+  const MAX_RESULT_KM = 30;       // ผล Longdo ไกลจากพื้นที่ที่เลือกเกินนี้ถือว่าไม่เกี่ยวข้อง
   const LONGDO = () => (BPNP.config.keys && BPNP.config.keys.longdoServices) || '';
   const collator = new Intl.Collator('th');
 
-  let addressData = null, loading = null, panel = null, poiMarkers = [];
+  let addressData = null, loading = null, panel = null, poiMarkers = [], popupTimers = [];
+  let searchSeq = 0, searchAbort = null;   // กันค้นซ้อน/ผลเก่าทับผลใหม่
   let province = null, district = null, subdistrict = null;
 
   /* ---------- ข้อมูล ---------- */
@@ -35,8 +48,10 @@
       name,
       label: name === 'กรุงเทพมหานคร' ? name : `จังหวัด${name}`,
       bangkok: name === 'กรุงเทพมหานคร',
-      districts: districts.map(([prefix, dName, subs]) => ({
+      // ตัดอำเภอที่ไม่มีตำบลย่อย (ข้อมูลต้นทางผิดปกติ) — เลือกแล้วไปต่อไม่ได้
+      districts: districts.filter(([, , subs]) => Array.isArray(subs) && subs.length).map(([prefix, dName, subs]) => ({
         name: dName,
+        prefix,
         label: prefix + dName,
         subs: subs.map(([sp, sName, zip, lat, lng]) => ({ name: sName, label: sp + sName, prefix: sp, zip, lat, lng }))
       }))
@@ -90,7 +105,22 @@
     });
   }
 
-  function clearMarkers() { poiMarkers.forEach((m) => m.remove()); poiMarkers = []; }
+  function clearMarkers() {
+    poiMarkers.forEach((m) => m.remove()); poiMarkers = [];
+    popupTimers.forEach(clearTimeout); popupTimers = [];
+  }
+
+  const hasCoord = (s) => typeof s.lat === 'number' && typeof s.lng === 'number';
+  function districtCentroid(dist) {
+    const pts = dist.subs.filter(hasCoord);
+    if (!pts.length) return null;
+    return { lat: pts.reduce((a, s) => a + s.lat, 0) / pts.length, lng: pts.reduce((a, s) => a + s.lng, 0) / pts.length };
+  }
+  function kmBetween(lat1, lng1, lat2, lng2) {
+    const rad = Math.PI / 180, dLat = (lat2 - lat1) * rad, dLng = (lng2 - lng1) * rad;
+    const h = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * rad) * Math.cos(lat2 * rad) * Math.sin(dLng / 2) ** 2;
+    return 2 * 6371 * Math.asin(Math.sqrt(h));
+  }
 
   /* ---------- แผง ---------- */
   function open() {
@@ -124,6 +154,8 @@
     const provIn = $('provinceInput'), distIn = $('districtInput'), subIn = $('subdistrictInput'), manual = $('manualAddress');
     const provList = $('provinceList'), distList = $('districtList'), subList = $('subdistrictList');
     const box = $('villageResult');
+    const searchBtn = $('searchAddressBtn');
+    let searching = false;
     panel.querySelectorAll('input').forEach((i) => i.addEventListener('keydown', (e) => e.stopPropagation()));
 
     box.textContent = 'กำลังโหลดข้อมูลจังหวัด...';
@@ -142,16 +174,26 @@
       subList.innerHTML = '';
     }
 
+    // ยกเลิกการค้นที่ค้างอยู่ (เปลี่ยนที่อยู่ระหว่างรอ) — ผลเก่าจะถูกทิ้ง
+    function cancelSearch() {
+      searchSeq++;
+      if (searchAbort) { searchAbort.abort(); searchAbort = null; }
+      if (searching) { searching = false; box.textContent = ''; }
+      searchBtn.disabled = false;
+    }
+
+    // sync* แค่อัปเดตสถานะ/รายการ — ไม่ย้ายโฟกัส (เดิมย้ายทันทีที่ชื่อตรงเป๊ะ ทำให้พิมพ์ชื่อที่เป็นคำขึ้นต้นของอีกชื่อไม่ได้)
     function syncProvince() {
       if (!addressData) return;
       fillList(addressData, provIn, provList);
       const found = findByName(addressData, provIn.value);
       if (found !== province) {
+        cancelSearch();
         province = found;
         resetDistrict();
         distIn.placeholder = province && province.bangkok ? 'พิมพ์เขต' : 'พิมพ์อำเภอ';
         subIn.placeholder = province && province.bangkok ? 'พิมพ์แขวง' : 'พิมพ์ตำบล';
-        if (province) { fillList(province.districts, distIn, distList); distIn.focus(); }
+        if (province) fillList(province.districts, distIn, distList);
       }
     }
     function syncDistrict() {
@@ -159,33 +201,40 @@
       fillList(province.districts, distIn, distList);
       const found = findByName(province.districts, distIn.value);
       if (found !== district) {
+        cancelSearch();
         district = found;
         resetSub();
-        if (district) { fillList(district.subs, subIn, subList); subIn.focus(); }
+        if (district) fillList(district.subs, subIn, subList);
       }
     }
     function syncSub() {
       if (!district) return;
       fillList(district.subs, subIn, subList);
       const found = findByName(district.subs, subIn.value);
-      if (found !== subdistrict) {
-        subdistrict = found;
-        if (subdistrict) manual.focus();
-      }
+      if (found !== subdistrict) { cancelSearch(); subdistrict = found; }
+    }
+    // ย้ายโฟกัสเมื่อผู้ใช้ "เลือก/ยืนยัน" แล้วเท่านั้น (change = เลือกจากรายการ/Enter/ออกจากช่อง) และเฉพาะตอนที่ช่องนั้นยังโฟกัสอยู่
+    function advanceOnChange(input, sync, ready, next) {
+      input.addEventListener('change', () => { sync(); if (ready() && document.activeElement === input) next.focus(); });
     }
 
     provIn.addEventListener('input', syncProvince);
     distIn.addEventListener('input', syncDistrict);
     subIn.addEventListener('input', syncSub);
+    advanceOnChange(provIn, syncProvince, () => province, distIn);
+    advanceOnChange(distIn, syncDistrict, () => district, subIn);
+    advanceOnChange(subIn, syncSub, () => subdistrict, manual);
+    // Enter ในช่องตำบล → ค้นหา (เมื่อเลือกตำบลถูกต้องแล้ว)
+    subIn.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); syncSub(); if (subdistrict) search(); } });
     provIn.addEventListener('focus', () => { if (addressData) fillList(addressData, provIn, provList); });
     distIn.addEventListener('focus', () => { if (province) fillList(province.districts, distIn, distList); });
     subIn.addEventListener('focus', () => { if (district) fillList(district.subs, subIn, subList); });
     manual.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); search(); } });
-    $('searchAddressBtn').addEventListener('click', search);
+    searchBtn.addEventListener('click', search);
     $('closeAddressPanel').addEventListener('click', close);
 
     /* ---------- ผลลัพธ์ ---------- */
-    function showResults(items, { single = false } = {}) {
+    function showResults(items, { single = false, zoom = ZOOM_SUBDISTRICT } = {}) {
       clearMarkers();
       T().stopRipple();
       box.innerHTML = '';
@@ -201,38 +250,44 @@
         row.innerHTML = `<div class="title">${esc(it.title)}</div>`
           + `<div class="coords">(lat:${it.lat}, lng:${it.lng})</div>`
           + (it.note ? `<div class="coords">${esc(it.note)}</div>` : '');
-        row.addEventListener('click', () => { T().flyTo(it.lat, it.lng, 14); setTimeout(openPopup, 1600); T().ripple(it.lat, it.lng, 2000); });
+        row.addEventListener('click', () => { T().flyTo(it.lat, it.lng, 14); popupTimers.push(setTimeout(openPopup, 1600)); T().ripple(it.lat, it.lng, 2000); });
         box.appendChild(row);
       });
       if (!pts.length) return;
       if (single || pts.length === 1) {
-        T().flyTo(pts[0][0], pts[0][1], ZOOM_SUBDISTRICT);
+        T().flyTo(pts[0][0], pts[0][1], zoom);
         T().ripple(pts[0][0], pts[0][1], 2000);
       } else {
-        // เดิม: fitBounds(pad 0.2) แล้วไม่ให้ซูมใกล้กว่า Leaflet 10
-        T().fitPoints(pts, { padding: 60, maxLeafletZoom: 10 });
+        // ผลหลายจุดมักอยู่ใกล้กัน (ระดับหมู่บ้าน) — จำกัดซูมสูงสุดที่ระดับ 15 (เดิม 10 ซูมไกลเกินไป)
+        T().fitPoints(pts, { padding: 60, maxLeafletZoom: ZOOM_MAX_MULTI });
       }
     }
 
-    function centroidResult(note) {
-      const s = subdistrict;
+    // กลางตำบล (ใช้ค่าที่เลือกไว้ตอนเริ่มค้น ไม่อ่านตัวแปรกลางที่อาจเปลี่ยนระหว่างรอ)
+    function centroidResult(sub, dist, prov, note) {
       return {
-        lat: s.lat, lng: s.lng, zip: s.zip,
-        title: `${s.label} ${district.label} ${province.label}`,
-        note: note || `กลาง${s.prefix}โดยประมาณ, รหัสไปรษณีย์ ${s.zip || '-'}`
+        lat: sub.lat, lng: sub.lng, zip: sub.zip,
+        title: `${sub.label} ${dist.label} ${prov.label}`,
+        note: note || `กลาง${sub.prefix}โดยประมาณ, รหัสไปรษณีย์ ${sub.zip || '-'}`
       };
     }
 
-    async function geocode(keyword) {
-      const res = await fetch(`https://search.longdo.com/addresslookup/api/addr/geocoding?text=${encodeURIComponent(keyword)}&key=${encodeURIComponent(LONGDO())}`);
+    async function geocode(keyword, signal) {
+      const res = await fetch(`https://search.longdo.com/addresslookup/api/addr/geocoding?text=${encodeURIComponent(keyword)}&key=${encodeURIComponent(LONGDO())}`, { signal });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       return ((data && data.data) || []).map((p) => {
         const pt = p.point && p.point[0];
-        return pt && pt.lat && pt.lon ? { lat: pt.lat, lng: pt.lon } : null;
+        const lat = pt ? Number(pt.lat) : NaN, lng = pt ? Number(pt.lon) : NaN;
+        if (!isFinite(lat) || !isFinite(lng) || (!lat && !lng)) return null;
+        // ฟิลด์ชื่อ/ที่อยู่ของ Longdo ยังไม่ได้ยืนยัน — อ่านแบบระวัง ไม่มี → ใช้คำค้นแทน
+        const label = [p.name, p.address, p.display_name].find((v) => typeof v === 'string' && v.trim());
+        return { lat, lng, label: label ? label.trim() : '' };
       }).filter(Boolean);
     }
 
     async function search() {
+      if (searching) return;
       if (!addressData) { BPNP.ui.showAlert('ข้อมูลจังหวัดยังโหลดไม่เสร็จ'); return; }
       syncProvince(); syncDistrict(); syncSub();
       if (!province || !district || !subdistrict) {
@@ -240,44 +295,86 @@
         BPNP.ui.showAlert(`กรุณาเลือก${miss}จากรายการ`);
         return;
       }
+      const prov = province, dist = district, sub = subdistrict;   // snapshot ณ เวลากดค้น
       const extra = manual.value.trim();
-      const hasLatLng = subdistrict.lat !== null && subdistrict.lng !== null;
-      const place = `${subdistrict.label} ${district.label} ${province.label}`;
+      const hasLatLng = hasCoord(sub);
+      const place = `${sub.label} ${dist.label} ${prov.label}`;
       const keyword = extra ? `${extra} ${place}` : place;
 
       // 1) ไม่กรอก "อื่นๆ" และมีพิกัดในข้อมูล → กลางตำบลทันที
       if (!extra && hasLatLng) {
-        showResults([centroidResult()], { single: true });
+        showResults([centroidResult(sub, dist, prov)], { single: true });
         BPNP.auth && BPNP.auth.logUserEvent('Search Address', place);
         return;
       }
 
-      // 2) ค้นผ่าน Longdo
+      // 2) ค้นผ่าน Longdo (มี timeout · ยกเลิกได้ · ผลเก่าถูกทิ้งด้วย seq)
+      const seq = ++searchSeq;
+      const ctrl = new AbortController();
+      searchAbort = ctrl;
+      searching = true;
+      searchBtn.disabled = true;
       box.innerHTML = `🔎 กำลังค้นหา "${esc(keyword)}"...`;
       let pts = [];
       let failed = false;
+      let outOfArea = false;
       if (LONGDO()) {
-        try { pts = await geocode(keyword); } catch (err) { console.error(err); failed = true; }
+        const timer = setTimeout(() => ctrl.abort(), FETCH_TIMEOUT_MS);
+        try { pts = await geocode(keyword, ctrl.signal); }
+        catch (err) { if (seq === searchSeq) { console.error(err); failed = true; } }
+        finally { clearTimeout(timer); }
       } else {
         failed = true;
       }
-      if (!panel) return; // ปิดแผงระหว่างรอ
+      if (seq !== searchSeq) return;   // ถูกยกเลิก (เปลี่ยนที่อยู่/ปิดแผง/ค้นใหม่) → ทิ้งผลเก่า
+      searching = false;
+      searchBtn.disabled = false;
+      searchAbort = null;
+
+      // กรอง/เรียง/จำกัดผล Longdo เทียบกับจุดอ้างอิง (กลางตำบล ไม่มี → กลางอำเภอ)
+      const dc = districtCentroid(dist);
+      const ref = hasLatLng ? { lat: sub.lat, lng: sub.lng } : dc;
+      if (ref && pts.length) {
+        const before = pts.length;
+        pts = pts.map((p) => ({ ...p, km: kmBetween(ref.lat, ref.lng, p.lat, p.lng) }))
+          .filter((p) => p.km <= MAX_RESULT_KM)
+          .sort((a, b) => a.km - b.km);
+        outOfArea = !pts.length && before > 0;
+      }
+      pts = pts.slice(0, MAX_GEOCODE_RESULTS);
 
       if (pts.length) {
-        showResults(pts.map((p) => ({ ...p, title: keyword, zip: subdistrict.zip })));
-      } else if (hasLatLng) {
-        // 3) ไม่พบ/ผิดพลาด → ใช้กลางตำบลแทน
-        const why = failed ? 'ค้นหาด้วย Longdo ไม่สำเร็จ' : `ไม่พบ "${extra}"`;
-        showResults([centroidResult(`${why} จึงแสดงกลาง${subdistrict.prefix}โดยประมาณ`)], { single: true });
+        // ไม่ใส่รหัสไปรษณีย์ตำบลให้ผล Longdo — จุดอาจอยู่คนละตำบล
+        showResults(pts.map((p, i) => ({
+          lat: p.lat, lng: p.lng,
+          title: p.label || (pts.length > 1 ? `${keyword} (${i + 1})` : keyword)
+        })));
       } else {
-        clearMarkers();
-        box.textContent = failed ? '⚠️ เกิดข้อผิดพลาดในการค้นหา' : '❌ ไม่พบข้อมูล';
+        const target = extra || place;
+        const why = failed ? 'ค้นหาด้วย Longdo ไม่สำเร็จ'
+          : outOfArea ? `ผลค้นหา "${target}" อยู่ไกลจากพื้นที่ที่เลือก`
+            : `ไม่พบ "${target}"`;
+        if (hasLatLng) {
+          // 3) ไม่พบ/ผิดพลาด → ใช้กลางตำบลแทน
+          showResults([centroidResult(sub, dist, prov, `${why} จึงแสดงกลาง${sub.prefix}โดยประมาณ`)], { single: true });
+        } else if (dc) {
+          // 4) ตำบลไม่มีพิกัดในข้อมูล → ใช้กลางอำเภอ (ค่าเฉลี่ยพิกัดตำบลที่มี)
+          showResults([{
+            lat: dc.lat, lng: dc.lng, zip: sub.zip, title: place,
+            note: `${why} และไม่มีพิกัด${sub.prefix}ในข้อมูล จึงแสดงกลาง${dist.prefix}โดยประมาณ, รหัสไปรษณีย์ ${sub.zip || '-'}`
+          }], { single: true, zoom: ZOOM_DISTRICT });
+        } else {
+          clearMarkers();
+          box.textContent = failed ? '⚠️ เกิดข้อผิดพลาดในการค้นหา' : '❌ ไม่พบข้อมูล';
+        }
       }
       BPNP.auth && BPNP.auth.logUserEvent('Search Address', keyword);
     }
   }
 
   function close() {
+    searchSeq++;   // ทิ้งผลค้นที่ยังค้างอยู่
+    if (searchAbort) { searchAbort.abort(); searchAbort = null; }
     clearMarkers();
     T().stopRipple();
     if (panel) { panel.remove(); panel = null; }
