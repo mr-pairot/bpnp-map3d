@@ -22,6 +22,7 @@
  *   - ตำบลไม่มีพิกัดและ Longdo ไม่เจอ → ใช้กลางอำเภอ (ค่าเฉลี่ยพิกัดตำบลในอำเภอ)
  *   - กรองอำเภอที่ไม่มีตำบลย่อยออกจากข้อมูล · เคลียร์ timer popup เมื่อล้างหมุด/ปิดแผง
  *   - ปุ่ม ✕ ท้ายแต่ละช่อง ล้างแบบลดหลั่น (จังหวัด→ล้างอำเภอ/ตำบล/อื่นๆ ด้วย) + ล้างหมุด/รายการผลทุกครั้ง · ✕ แสดงเมื่อเลือกถูกต้องแล้ว (อื่นๆ = มีข้อความ)
+ *   - แถวล่าง disable (สีจาง) จนกว่าแถวบนเลือกถูกต้อง · จุดเด้งรอคำตอบที่แถวแรกที่ยังไม่ถูกต้อง
  *   - ปุ่มค้นหา disable เมื่อค่าในช่องไม่ต่างจากการค้นครั้งล่าสุด (ค้นล้มเหลวไม่นับ ลองใหม่ได้)
  * CSS: css/tools/search_address.css (ใช้คลาสเดิม)
  * ───────────────────────────────────────────────────────────────────────── */
@@ -137,17 +138,17 @@
       <div class="address-body">
         <div class="addr-row">
           <input type="text" id="provinceInput" list="provinceList" placeholder="พิมพ์จังหวัด" autocomplete="off" />
-          <button type="button" class="addr-clear" id="clearProvince" aria-label="ล้างจังหวัด" disabled>✕</button>
+          <span class="addr-slot"><button type="button" class="addr-clear" id="clearProvince" aria-label="ล้างจังหวัด" disabled>✕</button><span class="addr-wait" id="waitProvince" aria-hidden="true"><i></i><i></i><i></i></span></span>
         </div>
         <datalist id="provinceList"></datalist>
         <div class="addr-row">
           <input type="text" id="districtInput" list="districtList" placeholder="พิมพ์อำเภอ" autocomplete="off" />
-          <button type="button" class="addr-clear" id="clearDistrict" aria-label="ล้างอำเภอ" disabled>✕</button>
+          <span class="addr-slot"><button type="button" class="addr-clear" id="clearDistrict" aria-label="ล้างอำเภอ" disabled>✕</button><span class="addr-wait" id="waitDistrict" aria-hidden="true"><i></i><i></i><i></i></span></span>
         </div>
         <datalist id="districtList"></datalist>
         <div class="addr-row">
           <input type="text" id="subdistrictInput" list="subdistrictList" placeholder="พิมพ์ตำบล" autocomplete="off" />
-          <button type="button" class="addr-clear" id="clearSubdistrict" aria-label="ล้างตำบล" disabled>✕</button>
+          <span class="addr-slot"><button type="button" class="addr-clear" id="clearSubdistrict" aria-label="ล้างตำบล" disabled>✕</button><span class="addr-wait" id="waitSubdistrict" aria-hidden="true"><i></i><i></i><i></i></span></span>
         </div>
         <datalist id="subdistrictList"></datalist>
       </div>
@@ -167,6 +168,7 @@
     const provList = $('provinceList'), distList = $('districtList'), subList = $('subdistrictList');
     const box = $('villageResult');
     const searchBtn = $('searchAddressBtn');
+    const wait = { prov: $('waitProvince'), dist: $('waitDistrict'), sub: $('waitSubdistrict') };
     const clr = { prov: $('clearProvince'), dist: $('clearDistrict'), sub: $('clearSubdistrict'), manual: $('clearManual') };
     let searching = false;
     let lastKey = null;   // คีย์ของการค้นล่าสุดที่สำเร็จ — ค่าในช่องเท่าเดิมแล้วปุ่มค้นหาไม่ active
@@ -239,6 +241,13 @@
       clr.dist.disabled = !district;
       clr.sub.disabled = !subdistrict;
       clr.manual.disabled = !manual.value;    // อื่นๆ ไม่มีรายการให้ตรวจ → มีข้อความก็แสดง
+      // แถวล่างปิดไว้ (สีจาง) จนกว่าแถวบนจะเลือกถูกต้อง
+      distIn.disabled = !province;
+      subIn.disabled = !district;
+      manual.disabled = !subdistrict;
+      // จุดเด้ง "รอคำตอบ" เฉพาะแถวแรกที่ยังเลือกไม่ถูกต้อง (แถวถัดไปรอคิวอยู่)
+      const next = !province ? 'prov' : !district ? 'dist' : !subdistrict ? 'sub' : null;
+      Object.keys(wait).forEach((k) => wait[k].classList.toggle('on', k === next));
     }
     function refreshSearchBtn() {
       searchBtn.disabled = searching || (lastKey !== null && lastKey === currentKey());
