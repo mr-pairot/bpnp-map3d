@@ -68,7 +68,7 @@
       if (!spans || S === null || !(L > 0)) return;
       const c = BPNP.alignment.pointAt(S, 0);
       if (!c) return;
-      bridges.push({ key: p['Sta.'], src, sta: p['Sta.'], S, L, spans, skew: parseFloat(p.Skew) || 0,
+      bridges.push({ key: p['Sta.'], src, sta: p['Sta.'], S, L, spans, skew: parseFloat(p.Skew) || 0, feature: f,
                      center: [c.lng, c.lat], heading: c.heading, geometry: f.geometry, heightLimit: f.heightLimit });
     });
     return bridges;
@@ -134,6 +134,8 @@
 
     const group = new THREE.Group();
     group.name = base.name;
+    // ชี้/คลิกรูป 3D (v3.10.04): ข้อมูลสำหรับ pick → การ์ดสะพานเดิม (bridge.js) + ป้ายชื่อ
+    group.userData = { typeId: 'layer_bridge', key: b.key, feature: b.feature, label: `${b.src === 'SB' ? 'สะพานเหล็ก' : 'สะพานคอนกรีต'}  กม. ${b.sta}` };
     // ตอม่อ
     P.forEach((pt, i) => {
       const type = pierType(i, n, piers, base.pierType);
@@ -195,12 +197,15 @@
         const l = new THREE.Matrix4().makeTranslation(mc.x, mc.y, mc.z)
           .scale(new THREE.Vector3(s, -s, s)).multiply(new THREE.Matrix4().makeRotationX(Math.PI / 2));
         this.camera.projectionMatrix = new THREE.Matrix4().fromArray(arr).multiply(l);
+        this.camera.projectionMatrixInverse.copy(this.camera.projectionMatrix).invert();   // ใช้ยิงรังสีตอนชี้/คลิก
+        this.rendered = true;
         this.renderer.resetState();
         this.renderer.render(this.scene, this.camera);
       }
     };
     const before = BPNP.map.registry.beforeIdFor ? BPNP.map.registry.beforeIdFor('structure') : undefined;
     m.addLayer(layer, before && m.getLayer(before) ? before : undefined);
+    if (BPNP.map.registerPick) BPNP.map.registerPick('bridge3d', pick);   // ชี้/คลิกรูป 3D ผ่านตัวตรวจกลาง js/map/hit3d.js
     if (BPNP.map.registry.pinTop) BPNP.map.registry.pinTop('structure', LAYER_ID);   // อยู่เหนือเลเยอร์ 2D ของ slot เสมอ
   }
 
@@ -213,6 +218,7 @@
       const mi = maplibregl.MercatorCoordinate.fromLngLat(rec.center, rec.elev), si = mi.meterInMercatorCoordinateUnits();
       rec.group.position.set((mi.x - m0.x) / s0, (mi.z - m0.z) / s0, (mi.y - m0.y) / s0);
       rec.group.scale.setScalar(si / s0);
+      rec.group.updateMatrixWorld(true);                 // ให้การยิงรังสีใช้ตำแหน่งล่าสุด
     });
   }
 
@@ -268,8 +274,31 @@
     setTimeout(refresh, 120);
   }
 
+  // จุดบนจอ → สะพาน 3D ที่ถูกชี้ (ยิงรังสีด้วยเมทริกซ์ของเฟรมล่าสุด)
+  function pick(pt) {
+    if (!THREE || !layer || !layer.scene || !layer.rendered || !pt || !built.size) return null;
+    const groups = [];
+    built.forEach(rec => groups.push(rec.group));
+    const cv = map().getCanvas(), nx = pt.x / cv.clientWidth * 2 - 1, ny = -(pt.y / cv.clientHeight) * 2 + 1, cam = layer.camera;
+    const a = new THREE.Vector3(nx, ny, -1).unproject(cam), b = new THREE.Vector3(nx, ny, 1).unproject(cam);
+    const rc = new THREE.Raycaster();
+    rc.ray.origin.copy(a); rc.ray.direction.copy(b).sub(a).normalize();
+    const hit = rc.intersectObjects(groups, true)[0];
+    if (!hit) return null;
+    let o = hit.object;
+    while (o && !(o.userData && o.userData.typeId)) o = o.parent;
+    return o ? { typeId: o.userData.typeId, key: o.userData.key, label: o.userData.label, feature: o.userData.feature, dist: hit.distance } : null;
+  }
+
   function register(mp) {
     mp.on('moveend', schedule);
+    // คลิกรูปสะพาน 3D → การ์ดสะพานเดิม (bridge.js) · ชั้น 2D ใต้รูปไม่เปิดการ์ด (ตรวจ hit3d)
+    mp.on('click', e => {
+      if (BPNP.tools.isBusy() || !built.size) return;
+      const h = BPNP.map.hit3d && BPNP.map.hit3d(e.point);
+      if (!h || h.typeId !== 'layer_bridge' || !h.feature) return;
+      BPNP.layers.bridge.openPopup(h.feature, [e.lngLat.lng, e.lngLat.lat]);
+    });
     BPNP.events.on('map:3d', schedule);
     BPNP.events.on('map:terrain', () => { built.forEach(rec => { rec.group.userData.stale = true; }); clearAll(); schedule(); });
     BPNP.events.on('features:change', schedule);

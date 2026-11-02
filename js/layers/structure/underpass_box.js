@@ -168,9 +168,19 @@
           points.push({ type: 'Feature', properties: p, geometry: { type: 'Point', coordinates: center } });
         });
         // เส้นขอบแยก (_outline) ใช้ลำดับรายการของ กม. เดียวกัน
+        //   กม. ซ้ำ (เช่น 18+755 มี 3 ตัว ห่างกันหลายสิบเมตร): จับคู่เส้นขอบกับรายการ กม. เดียวกันที่อยู่ใกล้ที่สุด (v3.10.04)
         const riBySta = {};
-        raw.forEach((r, i) => { const k = r.props['Sta.']; if (!(k in riBySta)) riBySta[k] = i; });
-        polys.forEach(f => { if (f.properties._outline && f.properties['Sta.'] in riBySta) f.properties._ri = riBySta[f.properties['Sta.']]; });
+        raw.forEach((r, i) => { const k = r.props['Sta.']; (riBySta[k] = riBySta[k] || []).push(i); });
+        const ctr = i => raw[i].ctr || (raw[i].ctr = U.bboxCenter(raw[i].feature.geometry));
+        polys.forEach(f => {
+          const list = riBySta[f.properties['Sta.']];
+          if (!f.properties._outline || !list) return;
+          if (list.length === 1) { f.properties._ri = list[0]; return; }
+          const c = U.bboxCenter(f.geometry);
+          let best = list[0], bd = Infinity;
+          list.forEach(i => { const q = ctr(i), d = (q[0] - c[0]) ** 2 + (q[1] - c[1]) ** 2; if (d < bd) { bd = d; best = i; } });
+          f.properties._ri = best;
+        });
         return { polys, points, raw, outlinesBySta };
       }).catch(err => { delete dataCache[id]; throw err; });
     }
@@ -227,7 +237,7 @@
           parts.forEach(f => { f.properties._idx = idx; });
           cache3d.set(idx, parts);
         }
-        items.push({ key: idx, parts: cache3d.get(idx), mode: GROUND_MODE });
+        items.push({ key: idx, parts: cache3d.get(idx), mode: GROUND_MODE, label: `${T.name}  กม. ${r.props['Sta.'] || '-'}` });
       });
       // คืนหน่วยความจำ: เก็บไว้ไม่เกิน CACHE_MAX รายการ (ทิ้งรายการที่อยู่นอกจอก่อน)
       if (cache3d.size > CACHE_MAX) for (const k of [...cache3d.keys()]) { if (!inView.has(k)) cache3d.delete(k); if (cache3d.size <= CACHE_MAX) break; }
@@ -280,12 +290,12 @@
         };
       },
       afterBuild: () => {
-        map.on('click', src + '-fill', e => { if (!BPNP.tools.isBusy()) openPopup(T, e.features[0].properties, [e.lngLat.lng, e.lngLat.lat]); });
-        map.on('click', srcPt + '-sq', e => { if (!BPNP.tools.isBusy()) openPopup(T, e.features[0].properties, e.features[0].geometry.coordinates); });
+        map.on('click', src + '-fill', e => { if (!BPNP.tools.isBusy() && !(BPNP.map.hit3d && BPNP.map.hit3d(e.point))) openPopup(T, e.features[0].properties, [e.lngLat.lng, e.lngLat.lat]); });
+        map.on('click', srcPt + '-sq', e => { if (!BPNP.tools.isBusy() && !(BPNP.map.hit3d && BPNP.map.hit3d(e.point))) openPopup(T, e.features[0].properties, e.features[0].geometry.coordinates); });
         // คลิกรูป 3D: ยิงรังสีจากจุดบนจอ (รูป 3D เป็น custom layer ไม่มี feature ให้ MapLibre ตรวจ)
         map.on('click', e => {
           if (BPNP.tools.isBusy() || !built3d) return;
-          const L3 = BPNP.layers.structure3dLayer, hit = L3 && L3.pick(e.point);
+          const hit = BPNP.map.hit3d && BPNP.map.hit3d(e.point);   // ผลที่ใกล้กล้องที่สุดของทุกชั้น 3D
           if (!hit || hit.typeId !== id) return;
           built3d.then(d => { const r = d && d.raw[hit.key]; if (r) openPopup(T, r.props, [e.lngLat.lng, e.lngLat.lat]); });
         });

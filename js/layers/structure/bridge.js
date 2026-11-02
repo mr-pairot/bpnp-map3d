@@ -682,6 +682,7 @@ window.animateBridgeNumbers = function (element) {
         // วงกลมอยู่บนรูปสะพาน → ตรวจก่อน · popup ที่วงกลมเปิดที่จุดศูนย์กลาง / ที่รูปเปิดที่จุดคลิก (เหมือนเดิม)
         map.on('click', e => {
           if (!BPNP.map.registry.isVisible('layer_bridge') || BPNP.tools.isBusy()) return;
+          if (BPNP.map.hit3d && BPNP.map.hit3d(e.point)) return;                   // โดนรูป 3D (สะพาน 3D เปิดการ์ดเองใน bridge_3d.js)
           const hits = map.queryRenderedFeatures(e.point, { layers: [SRC_PT + '-circle', SRC + '-fill'] });
           if (!hits.length) return;
           const f = features[hits[0].properties._idx];

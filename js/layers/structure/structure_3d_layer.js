@@ -13,7 +13,7 @@
  *
  * BPNP.layers.structure3dLayer
  *   sync(typeId, items)  items = [{ key, parts, mode }]  parts = ผลของ structure3d.build() — ส่ง [] เพื่อล้างชนิดนั้น
- *   pick({x, y})         → { typeId, key } | null  (ยิงรังสีจากจุดบนจอ ใช้เปิดการ์ดข้อมูล/เปลี่ยนเคอร์เซอร์)
+ *   pick({x, y})         → { typeId, key, label, dist } | null  (ยิงรังสีจากจุดบนจอ — ลงทะเบียนกับ js/map/hit3d.js)
  *
  * ลำดับเลเยอร์: เลเยอร์ 3D ถูกปักไว้บนสุดของ slot 'structure' ผ่าน registry.pinTop (ยกกลับทุกครั้งที่ 2D ถูกสร้าง/จัดลำดับใหม่)
  *   → เส้น/พื้นที่ 2D ของชั้นโครงสร้างอยู่ใต้รูป 3D เสมอ ไม่ทับรูป 3D (ไม่ว่าเลเยอร์ 2D จะสร้างก่อนหรือหลัง)
@@ -24,7 +24,7 @@
   const LAYER_ID = 'structure-3d';
   const GRID = 7, MAX_MARGIN = 0.2;
 
-  let THREE = null, libPromise = null, layer = null, origin = null, hovering = false, hoverQueued = false;
+  let THREE = null, libPromise = null, layer = null, origin = null;
   const types = {};                    // typeId → { recs: Map(key → rec), seq }
   const materials = new Map();         // color → material (ใช้ร่วมกัน)
 
@@ -85,7 +85,7 @@
       geo.setAttribute('position', new THREE.Float32BufferAttribute(arr, 3));
       geo.computeVertexNormals();
       const mesh = new THREE.Mesh(geo, material(color));
-      mesh.userData = { typeId, key: item.key };
+      mesh.userData = { typeId, key: item.key, label: item.label || '' };
       group.add(mesh);
     });
     return { group, center: c, bbox: [w, s, e, n], mode: item.mode, terr: terrainOn(), elev: 0 };
@@ -154,17 +154,8 @@
     const before = BPNP.map.registry.beforeIdFor ? BPNP.map.registry.beforeIdFor('structure') : undefined;
     m.addLayer(layer, before && m.getLayer(before) ? before : undefined);
     if (BPNP.map.registry.pinTop) BPNP.map.registry.pinTop('structure', LAYER_ID);   // อยู่บนสุดของ slot เสมอ แม้ registry จัดลำดับ 2D ใหม่
-    // เคอร์เซอร์มือเมื่อชี้โครงสร้าง 3D (ยิงรังสีหนึ่งครั้งต่อเฟรม)
-    m.on('mousemove', e => {
-      if (hoverQueued) return;
-      hoverQueued = true;
-      requestAnimationFrame(() => {
-        hoverQueued = false;
-        const hit = !!pick(e.point);
-        if (hit && !hovering) { hovering = true; m.getCanvas().style.cursor = 'pointer'; }
-        else if (!hit && hovering) { hovering = false; m.getCanvas().style.cursor = ''; }
-      });
-    });
+    // ชี้/คลิก: ลงทะเบียนกับตัวตรวจกลาง js/map/hit3d.js (เคอร์เซอร์ + ป้ายชื่อจัดการที่นั่น) — v3.10.04
+    if (BPNP.map.registerPick) BPNP.map.registerPick('structure3d', pick);
   }
 
   // ยกเลเยอร์ 3D ไปบนสุดของ slot 'structure' (ก่อนหมุดของ slot ถัดไป) — เลเยอร์ 2D ที่ถูกสร้างหลังเลเยอร์ 3D จะได้ไม่อยู่เหนือ
@@ -186,7 +177,7 @@
     const rc = new THREE.Raycaster();
     rc.ray.origin.copy(a); rc.ray.direction.copy(b).sub(a).normalize();
     const hit = rc.intersectObjects(meshes, false)[0];
-    return hit ? { typeId: hit.object.userData.typeId, key: hit.object.userData.key } : null;
+    return hit ? { typeId: hit.object.userData.typeId, key: hit.object.userData.key, label: hit.object.userData.label, dist: hit.distance } : null;
   }
 
   async function sync(typeId, items) {
