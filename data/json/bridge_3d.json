@@ -7,7 +7,8 @@
     "ชนิดตอม่อ: A เสาเดี่ยวผายบน · B เสาคู่ · C พอร์ทัล (คร่อมถนน, ใช้ portalSpan) · D ผนังทึบ",
     "ระดับพื้นสะพาน (deckLevel): ค่ารายสะพาน > ช่องลอดใต้สะพาน (height_limit ใน bridge_progress.json) + ความลึกคาน > defaults.deckLevel",
     "ความกว้างพื้นสะพาน (deckWidth): ค่ารายสะพาน > ความกว้างจากรูป 2D",
-    "ค่าที่ตั้งได้รายสะพาน: deckLevel, deckWidth, deckType (concrete/truss), pierType, piers, aTopMode (direct/cap), aFlareDepth, portalSpan, dThick, dRadius, girderDepth, tracks (0/1/2), gauge (1.0/1.435), wingWall (ม. 0 = ไม่มี)"
+    "ค่าที่ตั้งได้รายสะพาน: deckLevel, deckWidth, deckType (concrete/truss), pierType, piers, aTopMode (direct/cap), aFlareDepth, portalSpan, dThick, dRadius, girderDepth, tracks (0/1/2), gauge (1.0/1.435), trackSpacing (ระยะศูนย์กลางทางคู่ ม. ค่าตั้งต้น 5.0), wingWall (ม. 0 = ไม่มี)",
+    "ตัวสร้างสะพาน js/layers/structure/bridge_gen.js เป็นไฟล์เดียวกับ Map_demo_001/bridge-gen.js (v2) — ทดสอบบน demo แล้วคัดลอกมาได้"
   ],
   "defaults": {
     "deckLevel": 7.0,
@@ -15,8 +16,16 @@
     "gauge": 1.0,
     "dThick": 1.2,
     "dRadius": 0.6,
-    "CB": { "deckType": "concrete", "pierType": "A", "aTopMode": "direct" },
-    "SB": { "deckType": "truss", "pierType": "A", "aTopMode": "cap" }
+    "CB": {
+      "deckType": "concrete",
+      "pierType": "A",
+      "aTopMode": "direct"
+    },
+    "SB": {
+      "deckType": "truss",
+      "pierType": "A",
+      "aTopMode": "cap"
+    }
   },
   "bridges": {}
 }
