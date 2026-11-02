@@ -154,8 +154,10 @@
       const pier = G.buildPier(d, kit);
       pier.name = `pier-${i + 1}${i === 0 || i === n ? ' (ริม)' : ''}`;
       if (i === 0 || i === n) {
-        const ext = wing !== undefined ? +wing : Math.min(WING_MAX, i === 0 ? fp.extStart : fp.extEnd);
-        if (ext > 0.3) pier.add(G.buildWingWalls(d, i === 0 ? -1 : 1, ext));
+        // ความยาวปีกจากรูป 2D: ส่วนที่ยื่นเลยปลายสะพาน − ส่วนที่เกิดจากความเฉียงของปลาย (ครึ่งความกว้าง × tan Skew)
+        const raw = i === 0 ? fp.extStart : fp.extEnd;
+        const ext = wing !== undefined ? +wing : Math.min(WING_MAX, Math.max(0, raw - (fp.width / 2) * Math.abs(Math.tan(skewRad))));
+        if (ext > 0.3) pier.add(G.buildWingWalls(d, i === 0 ? -1 : 1, ext, skewRad));   // ปีกขนานแนวทางรถไฟ (v3.10.06)
       }
       pier.position.set(pt.x, 0, pt.z);
       // แกน x ตอม่อ = แนวราง แล้วหมุนตาม Skew (ทิศของค่า Skew ในข้อมูล: บวก = หมุนตามเข็ม — ตรวจกับรูป 2D ของ 125+143 / 132+351)

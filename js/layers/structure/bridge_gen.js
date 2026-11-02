@@ -520,16 +520,21 @@ function buildTrussSpan(d) {
 
   /* ---------- กำแพงปีกที่ตอม่อริม (BPNP) ----------
      dir = +1 ยื่นไปทาง +x (หลังตอม่อริมท้าย) · −1 ยื่นไปทาง −x (หน้าตอม่อริมหัว)
-     ext = ความยาวยื่น (ม.) · สูงจากพื้นถึงใต้พื้นสะพาน · อยู่ที่ขอบผนังตอม่อริมสองข้าง */
-  function buildWingWalls(d, dir, ext) {
+     ext = ความยาวยื่น (ม.) · สูงจากพื้นถึงใต้พื้นสะพาน · อยู่ที่ขอบผนังตอม่อริมสองข้าง
+     skewRad (v3.10.06) = มุมเฉียงของตอม่อ (ตอม่อหมุน +skew จากแนวสะพาน) → กำแพงปีกหมุนกลับ −skew
+       ให้ขนานแนวทางรถไฟ โดยเริ่มที่ปลายผนังตอม่อเฉียงเหมือนเดิม */
+  function buildWingWalls(d, dir, ext, skewRad = 0) {
     const g = new THREE.Group();
     g.name = 'wing-walls';
     const h = Math.max(1, d.params.deckLevel - 0.3);
     const t = 0.4;
     const zEdge = Math.max(1, (d.wallWidth || (d.W - 1)) / 2 - t / 2);
+    const ca = Math.cos(skewRad), sa = Math.sin(skewRad);   // แนวสะพานในกรอบของตอม่อ = (cos, 0, sin)
     for (const z of [-zEdge, zEdge]) {
       const w = box(ext, h, t, MATERIALS.pier, 'wing-wall');
-      w.position.set(dir * (d.params.dThick / 2 + ext / 2), h / 2, z);
+      // เริ่มที่ผิวผนังตอม่อ (x = ±dThick/2) ตรงปลายผนัง แล้วยื่นตามแนวสะพาน
+      w.position.set(dir * d.params.dThick / 2 + dir * ca * ext / 2, h / 2, z + dir * sa * ext / 2);
+      w.rotation.y = -skewRad;
       g.add(w);
     }
     return g;
