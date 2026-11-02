@@ -1,6 +1,6 @@
 /* js/map/controls.js
  * ─────────────────────────────────────────────────────────────────────────
- * มาตราส่วน, attribution และปุ่มเต็มจอ (เฉพาะเดสก์ท็อปบนเบราว์เซอร์ — ไม่แสดงบนมือถือ/แท็บเล็ต/PWA)
+ * มาตราส่วน, attribution และปุ่มเต็มจอ (คอมพิวเตอร์ที่ใช้เมาส์ + แท็บเล็ตผ่านเบราว์เซอร์ — ไม่แสดงบนมือถือ/PWA)
  * ใช้ DOM/CSS เดิม: .custom-standalone-scale, .custom-standalone-attr, .standard-map-btn
  * ───────────────────────────────────────────────────────────────────────── */
 (function () {
@@ -46,13 +46,35 @@
            navigator.standalone === true;
   }
 
-  // แสดงปุ่มเต็มจอเฉพาะ "เดสก์ท็อปบนเบราว์เซอร์": ตรวจจากตัวชี้หลักของอุปกรณ์ (เมาส์/ทัชแพด) ไม่ใช่แค่ User-Agent
-  //   เพราะแท็บเล็ต/มือถือที่เปิด "เว็บไซต์เดสก์ท็อป" จะส่ง UA แบบเดสก์ท็อป (ไม่มีคำว่า Android) แต่ตัวชี้หลักยังเป็นนิ้ว (coarse)
-  //   เต็มจอบนอุปกรณ์เหล่านั้นทำให้ขนาดหน้าเว็บเปลี่ยน ปุ่มบนจอขยายโตบังแผนที่
+  // ── เต็มจอ (v3.10.08) ──
+  // API มาตรฐาน หรือแบบ webkit (iPadOS ก่อน 16.4)
+  const FS = {
+    supported: () => !!(document.documentElement.requestFullscreen || document.documentElement.webkitRequestFullscreen),
+    active: () => !!(document.fullscreenElement || document.webkitFullscreenElement),
+    enter: () => {
+      const el = document.documentElement;
+      const r = el.requestFullscreen ? el.requestFullscreen() : el.webkitRequestFullscreen();
+      if (r && r.catch) r.catch(err => console.warn(err.message));
+    },
+    exit: () => {
+      const r = document.exitFullscreen ? document.exitFullscreen() : (document.webkitExitFullscreen && document.webkitExitFullscreen());
+      if (r && r.catch) r.catch(() => {});
+    }
+  };
+
+  // แท็บเล็ต (Android / iPad) — ใช้ได้แม้เปิด "เว็บไซต์เดสก์ท็อป" ซึ่ง UA เป็นแบบคอมพิวเตอร์ (iPad แจ้งเป็น Mac)
+  //   จอสัมผัส (หลายจุด หรือมีตัวชี้แบบนิ้ว) + ขนาดหน้าจอด้านสั้น ≥ 600 px (ค่าจากหน้าจอจริง ใช้แยกจากมือถือ)
+  function isTablet() {
+    const touch = navigator.maxTouchPoints > 1 || window.matchMedia('(any-pointer: coarse)').matches;
+    return touch && Math.min(screen.width, screen.height) >= 600;
+  }
+
+  // แสดงปุ่มเต็มจอ: คอมพิวเตอร์ที่ใช้เมาส์ + แท็บเล็ตที่เปิดผ่านเบราว์เซอร์ · ไม่แสดงบนมือถือ และแอปที่ติดตั้ง (PWA)
   function canShowFullscreenBtn() {
-    if (!document.documentElement.requestFullscreen) return false;
+    if (!FS.supported()) return false;                  // iPhone: Safari ไม่รองรับเต็มจอของหน้าเว็บ
+    if (isStandalonePwa()) return false;                // แอปที่ติดตั้งเต็มจออยู่แล้ว
+    if (isTablet()) return true;
     if (isMobile() || (navigator.userAgentData && navigator.userAgentData.mobile)) return false;
-    if (isStandalonePwa()) return false;
     return window.matchMedia('(hover: hover) and (pointer: fine)').matches;
   }
 
@@ -64,16 +86,15 @@
       imageSrc: 'assets/ui/fullscreen-enter.svg',
       style: { top: 'var(--safe-top)', right: 'var(--safe-right)' },
       title: 'แสดงเต็มหน้าจอ (Full Screen)',
-      onClick: () => {
-        if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(err => console.warn(err.message));
-        else if (document.exitFullscreen) document.exitFullscreen();
-      }
+      onClick: () => { if (!FS.active()) FS.enter(); else FS.exit(); }
     });
-    document.addEventListener('fullscreenchange', () => {
-      const on = !!document.fullscreenElement;
+    const sync = () => {
+      const on = FS.active();
       btn.title = on ? 'ออกจากการแสดงเต็มหน้าจอ' : 'แสดงเต็มหน้าจอ (Full Screen)';
       btn.style.backgroundImage = `url('assets/ui/${on ? 'fullscreen-exit' : 'fullscreen-enter'}.svg')`;
-    });
+    };
+    document.addEventListener('fullscreenchange', sync);
+    document.addEventListener('webkitfullscreenchange', sync);
   }
 
   function init(mapInstance) {
