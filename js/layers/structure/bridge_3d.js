@@ -94,7 +94,10 @@
   function paramsFor(b, fp) {
     const D = cfg.defaults || {}, bc = (cfg.bridges || {})[b.sta] || {};
     const base = Object.assign({ deckLevel: 7, tracks: 2, gauge: 1.0 }, D, D[b.src] || {}, bc);
-    delete base.CB; delete base.SB; delete base.piers;
+    delete base.CB; delete base.SB;
+    base.piers = bc.piers || {};          // ชนิดตอม่อรายต้น (ตัวสร้างร่วม: pierTypeAt)
+    base.abutmentD = true;                // ตอม่อริม = ผนังทึบเสมอ
+    base.skew = 0;                        // การเฉียงจัดการที่ไฟล์นี้ (ตาม กม. ของตอม่อแต่ละต้น)
     base.name = `${b.src} ${b.sta}`;
     if (!bc.deckWidth) base.deckWidth = Math.round(Math.min(20, Math.max(4, fp.width)) * 10) / 10;
     // ระดับพื้น: ค่ารายสะพาน > ช่องลอด + ความลึกโครงสร้าง > ค่าตั้งต้น
@@ -103,18 +106,12 @@
       const dep = base.deckType === 'truss' ? 1.6 : (base.girderDepth > 0 ? base.girderDepth : Math.min(4, Math.max(1.2, Lmax / 18)));
       base.deckLevel = Math.round((+b.heightLimit + dep) * 10) / 10;
     }
-    return { base, piers: bc.piers || {}, wing: bc.wingWall };
-  }
-
-  function pierType(i, n, piers, def) {
-    if (i === 0 || i === n) return 'D';                        // ตอม่อริม = ผนังทึบเสมอ
-    const t = String(piers[String(i + 1)] || def || 'A').toUpperCase();
-    return ['A', 'B', 'C', 'D'].includes(t) ? t : 'A';
+    return { base, wing: bc.wingWall };
   }
 
   // ── สร้างสะพาน 1 ตัว (Group หน่วยเมตร: x = ตะวันออก, y = ขึ้น, z = ใต้; origin = กึ่งกลางสะพาน) ──
   function buildBridge(b) {
-    const A = BPNP.alignment, fp = footprint(b), { base, piers, wing } = paramsFor(b, fp);
+    const A = BPNP.alignment, fp = footprint(b), { base, wing } = paramsFor(b, fp);
     const n = b.spans.length, kms = [b.S - b.L / 2];
     b.spans.forEach(l => kms.push(kms[kms.length - 1] + l));
     const pts = kms.map(k => A.pointAt(k, 0));
@@ -130,55 +127,41 @@
     let skew = b.skew;
     if (b.src === 'SB' && skew) { warn.push(`ข้อมูล Skew ${skew}° ของสะพานเหล็ก — สะพานเหล็กไม่มีตอม่อเฉียง วาดแบบตั้งฉาก (ตรวจข้อมูล)`); skew = 0; }
     const skewRad = skew * Math.PI / 180;
-    const pierBase = skew ? Object.assign({}, base, { deckWidth: Math.min(20, Math.round(base.deckWidth / Math.cos(skewRad) * 100) / 100) }) : base;
 
-    // ระดับพื้นเดียวทั้งสะพาน: ยกจนทุกตอม่อสร้างได้
-    const adjL = i => Math.max(b.spans[i - 1] || 0, b.spans[i] || 0);
-    let deckLevel = base.deckLevel;
-    const ok = dl => P.every((_, i) => G.deriveDims(Object.assign({}, pierBase, { deckLevel: dl, pierType: pierType(i, n, piers, base.pierType), spanLength: adjL(i), spanCount: 1 })).errors.length === 0);
-    let guard = 0;
-    while (!ok(deckLevel) && guard++ < 140) deckLevel = Math.round((deckLevel + 0.25) * 100) / 100;
-    if (deckLevel !== base.deckLevel) warn.push(`ระดับพื้น ${base.deckLevel} ม. ต่ำเกินไปสำหรับตอม่อ ใช้ ${deckLevel} ม.`);
-    base.deckLevel = deckLevel; pierBase.deckLevel = deckLevel;
+    // ระดับพื้นเดียวทั้งสะพาน: ยกจนทุกตอม่อสร้างได้ (ตัวสร้างร่วม fitDeckLevel)
+    const fit = G.fitDeckLevel(base, b.spans, skewRad);
+    if (fit.raised) warn.push(`ระดับพื้น ${base.deckLevel} ม. ต่ำเกินไปสำหรับตอม่อ ใช้ ${fit.deckLevel} ม.`);
+    base.deckLevel = fit.deckLevel;
 
     const group = new THREE.Group();
     group.name = base.name;
     // ชี้/คลิกรูป 3D (v3.10.04): ข้อมูลสำหรับ pick → การ์ดสะพานเดิม (bridge.js) + ป้ายชื่อ
     group.userData = { typeId: 'layer_bridge', key: b.key, feature: b.feature, label: `${b.src === 'SB' ? 'สะพานเหล็ก' : 'สะพานคอนกรีต'}  กม. ${b.sta}` };
-    // ตอม่อ
+    // ตอม่อ (ตัวสร้างร่วม: pierParams → ชนิดรายต้น · ตอม่อริม D · ความกว้าง ÷ cos(skew))
     P.forEach((pt, i) => {
-      const type = pierType(i, n, piers, base.pierType);
-      const d = G.deriveDims(Object.assign({}, pierBase, { pierType: type, spanLength: adjL(i), spanCount: 1 }));
+      const d = G.deriveDims(G.pierParams(base, b.spans, i, skewRad));
       d.warnings.forEach(w => warn.push(`ตอม่อ ${i + 1}: ${w}`));
-      const kit = G.makeKit(d);
-      const pier = G.buildPier(d, kit);
+      const pier = G.buildPier(d, G.makeKit(d));
       pier.name = `pier-${i + 1}${i === 0 || i === n ? ' (ริม)' : ''}`;
       if (i === 0 || i === n) {
         // ความยาวปีกจากรูป 2D: ส่วนที่ยื่นเลยปลายสะพาน − ส่วนที่เกิดจากความเฉียงของปลาย (ครึ่งความกว้าง × tan Skew)
         const raw = i === 0 ? fp.extStart : fp.extEnd;
         const ext = wing !== undefined ? +wing : Math.min(WING_MAX, Math.max(0, raw - (fp.width / 2) * Math.abs(Math.tan(skewRad))));
-        if (ext > 0.3) pier.add(G.buildWingWalls(d, i === 0 ? -1 : 1, ext, skewRad));   // ปีกขนานแนวทางรถไฟ (v3.10.06)
+        if (ext > 0.3) pier.add(G.buildWingWalls(d, i === 0 ? -1 : 1, ext, skewRad));   // ปีกขนานแนวทางรถไฟ
       }
       pier.position.set(pt.x, 0, pt.z);
-      // แกน x ตอม่อ = แนวราง แล้วหมุนตาม Skew (ทิศของค่า Skew ในข้อมูล: บวก = หมุนตามเข็ม — ตรวจกับรูป 2D ของ 125+143 / 132+351)
-      pier.rotation.y = (90 - pt.heading + skew) * Math.PI / 180;
+      pier.rotation.y = (90 - pt.heading + skew) * Math.PI / 180;   // แกน x ตอม่อ = แนวราง แล้วหมุนตาม Skew
       group.add(pier);
     });
-    // ช่วงสะพาน: ชิ้นตรงจากตอม่อ i ไป i+1
+    // ช่วงสะพาน: ชิ้นตรงจากตอม่อ i ไป i+1 · สะพานเฉียงเฉือนเป็นสี่เหลี่ยมด้านขนาน (ตัวสร้างร่วม skewSpan)
     b.spans.forEach((L, i) => {
-      const d = G.deriveDims(Object.assign({}, base, { pierType: 'A', spanLength: L, spanCount: 1 }));
-      const kit = G.makeKit(d);
-      const span = G.buildSpan(d, kit);
+      const d = G.deriveDims(G.spanParams(base, L));
+      const span = G.buildSpan(d, G.makeKit(d));
       const a = P[i], c = P[i + 1], vx = c.x - a.x, vz = c.z - a.z, chord = Math.hypot(vx, vz);
       span.position.set(a.x, 0, a.z);
       span.rotation.y = Math.atan2(-vz, vx);
       span.scale.x = chord / L;
-      if (skew) {
-        // เฉือนตามแนวสะพาน: x' = x + tan(Skew)·z → ปลายช่วงขนานกับแนวตอม่อ (แนวกึ่งกลาง z = 0 ไม่เปลี่ยน)
-        span.updateMatrix();
-        span.matrixAutoUpdate = false;
-        span.matrix.multiply(new THREE.Matrix4().makeShear(0, 0, 0, 0, Math.tan(skewRad), 0));
-      }
+      G.skewSpan(span, skewRad);
       span.name = `span-${i + 1}`;
       group.add(span);
     });
