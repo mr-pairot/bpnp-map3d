@@ -688,6 +688,7 @@ window.animateBridgeNumbers = function (element) {
           const f = features[hits[0].properties._idx];
           if (f) openPopup(f, hits[0].layer.id.endsWith('-circle') ? f.center : [e.lngLat.lng, e.lngLat.lat]);
         });
+        BPNP.layers.utils.markClickable([SRC_PT + '-circle', SRC + '-fill']);   // แปลงเวนคืนหลีกให้ (v3.10.05)
         [SRC_PT + '-circle', SRC + '-fill'].forEach(lid => {
           map.on('mouseenter', lid, () => { map.getCanvas().style.cursor = 'pointer'; });
           map.on('mouseleave', lid, () => { map.getCanvas().style.cursor = ''; });

@@ -299,6 +299,7 @@
           if (!hit || hit.typeId !== id) return;
           built3d.then(d => { const r = d && d.raw[hit.key]; if (r) openPopup(T, r.props, [e.lngLat.lng, e.lngLat.lat]); });
         });
+        U.markClickable([src + '-fill', srcPt + '-sq']);                       // แปลงเวนคืนหลีกให้ (v3.10.05)
         [src + '-fill', srcPt + '-sq'].forEach(lid => {
           map.on('mouseenter', lid, () => { map.getCanvas().style.cursor = 'pointer'; });
           map.on('mouseleave', lid, () => { map.getCanvas().style.cursor = ''; });

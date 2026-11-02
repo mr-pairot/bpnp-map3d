@@ -123,14 +123,23 @@
     const P = pts.map(p => ({ x: (p.lng - b.center[0]) * SX, z: -(p.lat - b.center[1]) * SY, heading: p.heading }));
     const warn = [];
 
+    // ── สะพานเฉียง (v3.10.05) ──
+    //   สะพานคอนกรีต: ตอม่อหมุนตาม Skew · พื้นสะพานแต่ละช่วงเฉือน (shear) เป็นสี่เหลี่ยมด้านขนาน ปลายขนานแนวตอม่อ
+    //                 ตอม่อยาว = ความกว้างพื้น ÷ cos(Skew) ให้รับพื้นได้เต็มความกว้าง
+    //   สะพานเหล็ก: ไม่มีตอม่อเฉียง — ถ้าข้อมูลมี Skew ถือว่าผิด วาดแบบตั้งฉากและบันทึกข้อความเตือน
+    let skew = b.skew;
+    if (b.src === 'SB' && skew) { warn.push(`ข้อมูล Skew ${skew}° ของสะพานเหล็ก — สะพานเหล็กไม่มีตอม่อเฉียง วาดแบบตั้งฉาก (ตรวจข้อมูล)`); skew = 0; }
+    const skewRad = skew * Math.PI / 180;
+    const pierBase = skew ? Object.assign({}, base, { deckWidth: Math.min(20, Math.round(base.deckWidth / Math.cos(skewRad) * 100) / 100) }) : base;
+
     // ระดับพื้นเดียวทั้งสะพาน: ยกจนทุกตอม่อสร้างได้
     const adjL = i => Math.max(b.spans[i - 1] || 0, b.spans[i] || 0);
     let deckLevel = base.deckLevel;
-    const ok = dl => P.every((_, i) => G.deriveDims(Object.assign({}, base, { deckLevel: dl, pierType: pierType(i, n, piers, base.pierType), spanLength: adjL(i), spanCount: 1 })).errors.length === 0);
+    const ok = dl => P.every((_, i) => G.deriveDims(Object.assign({}, pierBase, { deckLevel: dl, pierType: pierType(i, n, piers, base.pierType), spanLength: adjL(i), spanCount: 1 })).errors.length === 0);
     let guard = 0;
     while (!ok(deckLevel) && guard++ < 140) deckLevel = Math.round((deckLevel + 0.25) * 100) / 100;
     if (deckLevel !== base.deckLevel) warn.push(`ระดับพื้น ${base.deckLevel} ม. ต่ำเกินไปสำหรับตอม่อ ใช้ ${deckLevel} ม.`);
-    base.deckLevel = deckLevel;
+    base.deckLevel = deckLevel; pierBase.deckLevel = deckLevel;
 
     const group = new THREE.Group();
     group.name = base.name;
@@ -139,7 +148,7 @@
     // ตอม่อ
     P.forEach((pt, i) => {
       const type = pierType(i, n, piers, base.pierType);
-      const d = G.deriveDims(Object.assign({}, base, { pierType: type, spanLength: adjL(i), spanCount: 1 }));
+      const d = G.deriveDims(Object.assign({}, pierBase, { pierType: type, spanLength: adjL(i), spanCount: 1 }));
       d.warnings.forEach(w => warn.push(`ตอม่อ ${i + 1}: ${w}`));
       const kit = G.makeKit(d);
       const pier = G.buildPier(d, kit);
@@ -150,7 +159,7 @@
       }
       pier.position.set(pt.x, 0, pt.z);
       // แกน x ตอม่อ = แนวราง แล้วหมุนตาม Skew (ทิศของค่า Skew ในข้อมูล: บวก = หมุนตามเข็ม — ตรวจกับรูป 2D ของ 125+143 / 132+351)
-      pier.rotation.y = (90 - pt.heading + b.skew) * Math.PI / 180;
+      pier.rotation.y = (90 - pt.heading + skew) * Math.PI / 180;
       group.add(pier);
     });
     // ช่วงสะพาน: ชิ้นตรงจากตอม่อ i ไป i+1
@@ -162,6 +171,12 @@
       span.position.set(a.x, 0, a.z);
       span.rotation.y = Math.atan2(-vz, vx);
       span.scale.x = chord / L;
+      if (skew) {
+        // เฉือนตามแนวสะพาน: x' = x + tan(Skew)·z → ปลายช่วงขนานกับแนวตอม่อ (แนวกึ่งกลาง z = 0 ไม่เปลี่ยน)
+        span.updateMatrix();
+        span.matrixAutoUpdate = false;
+        span.matrix.multiply(new THREE.Matrix4().makeShear(0, 0, 0, 0, Math.tan(skewRad), 0));
+      }
       span.name = `span-${i + 1}`;
       group.add(span);
     });
@@ -307,16 +322,28 @@
 
   BPNP.layers.utils.register({ name: 'bridge_3d', register });
   // ตรวจสอบ: สร้างสะพานตาม Sta. แล้วคืนตำแหน่งตอม่อ (lng/lat) ชนิดตอม่อ และระดับพื้น — ใช้ตอนปรับแก้ข้อมูล
-  async function inspect(sta) {
+  //   opts.deck = true → คืนจุดบนพื้นสะพาน (มุมมองจากด้านบน, lng/lat) ไว้เทียบกับรูป 2D
+  async function inspect(sta, opts = {}) {
     await ensureLib(); const list = await loadBridges();
     const b = list.find(x => x.key === sta); if (!b) return null;
     const g = buildBridge(b); if (!g) return null;
     const SX = 111320 * Math.cos(b.center[1] * Math.PI / 180), SY = 110574;
+    let deck = null;
+    if (opts.deck) {
+      g.updateMatrixWorld(true);
+      deck = [];
+      const v = new THREE.Vector3();
+      g.children.filter(c => /^span-/.test(c.name)).forEach(sp => sp.traverse(o => {
+        if (!o.isMesh || !o.geometry || !o.geometry.attributes.position) return;
+        const pos = o.geometry.attributes.position;
+        for (let i = 0; i < pos.count; i++) { v.fromBufferAttribute(pos, i).applyMatrix4(o.matrixWorld); deck.push([b.center[0] + v.x / SX, b.center[1] - v.z / SY]); }
+      }));
+    }
     const piers = g.children.filter(c => /^pier-/.test(c.name)).map(c => ({ name: c.name,
       lngLat: [b.center[0] + c.position.x / SX, b.center[1] - c.position.z / SY], rotDeg: Math.round(c.rotation.y * 180 / Math.PI * 10) / 10 }));
     const spans = g.children.filter(c => /^span-/.test(c.name)).length;
     dispose(g);
-    return { sta, src: b.src, spans: b.spans, skew: b.skew, piers, spanCount: spans, warnings: warnings[b.key] || [] };
+    return { sta, src: b.src, spans: b.spans, skew: b.skew, piers, spanCount: spans, warnings: warnings[b.key] || [], deck };
   }
 
   BPNP.layers.bridge3d = { refresh: schedule, parseSpans, inspect, warnings, get built() { return built; }, get bridges() { return bridges; } };
