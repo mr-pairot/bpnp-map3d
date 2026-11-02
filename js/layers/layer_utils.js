@@ -89,6 +89,7 @@
     [].concat(layerIds).forEach(lid => {
       map.on('click', lid, e => {
         if (!e.features || !e.features.length) return;
+        if (BPNP.map.hit3d && BPNP.map.hit3d(e.point)) return;                     // โดนรูป 3D ที่บังอยู่ — ให้รูป 3D เปิดการ์ดเอง (js/map/hit3d.js)
         const f = e.features[0];
         const html = buildHtml(f, e);
         if (!html) return;
@@ -109,6 +110,7 @@
     });
     map.on('mousemove', layerId, e => {
       if (opts.maxZoom !== undefined && map.getZoom() >= opts.maxZoom) { pop.remove(); return; }
+      if (BPNP.map.hit3d && BPNP.map.hit3d(e.point)) { pop.remove(); return; }   // ชี้ที่รูป 3D — ป้ายของรูป 3D แสดงแทน (js/map/hit3d.js)
       const f = e.features && e.features[0];
       const text = f && getText(f);
       if (!text) { pop.remove(); return; }
