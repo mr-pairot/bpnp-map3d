@@ -12,6 +12,8 @@
 
 .bp-panel-title-container {
     display: flex;
+    flex-wrap: wrap;       /* จอแคบ: ปุ่ม Critical Alert ลงบรรทัดใหม่แทนการล้น */
+    row-gap: 6px;
     align-items: baseline; /* จัดให้อักษรฐานตรงกัน */
     margin-bottom: 10px;
 }
@@ -27,9 +29,17 @@
     font-size: 12px;
     color: #adb5bd;
     margin-left: 10px;
-    margin-right: 30px; /* ระยะห่างจากปุ่มปิด */
+    margin-right: 10px;
     font-weight: normal;
 }
+
+/* ช่องปุ่ม Critical Alert (bridge_alert.js) — ชิดขวา เว้นที่ให้ปุ่มปิด */
+.bridge-alert-slot {
+    margin-left: auto;
+    margin-right: 30px; /* ระยะห่างจากปุ่มปิด */
+    align-self: center;
+}
+.bridge-alert-slot:empty { display: none; }
 
 
 /* =========================================
