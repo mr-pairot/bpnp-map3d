@@ -243,7 +243,7 @@
         // คลิก: Pay Out อยู่ชั้นบน (เหมือนเดิม) → ตรวจก่อน
         map.on('click', e => {
           if (!BPNP.map.registry.isVisible('polygonLand') || BPNP.tools.isBusy()) return;
-          if (BPNP.map.hit3d && BPNP.map.hit3d(e.point)) return;                   // แปลงอยู่ใต้รูป 3D ที่ถูกคลิก
+          if (U.otherClickableAt(map, e.point, ['parcel-fill', 'payout-fill'])) return;   // ชั้นล่างสุด: โครงสร้าง/ถนน/รูป 3D บนจุดนี้ได้ก่อน
           const hits = map.queryRenderedFeatures(e.point, { layers: ['payout-fill', 'parcel-fill'] });
           if (!hits.length) return;
           const h = hits[0];
@@ -254,7 +254,8 @@
         ['parcel-fill', 'payout-fill'].forEach(lid => {
           map.on('mouseenter', lid, () => { map.getCanvas().style.cursor = 'pointer'; });
           map.on('mouseleave', lid, () => { map.getCanvas().style.cursor = ''; });
-          U.hoverLabel(map, lid, f => (f.properties || {}).Code || (f.properties || {}).name || 'Unknown Code', { className: 'land-hover', offset: 8 });
+          U.hoverLabel(map, lid, f => (f.properties || {}).Code || (f.properties || {}).name || 'Unknown Code',
+            { className: 'land-hover', offset: 8, yieldTo: e => U.otherClickableAt(map, e.point, ['parcel-fill', 'payout-fill']) });
         });
       },
       onShow: () => {
