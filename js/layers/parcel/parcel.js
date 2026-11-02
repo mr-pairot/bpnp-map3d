@@ -243,6 +243,7 @@
         // คลิก: Pay Out อยู่ชั้นบน (เหมือนเดิม) → ตรวจก่อน
         map.on('click', e => {
           if (!BPNP.map.registry.isVisible('polygonLand') || BPNP.tools.isBusy()) return;
+          if (BPNP.map.hit3d && BPNP.map.hit3d(e.point)) return;                   // แปลงอยู่ใต้รูป 3D ที่ถูกคลิก
           const hits = map.queryRenderedFeatures(e.point, { layers: ['payout-fill', 'parcel-fill'] });
           if (!hits.length) return;
           const h = hits[0];
