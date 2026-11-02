@@ -18,6 +18,7 @@ BPNP.boot.APP_SCRIPTS = [
   'js/map/basemaps.js',
   'js/map/layer_registry.js',
   'js/map/popup.js',
+  'js/map/hit3d.js',
   'js/map/map_core.js',
   'js/map/controls.js',
 
