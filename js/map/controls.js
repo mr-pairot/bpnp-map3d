@@ -1,6 +1,6 @@
 /* js/map/controls.js
  * ─────────────────────────────────────────────────────────────────────────
- * มาตราส่วน, attribution และปุ่มเต็มจอ (เฉพาะเดสก์ท็อป)
+ * มาตราส่วน, attribution และปุ่มเต็มจอ (เฉพาะเดสก์ท็อปบนเบราว์เซอร์ — ไม่แสดงบนมือถือ/แท็บเล็ต/PWA)
  * ใช้ DOM/CSS เดิม: .custom-standalone-scale, .custom-standalone-attr, .standard-map-btn
  * ───────────────────────────────────────────────────────────────────────── */
 (function () {
@@ -40,8 +40,24 @@
            (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent));
   }
 
+  // แอปติดตั้ง (PWA) — ไม่นับ display-mode: fullscreen เพราะ Chrome ตอบ true ทุกครั้งที่หน้าเว็บอยู่ในโหมดเต็มจอ (F11/requestFullscreen)
+  function isStandalonePwa() {
+    return ['standalone', 'minimal-ui', 'window-controls-overlay'].some(m => window.matchMedia(`(display-mode: ${m})`).matches) ||
+           navigator.standalone === true;
+  }
+
+  // แสดงปุ่มเต็มจอเฉพาะ "เดสก์ท็อปบนเบราว์เซอร์": ตรวจจากตัวชี้หลักของอุปกรณ์ (เมาส์/ทัชแพด) ไม่ใช่แค่ User-Agent
+  //   เพราะแท็บเล็ต/มือถือที่เปิด "เว็บไซต์เดสก์ท็อป" จะส่ง UA แบบเดสก์ท็อป (ไม่มีคำว่า Android) แต่ตัวชี้หลักยังเป็นนิ้ว (coarse)
+  //   เต็มจอบนอุปกรณ์เหล่านั้นทำให้ขนาดหน้าเว็บเปลี่ยน ปุ่มบนจอขยายโตบังแผนที่
+  function canShowFullscreenBtn() {
+    if (!document.documentElement.requestFullscreen) return false;
+    if (isMobile() || (navigator.userAgentData && navigator.userAgentData.mobile)) return false;
+    if (isStandalonePwa()) return false;
+    return window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  }
+
   function initFullscreenButton() {
-    if (isMobile() || !document.documentElement.requestFullscreen) return;
+    if (!canShowFullscreenBtn()) return;
     document.body.classList.add('has-fullscreen-btn');   // legend มุมขวาบนเลื่อนลงใต้ปุ่ม
     const btn = BPNP.ui.createStandardButton({
       id: 'fullscreenBtn',
