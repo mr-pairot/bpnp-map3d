@@ -1,13 +1,14 @@
 /* js/layers/structure/bridge_alert.js
  * ─────────────────────────────────────────────────────────────────────────
  * แจ้งเตือนงานสะพานล่าช้า (เดิม Critical_Alert_Str.js)
- *   - ปุ่ม "Bridge: Critical Alert" แสดงเฉพาะตอนเปิดชั้น Bridge (คอลัมน์ซ้าย)
+ *   - ปุ่ม "Critical Alert" อยู่ในส่วนหัวของแผงตารางสะพาน (bridge_panel.js) — แสดงเฉพาะตอนเปิดชั้น Bridge
  *   - เปิดแล้ว → จุดกระเพื่อมสีแดง/ส้ม/เหลืองที่สะพานที่เข้าเกณฑ์
  *       แดง  : เปิดใช้ และ (เวลาเหลือ < X วัน  หรือ ล่าช้า > Y %)
  *       ส้ม  : เปิดใช้ และ (ล่าช้า > Y %       และ เวลาเหลือ < X วัน)
  *       เหลือง: เปิดใช้ และ (ล่าช้า > Y %       และ เวลาเหลือ < X วัน)
  *     ล่าช้า = % แผน − % จริง · สะพานที่เสร็จ 100% ไม่แจ้ง
- *   - แผงตั้งเกณฑ์ (ชี้เมาส์ค้าง 1 วินาที หรือเปิดสวิตช์) · บันทึกค่าในเครื่อง
+ *   - แผงตั้งเกณฑ์: เปิดสวิตช์ → คลี่ขึ้นเหนือแผงตาราง · ปิดสวิตช์/✕/บันทึก/ปิดแผงตาราง → ยุบลงซ่อนหลังแผงตาราง
+ *     ส่วนหัวแผง = ชื่อ + ปุ่มปิด · บันทึกค่าในเครื่อง
  * CSS: css/layers/bridge_alert.css
  * ───────────────────────────────────────────────────────────────────────── */
 (function () {
@@ -21,8 +22,8 @@
   const STORAGE_KEY = 'critical_alert_config_v3';
   const clone = o => JSON.parse(JSON.stringify(o));
 
-  let wrapper = null, panel = null, toggle = null;
-  let active = false, available = false;
+  let panel = null, toggle = null, panelOpen = false;
+  let active = false;
   let config = loadConfig();
   let markers = [];
 
@@ -47,19 +48,26 @@
   }
 
   function build() {
-    if (wrapper) return;
-    wrapper = document.createElement('div');
-    wrapper.className = 'critical-alert-wrapper';
-    wrapper.style.display = 'none';
-    wrapper.innerHTML = `
+    if (panel) return;
+    const slot = BPNP.layers.bridgePanel && BPNP.layers.bridgePanel.headerSlot();
+    if (!slot) return;
+    slot.innerHTML = `
       <label class="toggle-alert-str" for="toggle-alert-bridge" title="เปิด/ปิด แจ้งเตือนสถานะความล่าช้า">
         <input type="checkbox" id="toggle-alert-bridge" class="toggle-alert__input">
         <span class="toggle-alert__button">
           <svg class="toggle-alert__button--correct" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
         </span>
-      </label>
-      <div class="alert-panel">
+      </label>`;
+    // แผงตั้งเกณฑ์อยู่นอกแผงตาราง (z-index ต่ำกว่า) — ยุบลงแล้วซ่อนหลังแผงตาราง
+    panel = document.createElement('div');
+    panel.className = 'alert-panel';
+    panel.innerHTML = `
+      <div class="alert-panel-header">
+        <div class="alert-panel-title">แจ้งเตือนงานสะพานล่าช้า</div>
+        <div class="alert-panel-sub">Bridge: Critical Alert</div>
         <button class="bp-close-btn" type="button" title="ปิดหน้าต่าง">&times;</button>
+      </div>
+      <div class="alert-panel-body">
         ${group('🔴 เคสแดง', 'red', 'red-bg', [
           { k: 'delayPct', l: 'ล่าช้า >', unit: '%', min: 0, max: 100, step: 5 },
           { k: 'daysRemaining', l: 'หรือ เวลาเหลือ <', unit: 'วัน', min: -30, max: 60, step: 5 }])}
@@ -74,31 +82,25 @@
           <button class="btn reset" type="button">ค่าเริ่มต้น</button>
         </div>
       </div>`;
-    document.body.appendChild(wrapper);
-    panel  = wrapper.querySelector('.alert-panel');
-    toggle = wrapper.querySelector('#toggle-alert-bridge');
+    document.body.appendChild(panel);
+    toggle = slot.querySelector('#toggle-alert-bridge');
     ['mousedown', 'touchstart', 'wheel', 'dblclick'].forEach(ev =>
-      wrapper.addEventListener(ev, e => e.stopPropagation(), { passive: true }));
-    wrapper.addEventListener('contextmenu', e => e.preventDefault());
+      panel.addEventListener(ev, e => e.stopPropagation(), { passive: true }));
+    panel.addEventListener('contextmenu', e => e.preventDefault());
     bind();
     syncUI();
-    BPNP.ui.leftColumnAdd(wrapper, 10);
   }
 
   function bind() {
-    let hoverTimer, idleTimer;
     toggle.onchange = e => { setActive(e.target.checked); e.target.checked ? showPanel() : hidePanel(); };
-    wrapper.onmouseenter = () => {
-      clearTimeout(idleTimer);
-      hoverTimer = setTimeout(() => {
-        if (!toggle.checked) { toggle.checked = true; setActive(true); }
-        showPanel();
-      }, 1000);
-    };
-    wrapper.onmouseleave = () => { clearTimeout(hoverTimer); idleTimer = setTimeout(hidePanel, 5000); };
     panel.querySelector('.set').onclick = () => { readUI(); saveConfig(); render(); hidePanel(); };
     panel.querySelector('.reset').onclick = () => { config = clone(DEFAULTS); syncUI(); saveConfig(); render(); };
-    panel.querySelector('.bp-close-btn').onclick = e => { e.stopPropagation(); clearTimeout(idleTimer); hidePanel(); };
+    panel.querySelector('.bp-close-btn').onclick = e => { e.stopPropagation(); hidePanel(); };
+    // แผงตารางปิด → แผง Alert ยุบตาม · ความสูงแผงตารางเปลี่ยน (แท็บ/จอหมุน) → ปรับตำแหน่งแผง Alert
+    BPNP.layers.bridgePanel.onHide(hidePanel);
+    const bp = document.getElementById('bridge-bottom-panel');
+    if (bp && window.ResizeObserver) new ResizeObserver(() => { if (panelOpen) layout(); }).observe(bp);
+    window.addEventListener('resize', () => { if (panelOpen) layout(); });
   }
 
   function syncUI() {
@@ -122,8 +124,21 @@
     });
   }
 
-  const showPanel = () => panel.classList.add('active');
-  const hidePanel = () => { if (panel) panel.classList.remove('active'); };
+  // วางแผง Alert ให้ขอบล่างชิดขอบบนแผงตาราง · ความสูงที่คลี่ = ความสูงเนื้อหา แต่ไม่เกินพื้นที่เหนือแผงตาราง
+  function layout() {
+    const bp = document.getElementById('bridge-bottom-panel'), h = bp ? bp.offsetHeight : 0;
+    panel.style.bottom = Math.max(0, h - 1) + 'px';
+    const head = panel.querySelector('.alert-panel-header'), body = panel.querySelector('.alert-panel-body');
+    const natural = head.offsetHeight + body.scrollHeight, avail = window.innerHeight - h - 16;
+    panel.style.maxHeight = Math.max(0, Math.min(natural, avail)) + 'px';
+  }
+  function showPanel() { if (!panel) return; panelOpen = true; panel.classList.add('active'); layout(); }
+  function hidePanel() {
+    if (!panel) return;
+    panelOpen = false;
+    panel.classList.remove('active');
+    panel.style.maxHeight = '0px';
+  }
 
   function daysRemaining(endDate, today) {
     if (!endDate) return Infinity;
@@ -169,10 +184,9 @@
   // เรียกจาก bridge.js เมื่อเปิด/ปิดชั้น Bridge
   function setAvailable(on) {
     build();
-    available = !!on;
-    wrapper.style.display = available ? '' : 'none';
-    if (!available && toggle.checked) { toggle.checked = false; setActive(false); }
-    BPNP.ui.leftColumnRefresh();
+    if (!toggle) return;
+    if (!on && toggle.checked) { toggle.checked = false; setActive(false); }
+    if (!on) hidePanel();
   }
 
   BPNP.layers.bridgeAlert = {
