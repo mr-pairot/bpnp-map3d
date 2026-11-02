@@ -85,7 +85,18 @@
   }
 
   // ── คลิก feature → popup ──
+  // ── ชั้นที่คลิกได้ (v3.10.05) — แปลงเวนคืนเป็นชั้นล่างสุดของการคลิก/ชี้: ถ้าจุดนั้นมีชั้นเหล่านี้อยู่ แปลงเวนคืนหลีกให้ ──
+  const clickTargets = new Set();
+  function markClickable(ids) { [].concat(ids).forEach(id => clickTargets.add(id)); }
+  // จุดนั้นมีชั้นที่คลิกได้ (นอกจาก except) หรือรูป 3D อยู่หรือไม่
+  function otherClickableAt(map, point, except = []) {
+    if (BPNP.map.hit3d && BPNP.map.hit3d(point)) return true;
+    const ids = [...clickTargets].filter(id => except.indexOf(id) === -1 && map.getLayer(id) && map.getLayoutProperty(id, 'visibility') !== 'none');
+    return ids.length ? map.queryRenderedFeatures(point, { layers: ids }).length > 0 : false;
+  }
+
   function clickPopup(map, layerIds, buildHtml, opts = {}) {
+    markClickable(layerIds);
     [].concat(layerIds).forEach(lid => {
       map.on('click', lid, e => {
         if (!e.features || !e.features.length) return;
@@ -110,6 +121,7 @@
     });
     map.on('mousemove', layerId, e => {
       if (opts.maxZoom !== undefined && map.getZoom() >= opts.maxZoom) { pop.remove(); return; }
+      if (opts.yieldTo && opts.yieldTo(e)) { pop.remove(); return; }   // ชั้นล่าง (แปลงเวนคืน): มีชั้นอื่นอยู่บนจุดนี้ → ไม่แสดงป้าย
       if (BPNP.map.hit3d && BPNP.map.hit3d(e.point)) { pop.remove(); return; }   // ชี้ที่รูป 3D — ป้ายของรูป 3D แสดงแทน (js/map/hit3d.js)
       const f = e.features && e.features[0];
       const text = f && getText(f);
@@ -185,5 +197,5 @@
     });
   }
 
-  BPNP.layers.utils = { z, loadGeoJSON, labelFont, ensureLabelBox, labelLayout, clickPopup, hoverLabel, bboxCenter, legendStack, htmlMarkerSet, register, registerAll };
+  BPNP.layers.utils = { z, loadGeoJSON, labelFont, ensureLabelBox, labelLayout, clickPopup, hoverLabel, markClickable, otherClickableAt, bboxCenter, legendStack, htmlMarkerSet, register, registerAll };
 })();
