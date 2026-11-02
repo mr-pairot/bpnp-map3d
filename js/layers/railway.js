@@ -82,23 +82,54 @@
   // ── โหมด 3D: หมุดสถานีตามระยะ (v3.9.01) ──────────────────────────────
   //   1) ย่อตามระยะห่างจากกล้อง เล็กสุด 50% (ย่อจากปลายหมุด ปลายหมุดยังแตะจุดเดิม)
   //   2) ป้ายชื่อที่ทับกันซ่อน — สถานีที่อยู่ใกล้ได้แสดงก่อน (ไอคอนยังแสดง แตะ/ชี้เพื่อดูชื่อ)
-  //   3) จางหายเมื่อใกล้ขอบฟ้า (ไม่ลอยขึ้นไปบนท้องฟ้า)
+  //   3) ไม่ลอยบนท้องฟ้า (v3.10.03): ซ่อนหมุดที่อยู่ด้านหลังกล้อง · ทั้งหมุดและป้ายต้องอยู่ใต้เส้นขอบฟ้า
+  //      (ส่วนบนเข้าใกล้ขอบฟ้า → จางหาย) · หาเส้นขอบฟ้าจาก "พื้นด้านหน้ากล้อง"
   //   4) ลำดับการวาด: หมุดใกล้อยู่หน้าหมุดไกล (ภายในหมุดเดียวกัน ไอคอนยังอยู่บนป้ายของตัวเอง)
   //   ชี้/แตะหมุด → ขึ้นมาหน้าสุดและแสดงชื่อชั่วคราว
   //   โหมด 2D: ล้างค่าทั้งหมด หมุดเหมือนเดิมทุกอย่าง
-  const MIN_SCALE = 0.5, FADE_FROM = 20, FADE_LEN = 70;
+  const MIN_SCALE = 0.5;
+  const FADE_BAND = 30;          // ส่วนบนของหมุดเข้าใกล้เส้นขอบฟ้า → จางหายในช่วงนี้ (px)
   let depthQueued = false, depthActive = false;
 
   const is3d = map => !!(BPNP.map.terrain && BPNP.map.terrain.isOn() && map.getPitch() > 0.5);
 
-  function horizonY(map) {
-    // แถวบนสุดที่ยังเป็นพื้นแผนที่ (เหนือขึ้นไปเป็นท้องฟ้า)
+  // ── กล้อง (v3.10.03) ──
+  // unproject ของแถวท้องฟ้าคืนจุดบนพื้น "ด้านหลังกล้อง" และ project กลับได้ตรง → ใช้ตรวจขอบฟ้าอย่างเดียวไม่ได้
+  // จึงตรวจว่าจุดอยู่ด้านหน้ากล้องหรือไม่ (เทียบทิศจากตำแหน่งกล้องกับทิศที่กล้องหัน)
+  // ตำแหน่งกล้อง: map.transform.getCameraLngLat() (MapLibre 5.24 — แอปตรึงรุ่นไว้) · ไม่มี → ไม่ตรวจหน้า/หลัง (แบบเดิม)
+  function cameraFrame(map) {
+    try {
+      const t = map.transform, ll = t && t.getCameraLngLat ? t.getCameraLngLat() : null;
+      if (!ll) return null;
+      const b = map.getBearing() * Math.PI / 180;
+      return { cp: maplibregl.MercatorCoordinate.fromLngLat(ll), fx: Math.sin(b), fy: -Math.cos(b) };   // เมอร์เคเตอร์: y ชี้ใต้
+    } catch (e) { return null; }
+  }
+  function inFront(cf, ll) {
+    if (!cf) return true;
+    const m = maplibregl.MercatorCoordinate.fromLngLat(ll);
+    return (m.x - cf.cp.x) * cf.fx + (m.y - cf.cp.y) * cf.fy > 0;
+  }
+
+  // แถวบนสุดที่ยังเห็น "พื้นด้านหน้ากล้อง" (เหนือขึ้นไปเป็นท้องฟ้า)
+  function horizonY(map, cf) {
     const c = map.getContainer(), x = c.clientWidth / 2;
-    const onGround = y => { try { const ll = map.unproject([x, y]); const q = map.project(ll); return Math.abs(q.y - y) < 1.5; } catch (e) { return false; } };
-    if (onGround(0)) return 0;
+    const ground = y => {
+      try { const ll = map.unproject([x, y]); if (!ll || !inFront(cf, ll)) return false; return Math.abs(map.project(ll).y - y) < 1.5; }
+      catch (e) { return false; }
+    };
+    if (ground(0)) return 0;
     let lo = 0, hi = c.clientHeight;
-    for (let i = 0; i < 12; i++) { const mid = (lo + hi) / 2; if (onGround(mid)) hi = mid; else lo = mid; }
+    for (let i = 0; i < 14; i++) { const mid = (lo + hi) / 2; if (ground(mid)) hi = mid; else lo = mid; }
     return hi;
+  }
+
+  // ความสูงเต็มของหมุด (ไอคอน + ป้ายชื่อที่อยู่เหนือไอคอน) ก่อนย่อ — วัดครั้งเดียวต่อหมุด
+  function fullHeight(root, inner, label) {
+    if (root.dataset.fullH) return +root.dataset.fullH;
+    const h = inner.offsetHeight - Math.min(0, label ? label.offsetTop : 0);
+    if (h > 0) root.dataset.fullH = String(h);
+    return h || 60;
   }
 
   function resetDepth() {
@@ -118,7 +149,8 @@
     if (!is3d(map)) { if (depthActive) resetDepth(); return; }
     depthActive = true;
     const c = map.getContainer(), H = c.clientHeight;
-    const hz = horizonY(map);
+    const cf = cameraFrame(map);
+    const hz = horizonY(map, cf);
     const ppm = ll => { const a = map.project(ll), b = map.project([ll.lng + 100 / (111320 * Math.cos(ll.lat * Math.PI / 180)), ll.lat]); return Math.hypot(b.x - a.x, b.y - a.y); };
     const ref = ppm(map.unproject([c.clientWidth / 2, H * 0.6]));
     // ขั้นที่ 1: ขนาด / ความจาง / ลำดับ
@@ -126,7 +158,9 @@
       const root = mk.getElement(), ll = mk.getLngLat(), p = map.project(ll);
       const inner = root.querySelector('.station-marker-inner'), label = root.querySelector('.station-marker-label');
       const scale = Math.max(MIN_SCALE, Math.min(1, ppm(ll) / ref));
-      const fade = Math.max(0, Math.min(1, (p.y - (hz + FADE_FROM)) / FADE_LEN));
+      // แสดงได้เมื่ออยู่หน้ากล้อง และทั้งหมุด + ป้ายชื่อ (หลังย่อ) อยู่ใต้เส้นขอบฟ้า · ส่วนบนเข้าใกล้ขอบฟ้า → จางใน FADE_BAND px
+      const top = p.y - fullHeight(root, inner, label) * scale;
+      const fade = !inFront(cf, ll) ? 0 : Math.max(0, Math.min(1, (top - hz) / FADE_BAND));
       inner.style.transformOrigin = '50% 100%';
       inner.style.transform = `scale(${scale.toFixed(3)})`;
       inner.style.opacity = fade.toFixed(2);
