@@ -1,4 +1,3 @@
-```svg
 <svg id="my-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"
      class="w-full h-full"
      style="--bg-color:#6c25dd;--map-green:#3fa423;--map-blue-dark:#5e95b0;--map-blue-light:#5e95b0;--pin-red:#0008fa;--pencil-body:#0008fa;--bldg-left:#ccced1;--bldg-right:#ccced1">
@@ -103,4 +102,3 @@
     </g>
   </g>
 </svg>
-```
