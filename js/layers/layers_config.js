@@ -4,6 +4,7 @@
  *
  *   id / name / nameLoaded / isDefault / hasOpacityControl / isControlVisible
  *     → ความหมายเดิมทุกประการ
+ *   hasContract2Toggle  มีปุ่ม "สัญญา2" ทางขวาชื่อเลเยอร์ (แสดง/ซ่อนสถานีช่วงสัญญา 2 — เริ่มที่ซ่อน) ใช้กับ stationName
  *   category  general | structure | progress   (เดิม sw_tw → progress)
  *   kind      raster (tile/WMS) | vector (GeoJSON จาก data/)
  *   slot      ลำดับซ้อนใน layer_registry (ค่าเริ่มต้นตาม category)
@@ -19,7 +20,7 @@ BPNP.layers.CONFIG = [
   { id: 'dpt',            name: 'ผังเมือง (DPT)',            nameLoaded: 'Longdo ผังเมืองรวม',    category: 'general', kind: 'raster', phase: 1, isDefault: false, hasOpacityControl: true,  isControlVisible: false },
   { id: 'tomtomTraffic',  name: 'Traffic Flow',             nameLoaded: 'TomTom Traffic',        category: 'general', kind: 'raster', phase: 1, isDefault: false, hasOpacityControl: true,  isControlVisible: false },
   { id: 'dohKmPost',      name: 'หลักกม.',                   nameLoaded: 'หลัก กม. กรมทางหลวง',   category: 'general', kind: 'vector', phase: 4, source: 'data/json/doh_km_post.json',             isDefault: false, hasOpacityControl: true,  isControlVisible: false },
-  { id: 'stationName',    name: 'รายชื่อสถานี (train icon)',   nameLoaded: 'Station Icon',          category: 'general', kind: 'vector', phase: 2, source: 'data/geojson/railway/station_name.geojson',      isDefault: false,                           isControlVisible: true  },
+  { id: 'stationName',    name: 'รายชื่อสถานี (train icon)',   nameLoaded: 'Station Icon',          category: 'general', kind: 'vector', phase: 2, source: 'data/geojson/railway/station_name.geojson',      isDefault: false,                           isControlVisible: true, hasContract2Toggle: true  },
   { id: 'alTrack',        name: 'Alignment Track (red)',    nameLoaded: 'Alignment Track',       category: 'general', kind: 'vector', phase: 2, source: 'data/geojson/alignment/al_track.geojson',        isDefault: true,  hasOpacityControl: false, isControlVisible: true  },
   { id: 'layer_ROW',      name: 'เขตทางรถไฟ (orange)',       nameLoaded: 'ROW Boundary',          category: 'general', kind: 'vector', phase: 2, source: 'data/geojson/railway/row_boundary.geojson',      isDefault: true,  hasOpacityControl: false, isControlVisible: true  },
   { id: 'stationLayout',  name: 'แผนผังย่านสถานี (lightblue)', nameLoaded: 'Station Layout',       category: 'general', kind: 'vector', phase: 2, source: 'data/geojson/railway/station_layout.geojson',    isDefault: false, hasOpacityControl: false, isControlVisible: true  },
