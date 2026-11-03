@@ -6,9 +6,13 @@
  *   Sta. = กึ่งกลางสะพาน · ตอม่อริมหัว = Sta − Length/2 · ตอม่อต้นถัดไป = + ความยาวช่วงสะสม (Span "3x40", "100+75")
  *   ตอม่อแต่ละต้นวางที่ กม. ของตัวเองบนแนวราง (โค้งตามแนวรางจริง) ตั้งฉากแนวราง ณ จุดนั้น แล้วหมุนตาม Skew
  *   ช่วงสะพานแต่ละช่วงเป็นชิ้นตรงจากตอม่อต้นหนึ่งไปอีกต้น
- * ตอม่อ: ตอม่อริม = Type D ผนังทึบเสมอ (+ กำแพงปีกตามรูป 2D) · ตอม่อใน = ตั้งรายต้นได้ (data/json/bridge_3d.json) ค่าตั้งต้น A
- * พื้น: CB = คอนกรีต (box girder) · SB = โครงเหล็ก (truss) · ราง 2 ทาง ขนาด 1.000 ม.
- * ระดับพื้น: ค่ารายสะพาน > ช่องลอด (height_limit) + ความลึกคาน > 7 ม. (ยกอัตโนมัติถ้าต่ำกว่าที่ตอม่อต้องการ)
+ * แบบมาตรฐาน (v3.11.00 · ตัวสร้าง v3.4): preset auto เลือกแบบตามความยาวแต่ละช่วง
+ *   CB = คาน I ตามแบบ JVBP Slab span 15/20/25/30 ม. พื้นกว้าง 11.00 ม. (กันหิน รางสาย ราวท่อ หมอนคอนกรีต)
+ *        ตอม่อริมแบบที่นั่งคาน + กำแพงหลัง + corbel · แผ่นยาง/แท่น/บล็อกกันเลื่อนใต้ปลายคานทุกตัว
+ *   SB = โครงถักตามแบบ 25–100 ม. (พื้นเหล็กเปิด หมอนเหล็ก ทางเดินข้าง) · ตอม่อริมผนังทึบ Type D · แผ่นยางใต้ปลายคอร์ดล่าง
+ * ตอม่อใน = ตั้งรายต้นได้ (data/json/bridge_3d.json) ค่าตั้งต้น A แบบมีคานหัวเสา (cap) · กำแพงปีกตามรูป 2D
+ * ระดับพื้น: ค่ารายสะพาน > ช่องลอด (height_limit) + ความลึกโครงสร้างจากตัวสร้าง > 7 ม. (ยกอัตโนมัติถ้าต่ำกว่าที่ตอม่อต้องการ)
+ * สะพานเฉียง: ช่วงสะพานเฉือนลงในรูปทรง (bakeSpan) คานขวางกลางช่วงตั้งฉากกับคาน
  *
  * แสดงเมื่อ: เปิดชั้น Bridge + โหมด 3D + config.features.bridge3d (เริ่มต้น ['editor']) + ซูม ≥ Leaflet 15
  *   สร้างเฉพาะสะพานในจอ (สูงสุด 14 สะพาน) และคืนหน่วยความจำเมื่อออกนอกจอ · โหลด Three.js เมื่อใช้ครั้งแรก
@@ -22,6 +26,8 @@
   const MIN_ZOOM = 14;          // = Leaflet 15
   const MAX_BUILT = 14;
   const WING_MAX = 4;           // ความยาวกำแพงปีกสูงสุด (ม.)
+  const CB_WIDTH_WARN = [11.0, 15.0];   // CB ตามแบบกว้าง 11.00 — เตือนเมื่อรูป 2D อยู่นอกช่วงนี้
+  const r2 = v => Math.round(v * 100) / 100;
 
   let THREE = null, G = null, cfg = null, libPromise = null;
   let layer = null, origin = null, bridges = null, refreshQueued = false, refreshing = false;
@@ -100,10 +106,9 @@
     base.skew = 0;                        // การเฉียงจัดการที่ไฟล์นี้ (ตาม กม. ของตอม่อแต่ละต้น)
     base.name = `${b.src} ${b.sta}`;
     if (!bc.deckWidth) base.deckWidth = Math.round(Math.min(20, Math.max(4, fp.width)) * 10) / 10;
-    // ระดับพื้น: ค่ารายสะพาน > ช่องลอด + ความลึกโครงสร้าง > ค่าตั้งต้น
+    // ระดับพื้น: ค่ารายสะพาน > ช่องลอด + ความลึกโครงสร้าง (ใต้ deckLevel จากตัวสร้าง ตามแบบของแต่ละช่วง) > ค่าตั้งต้น
     if (!bc.deckLevel && +b.heightLimit > 0) {
-      const Lmax = Math.max(...b.spans);
-      const dep = base.deckType === 'truss' ? 1.6 : (base.girderDepth > 0 ? base.girderDepth : Math.min(4, Math.max(1.2, Lmax / 18)));
+      const dep = Math.max(...b.spans.map(L => G.deriveDims(G.spanParams(base, L)).superDepth));
       base.deckLevel = Math.round((+b.heightLimit + dep) * 10) / 10;
     }
     return { base, wing: bc.wingWall };
@@ -119,6 +124,11 @@
     const SX = 111320 * Math.cos(b.center[1] * Math.PI / 180), SY = 110574;
     const P = pts.map(p => ({ x: (p.lng - b.center[0]) * SX, z: -(p.lat - b.center[1]) * SY, heading: p.heading }));
     const warn = [];
+    // CB ตามแบบกว้าง 11.00 ม. — รูป 2D ต่างมากผิดปกติให้ตรวจข้อมูล
+    const d0 = G.deriveDims(G.spanParams(base, Math.max(...b.spans)));
+    if (d0.params.presetUsed && d0.params.bridgeKind === 'concrete' && (fp.width < CB_WIDTH_WARN[0] || fp.width > CB_WIDTH_WARN[1])) {
+      warn.push(`ความกว้างรูป 2D ${r2(fp.width)} ม. ต่างจากแบบมาตรฐาน ${d0.W} ม. มาก (ตรวจข้อมูล)`);
+    }
 
     // ── สะพานเฉียง (v3.10.05) ──
     //   สะพานคอนกรีต: ตอม่อหมุนตาม Skew · พื้นสะพานแต่ละช่วงเฉือน (shear) เป็นสี่เหลี่ยมด้านขนาน ปลายขนานแนวตอม่อ
@@ -137,11 +147,16 @@
     group.name = base.name;
     // ชี้/คลิกรูป 3D (v3.10.04): ข้อมูลสำหรับ pick → การ์ดสะพานเดิม (bridge.js) + ป้ายชื่อ
     group.userData = { typeId: 'layer_bridge', key: b.key, feature: b.feature, label: `${b.src === 'SB' ? 'สะพานเหล็ก' : 'สะพานคอนกรีต'}  กม. ${b.sta}` };
-    // ตอม่อ (ตัวสร้างร่วม: pierParams → ชนิดรายต้น · ตอม่อริม D · ความกว้าง ÷ cos(skew))
+    // ช่วงสะพาน: ใช้แบบมาตรฐานของความยาวตัวเอง (ตำแหน่งคาน I ใช้วางแผ่นรองบนตอม่อด้วย)
+    const spanDims = b.spans.map(L => G.deriveDims(Object.assign(G.spanParams(base, L), { deckLevel: base.deckLevel })));
+    spanDims.forEach((sd, i) => sd.warnings.forEach(w => warn.push(`ช่วง ${i + 1}: ${w}`)));
+    // ตอม่อ (ตัวสร้างร่วม: pierParams → แบบมาตรฐาน · ชนิดรายต้น · ตอม่อริม (abutDir) · ความกว้าง ÷ cos(skew))
     P.forEach((pt, i) => {
       const d = G.deriveDims(G.pierParams(base, b.spans, i, skewRad));
       d.warnings.forEach(w => warn.push(`ตอม่อ ${i + 1}: ${w}`));
-      const pier = G.buildPier(d, G.makeKit(d));
+      const kit = G.makeKit(d);
+      bearingKit(kit, d, spanDims[i - 1], spanDims[i], skewRad);
+      const pier = G.buildPier(d, kit);
       pier.name = `pier-${i + 1}${i === 0 || i === n ? ' (ริม)' : ''}`;
       if (i === 0 || i === n) {
         // ความยาวปีกจากรูป 2D: ส่วนที่ยื่นเลยปลายสะพาน − ส่วนที่เกิดจากความเฉียงของปลาย (ครึ่งความกว้าง × tan Skew)
@@ -153,20 +168,55 @@
       pier.rotation.y = (90 - pt.heading + skew) * Math.PI / 180;   // แกน x ตอม่อ = แนวราง แล้วหมุนตาม Skew
       group.add(pier);
     });
-    // ช่วงสะพาน: ชิ้นตรงจากตอม่อ i ไป i+1 · สะพานเฉียงเฉือนเป็นสี่เหลี่ยมด้านขนาน (ตัวสร้างร่วม skewSpan)
+    // ช่วงสะพาน: ชิ้นตรงจากตอม่อ i ไป i+1 · สะพานเฉียงเฉือนลงในรูปทรง (bakeSpan) — คานขวางกลางช่วงตั้งฉากกับคาน
     b.spans.forEach((L, i) => {
-      const d = G.deriveDims(G.spanParams(base, L));
-      const span = G.buildSpan(d, G.makeKit(d));
+      const d = spanDims[i];
+      const span = G.bakeSpan(G.buildSpan(d, G.makeKit(d)), skewRad, 0);
       const a = P[i], c = P[i + 1], vx = c.x - a.x, vz = c.z - a.z, chord = Math.hypot(vx, vz);
       span.position.set(a.x, 0, a.z);
       span.rotation.y = Math.atan2(-vz, vx);
       span.scale.x = chord / L;
-      G.skewSpan(span, skewRad);
       span.name = `span-${i + 1}`;
       group.add(span);
     });
     warnings[b.key] = warn;
     return group;
+  }
+
+  /* แผ่นรองบนตอม่อจากช่วงสองข้าง (เหมือน buildBridge ของตัวสร้าง · กรอบตอม่อที่หมุนตามมุมเฉียง)
+     คาน I: ใต้ปลายคานทุกตัว ห่างแนวตอม่อตามแนวคาน endGap + 0.35 · บล็อกกันเลื่อนระหว่างคาน (ยกเว้นช่องกลาง)
+     โครงถักตามแบบ: ใต้ปลายคอร์ดล่าง ห่างแนวตอม่อ tp.off */
+  function bearingKit(kit, d, prev, next, skewRad) {
+    const p = d.params, c = Math.cos(skewRad), sn = Math.sin(skewRad);
+    if (d.ig) {
+      const zs = new Set([prev, next].filter(Boolean).flatMap(sd => sd.girderZ.map(z => r2(z / c))));
+      kit.padZ = [...zs].sort((a, b) => a - b);
+      if (p.bearingDetail) {
+        const bx = p.endGap + 0.35;
+        kit.pads = [];
+        [[prev, -1], [next, 1]].forEach(([sd, sg]) => {
+          if (sd) sd.girderZ.forEach(z => kit.pads.push({ x: sg * bx * c, z: z / c + sg * bx * sn }));
+        });
+      }
+      if (p.restrainBlocks) {
+        const gz = (next || prev).girderZ;
+        kit.blocks = [];
+        for (let k = 1; k < gz.length; k++) {
+          const a = gz[k - 1], b = gz[k];
+          if (a < 0 && b > 0) continue;
+          if (b - a <= 1.5) kit.blocks.push((a + b) / 2); else kit.blocks.push(a + 0.6, b - 0.6);
+        }
+        kit.blocks = kit.blocks.map(z => r2(z / c));
+      }
+    }
+    if (d.truss) {
+      const sides = [[prev, -1], [next, 1]].filter(([sd]) => sd && sd.tp);
+      if (sides.length) {
+        kit.pads = [];
+        sides.forEach(([sd, sg]) => [-sd.trussZ, sd.trussZ].forEach(z => kit.pads.push({ x: sg * Math.max(0.35, sd.tp.off), z })));
+      }
+    }
+    return kit;
   }
 
   function dispose(obj) {
