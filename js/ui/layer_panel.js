@@ -47,6 +47,7 @@
         opacity:  Math.round(BPNP.map.registry.getOpacity(c.id) * 100)
       };
       if (c.hasPierToggle) overlays[c.id].showPierToggle = BPNP.map.registry.isVisible(pierLayerOf(c.id));
+      if (c.hasContract2Toggle && BPNP.layers.railway) overlays[c.id].showContract2 = BPNP.layers.railway.isContract2Visible();
       if (hsAvailable(c))  overlays[c.id].showHeightSign = hsEnabled(c);
     });
     const order = Array.from(document.querySelectorAll(`#${LISTS.general} .layer-item[data-layer-id]`)).map(el => el.dataset.layerId);
@@ -108,7 +109,7 @@
 
       let html = `<input type="checkbox" id="ov_${c.id}" value="${c.id}" ${supported ? '' : 'disabled'}>` +
                  `<label for="ov_${c.id}">${esc(c.name)}${tag ? ` <span class="layer-phase-tag">${tag}</span>` : ''}</label>`;
-      if (supported && (c.hasOpacityControl || c.hasPierToggle || hsAvailable(c))) {
+      if (supported && (c.hasOpacityControl || c.hasPierToggle || c.hasContract2Toggle || hsAvailable(c))) {
         // ลำดับเดิม: แถบความทึบ → ปุ่มป้าย → ปุ่ม Pier
         html += `<div style="display:flex;align-items:center;gap:6px;">`;
         if (c.hasOpacityControl) {
@@ -120,6 +121,9 @@
         }
         if (c.hasPierToggle) {
           html += `<label class="hs-toggle-label" title="เปิด/ปิด Pier No."><input type="checkbox" class="hs-toggle-cb pier-toggle-cb" data-layer-id="${c.id}"><span class="hs-toggle-btn">Pier</span></label>`;
+        }
+        if (c.hasContract2Toggle) {
+          html += `<label class="hs-toggle-label" title="แสดง/ซ่อน สถานีช่วงสัญญา 2 (ป้ายหยุดรถไฟโคกสว่าง – สถานีสะพานมิตรภาพ 3)"><input type="checkbox" class="hs-toggle-cb contract2-toggle-cb" data-layer-id="${c.id}"><span class="hs-toggle-btn">สัญญา2</span></label>`;
         }
         html += `</div>`;
       }
@@ -148,6 +152,14 @@
           if (pierCb.checked) BPNP.core.toast.show('กำลังโหลด Pier No....', true);
           await BPNP.map.registry.setVisible(pid, pierCb.checked);
           BPNP.core.toast.hide();
+          saveSettings();
+        });
+      }
+
+      const c2Cb = item.querySelector('.contract2-toggle-cb');
+      if (c2Cb) {
+        c2Cb.addEventListener('change', () => {
+          if (BPNP.layers.railway) BPNP.layers.railway.setContract2Visible(c2Cb.checked);
           saveSettings();
         });
       }
@@ -365,6 +377,12 @@
         const pierCb = document.querySelector(`.pier-toggle-cb[data-layer-id="${c.id}"]`);
         if (pierCb) pierCb.checked = true;
         BPNP.map.registry.setVisible(pierLayerOf(c.id), true);
+      }
+      if (c.hasContract2Toggle && BPNP.layers.railway) {            // ไม่มีค่าที่บันทึกไว้ → ซ่อน (ค่าเริ่มต้น)
+        const on = !!(s && s.showContract2);
+        const c2Cb = document.querySelector(`.contract2-toggle-cb[data-layer-id="${c.id}"]`);
+        if (c2Cb) c2Cb.checked = on;
+        BPNP.layers.railway.setContract2Visible(on);
       }
     });
     queue.forEach((c, i) => setTimeout(() => {
