@@ -1,114 +1,106 @@
-<svg id="my-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="w-full h-full">
-  <defs>
-    <style>
-      :root { 
-        /* โทนสีแผนที่ (Map Colors) */
-        --map-green: #6bc24b;       /* สีเขียวที่สว่างและชัดขึ้น */
-        --map-blue-light: #64b5f6;  /* สีฟ้าผิวน้ำด้านสว่าง */
-        --map-blue-dark: #1e88e5;   /* สีฟ้าผิวน้ำด้านเงา */
-        --map-grey-light: #cfd8dc;  /* สีฐานแผนที่ด้านสว่าง */
-        --map-grey-dark: #90a4ae;   /* สีฐานแผนที่ด้านเงา */
-        --white-border: #ffffff;    /* เส้นขอบสีขาวล้วนให้ดูคม */
-        
-        /* โทนสีตึก (Building Colors) */
-        --bldg-top: #ffffff;        /* ดาดฟ้าตึกสีขาวสว่าง */
-        --bldg-left: #e2e8f0;       /* ผนังตึกฝั่งรับแสง (เทาอ่อน) */
-        --bldg-right: #94a3b8;      /* ผนังตึกฝั่งร่มเงา (เทาเข้ม) */
-        --bldg-shadow: rgba(0,0,0,0.25); /* เงาตึกที่พื้น (เข้มขึ้นเล็กน้อย) */
+```svg
+<svg id="my-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"
+     class="w-full h-full"
+     style="--bg-color:#6c25dd;--map-green:#3fa423;--map-blue-dark:#5e95b0;--map-blue-light:#5e95b0;--pin-red:#0008fa;--pencil-body:#0008fa;--bldg-left:#ccced1;--bldg-right:#ccced1">
+  <style>
+    :root {
+      --white-border:#f2f5f6;
+      --map-grey-light:#a3a3a3;
+      --map-grey-dark:#8a8a8a;
+      --pencil-eraser:#f48a3d;
+      --pencil-wood:#e0a570;
+      --pencil-lead:#163c65;
+      --pencil-highlight:#ffffff59;
+      --bldg-top:#fff;
+      --bldg-shadow:#00000026;
+    }
+    .bg{fill:var(--bg-color);transition:fill .2s}
+    .white-fill{fill:var(--white-border)}
+    .map-outline{fill:none;stroke:var(--white-border);stroke-width:18;stroke-linejoin:round}
+    .map-gl{fill:var(--map-green)}
+    .map-grl{fill:var(--map-grey-light)}
+    .map-grd{fill:var(--map-grey-dark)}
+    .map-bd{fill:var(--map-blue-dark)}
+    .map-bl{fill:var(--map-blue-light)}
+    .pin{fill:var(--pin-red)}
+    .p-eraser{fill:var(--pencil-eraser)}
+    .p-body{fill:var(--pencil-body)}
+    .p-wood{fill:var(--pencil-wood)}
+    .p-lead{fill:var(--pencil-lead)}
+    .p-glow{fill:var(--pencil-highlight)}
+    .b-shadow{fill:var(--bldg-shadow)}
+    .b-left{fill:var(--bldg-left)}
+    .b-right{fill:var(--bldg-right)}
+    .b-top{fill:var(--bldg-top)}
+  </style>
 
-        /* โทนสีวัตถุประดับ (Props Colors) */
-        --pin-blue: #2962ff;        /* หมุดสีน้ำเงินสด */
-        --pencil-body: #2962ff;     /* ตัวดินสอ */
-        --pencil-eraser: #ff7043;   /* ยางลบ (สีส้มปะการัง) */
-        --pencil-wood: #ffb74d;     /* เนื้อไม้ดินสอ */
-        --pencil-lead: #1c313a;     /* ไส้ดินสอ */
-        --pencil-highlight: rgba(255, 255, 255, 0.4); 
-      }
+  <rect id="bg-rect" class="bg" width="512" height="512" rx="115" style="display:none"/>
 
-      /* การผูกตัวแปรเข้ากับคลาส (Classes) */
-      .white-fill { fill: var(--white-border); }
-      .map-outline { fill: none; stroke: var(--white-border); stroke-width: 18; stroke-linejoin: round; }
-      .map-gl { fill: var(--map-green); }
-      .map-grl { fill: var(--map-grey-light); }
-      .map-grd { fill: var(--map-grey-dark); }
-      .map-bd { fill: var(--map-blue-dark); }
-      .map-bl { fill: var(--map-blue-light); }
-      .pin { fill: var(--pin-blue); }
-      .p-eraser { fill: var(--pencil-eraser); }
-      .p-body { fill: var(--pencil-body); }
-      .p-wood { fill: var(--pencil-wood); }
-      .p-lead { fill: var(--pencil-lead); }
-      .p-glow { fill: var(--pencil-highlight); }
-      .b-shadow { fill: var(--bldg-shadow); }
-      .b-left { fill: var(--bldg-left); }
-      .b-right { fill: var(--bldg-right); }
-      .b-top { fill: var(--bldg-top); }
-    </style>
-  </defs>
-
-  <!-- Content Group -->
-  <g id="zoom-group" style="transform-origin: 256px 256px;" transform="scale(1)">
-    
-    <!-- แผนที่ (Map Layer) -->
-    <g class="draggable" id="item-map" transform="translate(1.2, 0) rotate(0) scale(1.1)">
-      <g transform="translate(255, 300) scale(0.95, 1.17)">
-        <path class="map-outline" d="M-185,-105 L-75,-135 L75,-95 L185,-135 L185,95 L75,135 L-75,95 L-185,125 Z" />
-        <path class="white-fill" d="M-185,-105 L-75,-135 L75,-95 L185,-135 L185,95 L75,135 L-75,95 L-185,125 Z" />
-        <!-- ผิวดินและฐานฝั่งซ้าย -->
-        <polygon class="map-gl" points="-185,-105 -75,-135 -75,95 -185,125" />
-        <path class="map-grl" d="M-185,-5 Q-130,-35 -75,-5 L-75,55 Q-130,25 -185,55 Z" />
-        <!-- ผิวน้ำและฐานช่วงกลาง -->
-        <polygon class="map-bd" points="-75,-135 75,-95 75,135 -75,95" />
-        <path class="map-grd" d="M-75,-135 L75,-95 L75,5 Q0,-25 -75,-5 Z" />
-        <!-- ผิวน้ำและฐานฝั่งขวา -->
-        <polygon class="map-bl" points="75,-95 185,-135 185,95 75,135" />
-        <path class="map-grl" d="M75,-95 L185,-135 L185,-45 Q130,-15 75,5 Z" />
+  <g id="zoom-group" style="transform-origin:256px 256px" transform="scale(1)">
+    <g class="draggable" id="item-map"
+       data-x="1.2279579145653656" data-y="0" data-rot="0" data-scale="1.1"
+       transform="translate(1.2279579145653656) scale(1.1)">
+      <g transform="translate(255 300) scale(.95 1.17)">
+        <path class="map-outline" d="M-185-105-75-135 75-95 185-135V95L75 135-75 95-185 125Z"/>
+        <path class="white-fill" d="M-185-105-75-135 75-95 185-135V95L75 135-75 95-185 125Z"/>
+        <path class="map-gl" d="M-185-105-75-135V95L-185 125Z"/>
+        <path class="map-grl" d="M-185-5Q-130-35-75-5V55Q-130 25-185 55Z"/>
+        <path class="map-bd" d="M-75-135 75-95V135L-75 95Z"/>
+        <path class="map-grd" d="M-75-135 75-95V5Q0-25-75-5Z"/>
+        <path class="map-bl" d="M75-95 185-135V95L75 135Z"/>
+        <path class="map-grl" d="M75-95 185-135V-45Q130-15 75 5Z"/>
       </g>
     </g>
 
-    <!-- ตึก 1 (Building 1 Layer) -->
-    <g class="draggable" id="item-bldg1" transform="translate(0, 0) rotate(0) scale(1)">
-      <g transform="translate(255, 300) scale(0.95, 1.17)">
-        <g transform="translate(-45, 40) scale(1.3)">
-          <polygon class="b-shadow" points="0,35 30,50 70,30 40,15" />
-          <polygon class="b-left" points="0,-25 30,-10 30,50 0,35" />
-          <polygon class="b-right" points="30,-10 60,-25 60,35 30,50" />
-          <polygon class="b-top" points="30,-40 60,-25 30,-10 0,-25" />
+    <g class="draggable" id="item-bldg1"
+       data-x="0" data-y="0" data-rot="0" data-scale="1" transform="translate(0)">
+      <g transform="translate(255 300) scale(.95 1.17)">
+        <g transform="translate(-45 40) scale(1.3)">
+          <polygon class="b-shadow" points="0 35 30 50 70 30 40 15"/>
+          <polygon class="b-left" points="0-25 30-10 30 50 0 35"/>
+          <polygon class="b-right" points="30-10 60-25 60 35 30 50"/>
+          <polygon class="b-top" points="30-40 60-25 30-10 0-25"/>
         </g>
       </g>
     </g>
 
-    <!-- ตึก 2 (Building 2 Layer) -->
-    <g class="draggable" id="item-bldg2" transform="translate(0, 0) rotate(0) scale(1)">
-      <g transform="translate(255, 300) scale(0.95, 1.17)">
-        <g transform="translate(-150, -5) scale(0.9)">
-          <polygon class="b-shadow" points="0,35 30,50 70,30 40,15" />
-          <polygon class="b-left" points="0,-15 30,0 30,50 0,35" />
-          <polygon class="b-right" points="30,0 60,-15 60,35 30,50" />
-          <polygon class="b-top" points="30,-30 60,-15 30,0 0,-15" />
+    <g class="draggable" id="item-bldg2"
+       data-x="0" data-y="0" data-rot="0" data-scale="1" transform="translate(0)">
+      <g transform="translate(255 300) scale(.95 1.17)">
+        <g transform="translate(-150 -5) scale(.9)">
+          <polygon class="b-shadow" points="0 35 30 50 70 30 40 15"/>
+          <polygon class="b-left" points="0-15 30 0 30 50 0 35"/>
+          <polygon class="b-right" points="30 0 60-15 60 35 30 50"/>
+          <polygon class="b-top" points="30-30 60-15 30 0 0-15"/>
         </g>
       </g>
     </g>
-    
-    <!-- หมุด (Pin Layer) -->
-    <g class="draggable" id="item-pin" transform="translate(13.5, 4.9) rotate(0) scale(1)">
-      <g transform="translate(210, 270) scale(1.4, 1.3)">
-        <path class="pin" d="M0,0 C-20,-35 -60,-100 -60,-130 A60,60 0 1,1 60,-130 C60,-100 20,-35 0,0 Z" />
-        <circle class="white-fill" cx="0" cy="-130" r="27" />
+
+    <g class="draggable" id="item-pin"
+       data-x="13.507537060218567" data-y="4.911831658261292"
+       data-rot="0" data-scale="1"
+       transform="translate(13.507537060218567 4.911831658261292)">
+      <g transform="translate(210 270) scale(1.4 1.3)">
+        <path class="pin" d="M0 0C-20-35-60-100-60-130A60 60 0 1 1 60-130C60-100 20-35 0 0Z"/>
+        <circle class="white-fill" cy="-130" r="27"/>
       </g>
     </g>
-    
-    <!-- ดินสอ (Pencil Layer) -->
-    <g class="draggable" id="item-pencil" transform="translate(-2.5, -19.6) rotate(0) scale(1.1)">
-      <g transform="translate(365, 250) scale(1.2) rotate(30)">
-        <path d="M-30,-140 C-30,-160 30,-160 30,-140 L30,70 L0,135 L-30,70 Z" fill="var(--white-border)" stroke="var(--white-border)" stroke-width="1" stroke-linejoin="round" />
-        <path class="p-eraser" d="M-30,-140 C-30,-155 30,-155 30,-140 L30,-95 L-30,-95 Z" />
-        <rect class="white-fill" x="-30" y="-95" width="60" height="20" />
-        <path class="p-body" d="M-30,-75 L30,-75 L30,65 Q15,75 0,65 Q-15,75 -30,65 Z" />
-        <path class="p-wood" d="M-30,65 Q-15,75 0,65 Q15,75 30,65 L0,135 Z" />
-        <path class="p-lead" d="M-13,106 Q0,116 13,106 L0,135 Z" />
-        <rect class="p-glow" x="-20" y="-75" width="10" height="135" rx="5" />
+
+    <g class="draggable" id="item-pencil"
+       data-x="-28.243032035002443" data-y="-24.559158291306517"
+       data-rot="0" data-scale="1"
+       transform="translate(-28.243032035002443 -24.559158291306517)">
+      <g transform="translate(365 250) scale(1.2) rotate(30)">
+        <path d="M-30-140C-30-160 30-160 30-140V70L0 135-30 70Z"
+              fill="var(--white-border)" stroke="var(--white-border)" stroke-width="1" stroke-linejoin="round"/>
+        <path class="p-eraser" d="M-30-140C-30-155 30-155 30-140V-95H-30Z"/>
+        <rect class="white-fill" x="-30" y="-95" width="60" height="20"/>
+        <path class="p-body" d="M-30-75H30V65Q15 75 0 65-15 75-30 65Z"/>
+        <path class="p-wood" d="M-30 65Q-15 75 0 65 15 75 30 65L0 135Z"/>
+        <path class="p-lead" d="M-13 106Q0 116 13 106L0 135Z"/>
+        <rect class="p-glow" x="-20" y="-75" width="10" height="135" rx="5"/>
       </g>
     </g>
   </g>
 </svg>
+```
