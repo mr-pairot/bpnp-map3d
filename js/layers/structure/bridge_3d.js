@@ -206,7 +206,7 @@
 
   /* แผ่นรองบนตอม่อจากช่วงสองข้าง (เหมือน buildBridge ของตัวสร้าง · กรอบตอม่อที่หมุนตามมุมเฉียง)
      คาน I: ใต้ปลายคานทุกตัว ห่างแนวตอม่อตามแนวคาน endGap + 0.35 · บล็อกกันเลื่อนระหว่างคาน (ยกเว้นช่องกลาง)
-     โครงถักตามแบบ: ใต้ปลายคอร์ดล่าง ห่างแนวตอม่อ tp.off */
+     โครงถักตามแบบ: ใต้จุดล่างแรกของแต่ละช่วง ห่างแนวตอม่อ tp.off + 0.10 (แท่นสองช่วงบนตอม่อกลางไม่ซ้อนกัน) */
   function bearingKit(kit, d, prev, next, skewRad) {
     const p = d.params, c = Math.cos(skewRad), sn = Math.sin(skewRad);
     if (d.ig) {
@@ -234,7 +234,7 @@
       const sides = [[prev, -1], [next, 1]].filter(([sd]) => sd && sd.tp);
       if (sides.length) {
         kit.pads = [];
-        sides.forEach(([sd, sg]) => [-sd.trussZ, sd.trussZ].forEach(z => kit.pads.push({ x: sg * Math.max(0.35, sd.tp.off), z })));
+        sides.forEach(([sd, sg]) => [-sd.trussZ, sd.trussZ].forEach(z => kit.pads.push({ x: sg * (sd.tp.off + 0.1), z })));   // v3.5.1: ใต้จุดล่างแรก ขยับเข้า 0.10
       }
     }
     return kit;
