@@ -75,9 +75,30 @@
       const c = BPNP.alignment.pointAt(S, 0);
       if (!c) return;
       bridges.push({ key: p['Sta.'], src, sta: p['Sta.'], S, L, spans, skew: parseFloat(p.Skew) || 0, feature: f,
-                     center: [c.lng, c.lat], heading: c.heading, geometry: f.geometry, heightLimit: f.heightLimit });
+                     center: [c.lng, c.lat], heading: c.heading, geometry: f.geometry, heightLimit: f.heightLimit,
+                     bbox: lngLatBox(f.geometry, [c.lng, c.lat]) });
     });
     return bridges;
+  }
+
+  // กรอบ [W, S, E, N] ของรูป 2D (รวมกำแพงปีก) — ใช้เลือกสะพานที่อยู่ในจอ · ไม่มีรูปทรง = จุดกึ่งกลาง
+  function lngLatBox(geom, center) {
+    const bb = [Infinity, Infinity, -Infinity, -Infinity];
+    (function walk(x) {
+      if (!Array.isArray(x)) return;
+      if (typeof x[0] === 'number') {
+        bb[0] = Math.min(bb[0], x[0]); bb[1] = Math.min(bb[1], x[1]); bb[2] = Math.max(bb[2], x[0]); bb[3] = Math.max(bb[3], x[1]);
+        return;
+      }
+      x.forEach(walk);
+    })(geom && geom.coordinates);
+    return bb[0] <= bb[2] ? bb : [center[0], center[1], center[0], center[1]];
+  }
+
+  // ระยะ (องศา) จากจุดถึงกรอบ — 0 เมื่ออยู่ในกรอบ
+  function boxDist(bb, lng, lat) {
+    const dx = Math.max(bb[0] - lng, 0, lng - bb[2]), dy = Math.max(bb[1] - lat, 0, lat - bb[3]);
+    return Math.hypot(dx, dy);
   }
 
   // ความกว้างและส่วนยื่นของรูป 2D (กรอบในแนวราง ณ กึ่งกลาง)
@@ -297,9 +318,10 @@
       const list = await loadBridges();
       const b = m.getBounds(), padX = (b.getEast() - b.getWest()) * 0.25, padY = (b.getNorth() - b.getSouth()) * 0.25;
       const ctr = m.getCenter();
-      const want = list.filter(x => x.center[0] > b.getWest() - padX && x.center[0] < b.getEast() + padX
-                                 && x.center[1] > b.getSouth() - padY && x.center[1] < b.getNorth() + padY)
-        .sort((p, q) => Math.hypot(p.center[0] - ctr.lng, p.center[1] - ctr.lat) - Math.hypot(q.center[0] - ctr.lng, q.center[1] - ctr.lat))
+      // กรอบสะพานซ้อนทับกับจอ (เผื่อขอบ 25%) — สะพานยาวยังแสดงเมื่อซูมดูช่วงปลาย แม้กึ่งกลางอยู่นอกจอ
+      const W = b.getWest() - padX, E = b.getEast() + padX, S = b.getSouth() - padY, N = b.getNorth() + padY;
+      const want = list.filter(x => x.bbox[2] > W && x.bbox[0] < E && x.bbox[3] > S && x.bbox[1] < N)
+        .sort((p, q) => boxDist(p.bbox, ctr.lng, ctr.lat) - boxDist(q.bbox, ctr.lng, ctr.lat))
         .slice(0, MAX_BUILT);
       const keys = new Set(want.map(x => x.key));
       built.forEach((rec, k) => { if (!keys.has(k)) { layer.scene.remove(rec.group); dispose(rec.group); built.delete(k); } });
