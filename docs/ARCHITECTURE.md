@@ -98,7 +98,7 @@ flowchart TB
 | `ui/bottom_panel.js` | ตารางรายการแปลง | — | bottomPanel.js |
 | `layers/structure/footing.js` | Footing VB45–VB118 + Pier | `kml/footing/*` | main.js |
 | `layers/structure/underpass_box.js` | Underpass + Box Culvert + legend | `kml/structure/underpass`, `box_culvert` | main.js, setUnderpassLegend.js |
-| `layers/structure/bridge_gen.js` | ตัวสร้างชิ้นส่วนสะพาน (Three.js) v3.6 ตามแบบมาตรฐาน — ไฟล์เดียวกับ Map_demo_001 | — | mr-pairot/Map_demo_001 bridge-gen.js |
+| `layers/structure/bridge_gen.js` | ตัวสร้างชิ้นส่วนสะพาน (Three.js) v3.6.1 ตามแบบมาตรฐาน — ไฟล์เดียวกับ Map_demo_001 | — | mr-pairot/Map_demo_001 bridge-gen.js |
 | `layers/structure/bridge_3d.js` | สะพาน CB/SB 3 มิติ วางตาม กม. (custom layer) | Span/Length/Skew + `json/bridge_3d.json` | (ใหม่ เฟส 3D-B) |
 | `layers/structure/structure_3d.js` | สร้างรูป 3 มิติ Box Culvert / Underpass (ช่อง, กำแพงปีกลาด, ปลายพับ) | ข้อมูล KML + alignment | (ใหม่ เฟส 3D-B) |
 | `layers/structure/structure_3d_layer.js` | วาดรูป 3D Box Culvert/Underpass ด้วย Three.js (custom layer) วางทั้งโครงสร้างที่ระดับพื้นดินค่าเดียว (Underpass = จุดสูงสุดในกรอบ · Box Culvert = กึ่งกลาง) | ผลจาก structure_3d.js + `elevationAt` | (ใหม่) |
