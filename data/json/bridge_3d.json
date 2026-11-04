@@ -5,12 +5,13 @@
     "preset = แบบมาตรฐานโครงการ: auto (เลือกตามความยาวแต่ละช่วง) · CB: cb15 / cb20 / cb25 / cb30 · SB: sb25 / sb30 / sb40 / sb50 / sb60 / sb75 / sb100 · none = ไม่ใช้แบบ",
     "เมื่อใช้แบบมาตรฐาน ค่าตามแบบทับค่าที่กรอก (เช่น deckWidth, girderDepth ของ CB · ขนาดโครงถักของ SB) — ถ้าต้องการกำหนดเองรายสะพาน ใส่ \"preset\": \"none\" ในสะพานนั้นด้วย",
     "bridges = ค่ารายสะพาน อ้างอิงด้วย Sta. ตามข้อมูล (เช่น \"21+325.000\") ใส่เฉพาะค่าที่ต่างจากค่าตั้งต้น",
-    "piers = ชนิดตอม่อในรายต้น { \"2\": \"B\" } นับจาก กม. น้อย (ต้น 1 และต้นสุดท้ายเป็นตอม่อริมเสมอ: CB ตามแบบ = ที่นั่งคาน + กำแพงหลัง · SB = ผนังทึบ Type D)",
+    "piers = ชนิดตอม่อในรายต้น { \"2\": \"D\" } นับจาก กม. น้อย (ต้น 1 และต้นสุดท้ายเป็นตอม่อริมเสมอ: แบบมาตรฐาน CB และ SB = ที่นั่งคาน + กำแพงหลัง + corbel · preset none = ผนังทึบ Type D)",
+    "ตอม่อในสะพานเหล็ก: ค่าตั้งต้น B (เสาคู่) · D ตามรายสะพานใน bridges (กม.85, 88, 146 ทุกต้น · กม.155 ต้น 2 และ 6) · สะพานคอนกรีต: ค่าตั้งต้น A แบบมีคานหัวเสา",
     "ชนิดตอม่อ: A เสาเดี่ยวผายบน (aTopMode: direct / cap) · B เสาคู่ · C พอร์ทัล (คร่อมถนน, ใช้ portalSpan) · D ผนังทึบ",
     "ระดับพื้นสะพาน (deckLevel): ค่ารายสะพาน > ช่องลอดใต้สะพาน (height_limit ใน bridge_progress.json) + ความลึกโครงสร้างจากตัวสร้าง > defaults.deckLevel · CB = ผิวพื้นที่กึ่งกลาง · SB = หลัง stringer (ใต้หมอน)",
     "ความกว้างพื้นสะพาน: CB ตามแบบ 11.00 ม. (เตือนเมื่อรูป 2D แคบกว่า 11.0 หรือกว้างกว่า 15.0 ม.) · SB ตามแบบ = ระยะโครงถัก + ทางเดินข้าง · preset none = ค่ารายสะพาน > ความกว้างจากรูป 2D",
     "ค่าที่ตั้งได้รายสะพาน: preset, deckLevel, deckWidth, pierType, piers, aTopMode (direct/cap), aFlareDepth, portalSpan, dThick, dRadius, girderDepth, tracks (0/1/2), gauge (1.0/1.435), trackSpacing (ค่าตั้งต้น 5.0), wingWall (ม. 0 = ไม่มี), abutmentStyle (wall/seat) และค่าอื่นของตัวสร้าง (ดู BRIDGE-README.md ใน Map_demo_001)",
-    "ตัวสร้างสะพาน js/layers/structure/bridge_gen.js เป็นไฟล์เดียวกับ Map_demo_001/bridge-gen.js (v3.4) — ทดสอบบน demo แล้วคัดลอกมาได้"
+    "ตัวสร้างสะพาน js/layers/structure/bridge_gen.js เป็นไฟล์เดียวกับ Map_demo_001/bridge-gen.js (v3.5) — ทดสอบบน demo แล้วคัดลอกมาได้"
   ],
   "defaults": {
     "deckLevel": 7.0,
@@ -27,9 +28,33 @@
     "SB": {
       "bridgeKind": "steel",
       "preset": "auto",
-      "pierType": "A",
-      "aTopMode": "cap"
+      "pierType": "B",
+      "abutmentStyle": "seat"
     }
   },
-  "bridges": {}
+  "bridges": {
+    "85+875.461": {
+      "piers": {
+        "2": "D",
+        "3": "D"
+      }
+    },
+    "88+157.740": {
+      "piers": {
+        "2": "D",
+        "3": "D"
+      }
+    },
+    "146+848.125": {
+      "piers": {
+        "2": "D"
+      }
+    },
+    "155+065.000": {
+      "piers": {
+        "2": "D",
+        "6": "D"
+      }
+    }
+  }
 }
