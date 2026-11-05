@@ -41,7 +41,7 @@
     BPNP.layers.CONFIG.forEach(c => {
       // ชั้นที่ยังไม่รองรับ/โมดูลโหลดไม่สำเร็จ → คงค่าที่บันทึกไว้เดิม
       // ชั้นที่ไม่อยู่ในรายการ (เช่น หลัก กม. ทล. ที่เปิดจากปุ่มของตัวเอง) ไม่บันทึกสถานะ — เหมือนเดิม
-      if (!BPNP.layers.isSupported(c) || !BPNP.map.registry.has(c.id) || c.isControlVisible === false) return;
+      if (!BPNP.layers.isSupported(c) || !BPNP.map.registry.has(c.id) || c.isControlVisible === false || !featureOk(c)) return;
       overlays[c.id] = {
         isActive: BPNP.map.registry.isVisible(c.id),
         opacity:  Math.round(BPNP.map.registry.getOpacity(c.id) * 100)
@@ -80,10 +80,14 @@
   }
 
   // ── ชั้นข้อมูล ──
+  // ชั้นที่ผูกกับสวิตช์ความสามารถตาม role (config.features — เช่น SW - Color Light เฉพาะ editor)
+  //   ไม่ผ่าน = ไม่แสดงในรายการ · ไม่เปิดจากค่าที่บันทึกไว้ · ไม่บันทึก
+  const featureOk = c => !c.feature || !!(BPNP.features && BPNP.features.isOn(c.feature));
+
   function renderOverlays(settings) {
     Object.values(LISTS).forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = ''; });
 
-    let configs = BPNP.layers.CONFIG.filter(c => c.isControlVisible !== false);
+    let configs = BPNP.layers.CONFIG.filter(c => c.isControlVisible !== false && featureOk(c));
     const order = (settings && settings.generalLayerOrder) || [];
     if (order.length) {
       const rank = id => { const i = order.indexOf(id); return i === -1 ? 999 : i; };
@@ -360,7 +364,7 @@
   function restoreOverlays(settings) {
     const queue = [];
     BPNP.layers.CONFIG.forEach(c => {
-      if (!BPNP.layers.isSupported(c) || !BPNP.map.registry.has(c.id) || c.isControlVisible === false) return;
+      if (!BPNP.layers.isSupported(c) || !BPNP.map.registry.has(c.id) || c.isControlVisible === false || !featureOk(c)) return;
       const s = settings && settings.overlays && settings.overlays[c.id];
       const active = s ? !!s.isActive : !!c.isDefault;
       const opacity = s && typeof s.opacity === 'number' ? s.opacity : 100;
@@ -399,6 +403,17 @@
     renderBaseLayers();
     renderOverlays(settings);
     restoreOverlays(settings);
+    // role เปลี่ยนระหว่างใช้งาน → สร้างรายการใหม่ (ชั้นที่ไม่มีสิทธิ์ถูกปิดโดยโมดูลของชั้นเอง) แล้วติ๊กตามสถานะจริง
+    if (BPNP.events) BPNP.events.on('features:change', () => {
+      renderOverlays(loadSettings());
+      BPNP.layers.CONFIG.forEach(c => {
+        const cb = document.getElementById('ov_' + c.id);
+        if (cb) cb.checked = BPNP.map.registry.isVisible(c.id);
+        const c2 = document.querySelector(`.contract2-toggle-cb[data-layer-id="${c.id}"]`);   // ปุ่มสัญญา2 คงสถานะเดิม
+        if (c2 && BPNP.layers.railway) c2.checked = BPNP.layers.railway.isContract2Visible();
+      });
+      updateSectionCounts();
+    });
 
     BPNP.ui.registerButton(() => {
       BPNP.ui.createStandardButton({
