@@ -33,7 +33,9 @@ window.BPNP_CONFIG = {
     // รูป 3 มิติ Box Culvert / Underpass ในโหมด 3D — เปิดเฉพาะ editor ระหว่างปรับรูปให้ถูกต้อง (v3.9.10)
     structure3d: ['editor'],
     // สะพานรถไฟ 3 มิติ CB / SB ในโหมด 3D (js/layers/structure/bridge_3d.js · ตั้งค่า data/json/bridge_3d.json) — v3.10.00
-    bridge3d: ['editor']
+    bridge3d: ['editor'],
+    // SW - Color Light (ไฟสีระบบอาณัติสัญญาณ, js/layers/progress/sw_light.js) — ทดสอบเฉพาะ editor ก่อน (v3.10.09)
+    swLight: ['editor']
   },
 
   map: {
@@ -44,6 +46,9 @@ window.BPNP_CONFIG = {
     defaultBasemap: 'osm',
     allowRotate:    true,            // 2D เริ่มต้น — ปุ่ม 3D เปิดการเอียง/หมุนเอง (js/map/terrain.js)
     // เฟส 3D: ภูมิประเทศจาก AWS Terrain Tiles (ฟรี ไม่ต้องใช้คีย์, Terrarium encoding)
+    // โหมด 3D: หมุด/ป้าย/popup ที่หลังกล้อง เลยขอบฟ้า หรือไกลเกิน ไม่แสดง (js/map/view3d.js) — v3.10.10
+    //   ระยะสูงสุด = maxDistFactor × ระยะกล้องถึงกลางจอ (ไม่ต่ำกว่า minKm) · fadeFrac = ช่วงท้ายที่ชื่อสถานีค่อย ๆ จาง
+    view3d: { maxDistFactor: 4, minKm: 3, fadeFrac: 0.25 },
     terrain: {
       tiles:        'https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png',
       encoding:     'terrarium',
