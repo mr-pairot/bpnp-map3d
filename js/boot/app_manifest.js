@@ -19,6 +19,7 @@ BPNP.boot.APP_SCRIPTS = [
   'js/map/layer_registry.js',
   'js/map/popup.js',
   'js/map/hit3d.js',
+  'js/map/view3d.js',
   'js/map/map_core.js',
   'js/map/controls.js',
 
@@ -57,6 +58,9 @@ BPNP.boot.LAYER_SCRIPTS = [
   'js/layers/doh_km.js',
   'js/layers/progress/track_progress.js',
   'js/layers/progress/sw_summary.js',
+  'js/layers/progress/sw_light.js',
+  'js/layers/progress/sw_light_panel.js',
+  'js/layers/progress/sw_light_summary.js',
   'js/layers/progress/sw_panel.js',
   'js/layers/progress/sw_loc.js',
 
@@ -102,6 +106,7 @@ BPNP.boot.APP_CSS = [
   'css/layers/track_progress.css',
   'css/layers/sw_loc.css',
   'css/layers/sw_panel.css',
+  'css/layers/sw_light.css',
   'css/tools/search_km.css',
   'css/tools/search_hub.css',
   'css/tools/search_address.css',
