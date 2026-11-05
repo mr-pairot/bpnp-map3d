@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  
+  <!-- Outer red circle -->
+  <circle cx="256" cy="256" r="216" fill="#DC0000"/>
+  
+  <!-- Inner white circle -->
+  <circle cx="256" cy="256" r="176" fill="#FFFFFF"/>
+  
+  <!-- Traffic light pole -->
+  <rect x="238" y="351" width="36" height="56" rx="4" fill="#383F47"/>
+  
+  <!-- Traffic light top dome -->
+  <circle cx="256" cy="134" r="29" fill="#383F47"/>
+  
+  <!-- Traffic light main housing -->
+  <rect x="189" y="134" width="134" height="217" rx="6" fill="#383F47"/>
+  
+  <!-- Red light -->
+  <circle cx="256" cy="179" r="27.5" fill="#CF0C58"/>
+  <circle cx="256" cy="179" r="15" fill="#EF2E63"/>
+  
+  <!-- Yellow light -->
+  <circle cx="256" cy="242" r="27" fill="#DBA716"/>
+  <circle cx="256" cy="242" r="15" fill="#EDBF2E"/>
+  
+  <!-- Green light -->
+  <circle cx="256" cy="305" r="27" fill="#18C053"/>
+  <circle cx="256" cy="305" r="15" fill="#32D75E"/>
+</svg>
+
