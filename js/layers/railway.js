@@ -4,8 +4,6 @@
  *
  * stationName ใช้ HTML marker (เบราว์เซอร์วาดตัวอักษรไทยเอง — สระ/วรรณยุกต์ถูกต้องแน่นอน)
  * มีแค่ 31 จุด จึงไม่กระทบความเร็ว
- * ปุ่ม "สัญญา2" (แผงเลเยอร์): สถานีช่วง กม.183+400 (ป้ายหยุดรถไฟโคกสว่าง) – 354+385 (สถานีสะพานมิตรภาพ 3) แสดง/ซ่อนทั้งหมุดและชื่อ
- *   เริ่มต้นซ่อน — BPNP.layers.railway.setContract2Visible(on) / isContract2Visible()
  * ───────────────────────────────────────────────────────────────────────── */
 (function () {
   'use strict';
@@ -23,14 +21,7 @@
   const YT_ICON = '<svg class="bp-yt-icon" viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>';
 
   // ── สถานี (HTML marker) ──
-  let stationMarkers = null, mapRef = null;
-
-  // ── สัญญา 2: ช่วง กม. (ม.) รวมสถานีหัวท้าย — ใช้ช่วง กม. ไม่ใช้รายชื่อ สถานีที่เพิ่มในช่วงนี้ภายหลังจึงถูกนับอัตโนมัติ ──
-  const CONTRACT2 = { from: 183 * 1000 + 400, to: 354 * 1000 + 385 };
-  let contract2Visible = false;                                   // เริ่มต้นซ่อน
-  const kmToMeters = km => { const m = String(km).match(/^(\d+)\+(\d+(?:\.\d+)?)$/); return m ? (+m[1]) * 1000 + parseFloat(m[2]) : NaN; };
-  const inContract2 = mk => mk._km >= CONTRACT2.from && mk._km <= CONTRACT2.to;
-  const stationShown = mk => contract2Visible || !inContract2(mk);
+  let stationMarkers = null;
 
   function stationPopupHtml(name, km) {
     return `
@@ -85,40 +76,33 @@
                    `<img src="${ICONS[style] || ICONS.default}" width="32" height="32" alt="" draggable="false"></div>`;
     el.addEventListener('click', e => { e.stopPropagation(); openStationPopup(name, km, f.geometry.coordinates); });
 
-    const mk = new maplibregl.Marker({ element: el, anchor: 'bottom' }).setLngLat(f.geometry.coordinates);
-    mk._km = kmToMeters(km);                                      // ใช้แยกสถานีช่วงสัญญา 2
-    return mk;
-  }
-
-  // แสดง/ซ่อนสถานีตามสถานะปุ่ม "สัญญา2" (ทำงานเมื่อเลเยอร์รายชื่อสถานีเปิดอยู่) — ถอด/ใส่หมุดทั้งตัว ไอคอนและชื่อไปด้วยกัน
-  function applyStationVisibility() {
-    if (!mapRef || !stationMarkers || !BPNP.map.registry.isVisible('stationName')) return;
-    stationMarkers.forEach(mk => { if (stationShown(mk)) { if (!mk._map) mk.addTo(mapRef); } else mk.remove(); });
-    if (!contract2Visible && BPNP.map.popup && BPNP.map.popup.close) BPNP.map.popup.close();   // การ์ดสถานีที่ถูกซ่อนไม่ค้างบนแผนที่
-    requestAnimationFrame(snapLabels);
-    scheduleDepth(mapRef);
+    el.dataset.view3d = 'own';   // จัดการการซ่อนในโหมด 3D เอง (updateDepth: ย่อ/จาง/ระยะ) — ผู้ดูแลกลาง js/map/view3d.js ข้าม
+    return new maplibregl.Marker({ element: el, anchor: 'bottom' }).setLngLat(f.geometry.coordinates);
   }
 
   // ── โหมด 3D: หมุดสถานีตามระยะ (v3.9.01) ──────────────────────────────
   //   1) ย่อตามระยะห่างจากกล้อง เล็กสุด 50% (ย่อจากปลายหมุด ปลายหมุดยังแตะจุดเดิม)
   //   2) ป้ายชื่อที่ทับกันซ่อน — สถานีที่อยู่ใกล้ได้แสดงก่อน (ไอคอนยังแสดง แตะ/ชี้เพื่อดูชื่อ)
-  //   3) จางหายเมื่อใกล้ขอบฟ้า (ไม่ลอยขึ้นไปบนท้องฟ้า)
+  //   3) ไม่ลอยบนท้องฟ้า (v3.10.03): ซ่อนหมุดที่อยู่ด้านหลังกล้อง · ทั้งหมุดและป้ายต้องอยู่ใต้เส้นขอบฟ้า
+  //      (ส่วนบนเข้าใกล้ขอบฟ้า → จางหาย) · หาเส้นขอบฟ้าจาก "พื้นด้านหน้ากล้อง"
   //   4) ลำดับการวาด: หมุดใกล้อยู่หน้าหมุดไกล (ภายในหมุดเดียวกัน ไอคอนยังอยู่บนป้ายของตัวเอง)
   //   ชี้/แตะหมุด → ขึ้นมาหน้าสุดและแสดงชื่อชั่วคราว
   //   โหมด 2D: ล้างค่าทั้งหมด หมุดเหมือนเดิมทุกอย่าง
-  const MIN_SCALE = 0.5, FADE_FROM = 20, FADE_LEN = 70;
+  const MIN_SCALE = 0.5;
+  const FADE_BAND = 30;          // ส่วนบนของหมุดเข้าใกล้เส้นขอบฟ้า → จางหายในช่วงนี้ (px)
   let depthQueued = false, depthActive = false;
 
   const is3d = map => !!(BPNP.map.terrain && BPNP.map.terrain.isOn() && map.getPitch() > 0.5);
 
-  function horizonY(map) {
-    // แถวบนสุดที่ยังเป็นพื้นแผนที่ (เหนือขึ้นไปเป็นท้องฟ้า)
-    const c = map.getContainer(), x = c.clientWidth / 2;
-    const onGround = y => { try { const ll = map.unproject([x, y]); const q = map.project(ll); return Math.abs(q.y - y) < 1.5; } catch (e) { return false; } };
-    if (onGround(0)) return 0;
-    let lo = 0, hi = c.clientHeight;
-    for (let i = 0; i < 12; i++) { const mid = (lo + hi) / 2; if (onGround(mid)) hi = mid; else lo = mid; }
-    return hi;
+  // ── กล้อง / เส้นขอบฟ้า / ระยะ: ตัวตรวจกลาง js/map/view3d.js (v3.10.10 — เดิมอยู่ในไฟล์นี้ตั้งแต่ v3.10.03) ──
+  const V = () => BPNP.map.view3d;
+
+  // ความสูงเต็มของหมุด (ไอคอน + ป้ายชื่อที่อยู่เหนือไอคอน) ก่อนย่อ — วัดครั้งเดียวต่อหมุด
+  function fullHeight(root, inner, label) {
+    if (root.dataset.fullH) return +root.dataset.fullH;
+    const h = inner.offsetHeight - Math.min(0, label ? label.offsetTop : 0);
+    if (h > 0) root.dataset.fullH = String(h);
+    return h || 60;
   }
 
   function resetDepth() {
@@ -138,7 +122,8 @@
     if (!is3d(map)) { if (depthActive) resetDepth(); return; }
     depthActive = true;
     const c = map.getContainer(), H = c.clientHeight;
-    const hz = horizonY(map);
+    const st = V().state(map);                // กล้อง + เส้นขอบฟ้า + ระยะสูงสุด (4 × ระยะกล้องถึงกลางจอ)
+    const hz = st ? st.hz : 0;
     const ppm = ll => { const a = map.project(ll), b = map.project([ll.lng + 100 / (111320 * Math.cos(ll.lat * Math.PI / 180)), ll.lat]); return Math.hypot(b.x - a.x, b.y - a.y); };
     const ref = ppm(map.unproject([c.clientWidth / 2, H * 0.6]));
     // ขั้นที่ 1: ขนาด / ความจาง / ลำดับ
@@ -146,7 +131,11 @@
       const root = mk.getElement(), ll = mk.getLngLat(), p = map.project(ll);
       const inner = root.querySelector('.station-marker-inner'), label = root.querySelector('.station-marker-label');
       const scale = Math.max(MIN_SCALE, Math.min(1, ppm(ll) / ref));
-      const fade = Math.max(0, Math.min(1, (p.y - (hz + FADE_FROM)) / FADE_LEN));
+      // แสดงได้เมื่ออยู่หน้ากล้อง และทั้งหมุด + ป้ายชื่อ (หลังย่อ) อยู่ใต้เส้นขอบฟ้า · ส่วนบนเข้าใกล้ขอบฟ้า → จางใน FADE_BAND px
+      const top = p.y - fullHeight(root, inner, label) * scale;
+      //   + ไกลเกินระยะสูงสุด → ไม่แสดง (ช่วงท้าย 25% ค่อย ๆ จาง) — v3.10.10
+      const dist = V().check(st, ll);          // 0 = หลังกล้อง/ไกลเกิน · 0…1 = ช่วงจางตามระยะ
+      const fade = dist <= 0 ? 0 : Math.max(0, Math.min(1, (top - hz) / FADE_BAND)) * dist;
       inner.style.transformOrigin = '50% 100%';
       inner.style.transform = `scale(${scale.toFixed(3)})`;
       inner.style.opacity = fade.toFixed(2);
@@ -207,7 +196,6 @@
   }
 
   function register(map) {
-    mapRef = map;
     const R = BPNP.map.registry;
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => {   // ฟอนต์มาทีหลัง → วัดใหม่
       (stationMarkers || []).forEach(mk => { const l = mk.getElement().querySelector('.station-marker-label'); if (l) { delete l.dataset.snapped; l.style.width = ''; l.style.boxSizing = ''; l.style.transform = ''; } });
@@ -244,15 +232,10 @@
         stationMarkers.forEach(mk => bindFront(map, mk));
         return {};
       },
-      onShow: () => { (stationMarkers || []).forEach(m => { if (stationShown(m)) m.addTo(map); }); requestAnimationFrame(snapLabels); scheduleDepth(map); },
+      onShow: () => { (stationMarkers || []).forEach(m => m.addTo(map)); requestAnimationFrame(snapLabels); scheduleDepth(map); },
       onHide: () => (stationMarkers || []).forEach(m => m.remove())
     });
   }
-
-  BPNP.layers.railway = {
-    setContract2Visible(on) { contract2Visible = !!on; applyStationVisibility(); },
-    isContract2Visible: () => contract2Visible
-  };
 
   U.register({ name: 'railway', register });
 })();
