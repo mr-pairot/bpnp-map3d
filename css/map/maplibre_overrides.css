@@ -14,7 +14,13 @@
 .maplibregl-canvas { outline: none; }
 
 /* ── popup (รูปแบบเดียวกับ Leaflet) ── */
-.maplibregl-popup { z-index: 800; }
+.maplibregl-popup { z-index: 300000; }   /* v3.10.10: เหนือหมุดทุกชนิด (ป้ายสถานี 3D 1000+, ป้ายที่ชี้ 100000, หมุดผลค้นหา 200000) — ยังอยู่ใต้ปุ่ม/แผงของแอป (แผนที่อยู่ในกลุ่มลำดับของตัวเอง z-index 0) */
+
+/* v3.10.10: โหมด 3D — หมุด/ป้าย/popup ที่อยู่หลังกล้อง เลยเส้นขอบฟ้า หรือไกลเกิน (js/map/view3d.js) */
+.maplibregl-marker.v3d-hidden,
+.maplibregl-popup.v3d-hidden { opacity: 0 !important; pointer-events: none !important; }
+.maplibregl-marker.v3d-hidden *,
+.maplibregl-popup.v3d-hidden * { pointer-events: none !important; }
 
 .maplibregl-popup-content {
   padding: 1px;
