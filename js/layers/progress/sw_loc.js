@@ -176,6 +176,9 @@ class SWLocManager {
         if (this._visible) return;
         this._visible = true;
         this._markers.forEach(m => m.addTo(this._map));
+        // แผงของ SW - Color Light อยู่ตำแหน่งเดียวกัน → ปิดก่อนเปิดแผงของ SW-LOC (v3.10.09)
+        if (window.swLightPanel) swLightPanel.hide();
+        if (window.swLightSummary) swLightSummary.hide();
         this._openBottomPanel();
     }
 
