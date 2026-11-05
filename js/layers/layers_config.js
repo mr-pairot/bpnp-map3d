@@ -48,7 +48,9 @@ BPNP.layers.CONFIG = [
 
   // ── Signalling and Track ──
   { id: 'layer_track_progress', name: 'Track Progress', nameLoaded: 'ความคืบหน้างานวางราง', category: 'progress', kind: 'vector', phase: 4, source: 'data/json/track_progress.json', isDefault: false, hasOpacityControl: false, isControlVisible: true },
-  { id: 'layer_sw_loc',         name: 'SW - LOC',       nameLoaded: 'งานตู้ LOC',          category: 'progress', kind: 'vector', phase: 4, source: 'data/json/sw_loc.json',         isDefault: false, hasOpacityControl: false, isControlVisible: true }
+  { id: 'layer_sw_loc',         name: 'SW - LOC',       nameLoaded: 'งานตู้ LOC',          category: 'progress', kind: 'vector', phase: 4, source: 'data/json/sw_loc.json',         isDefault: false, hasOpacityControl: false, isControlVisible: true },
+  // ไฟสีระบบอาณัติสัญญาณ — แสดงในรายการเฉพาะผู้ใช้ที่ผ่านสวิตช์ config.features.swLight (feature)
+  { id: 'layer_sw_light',       name: 'SW - Color Light', nameLoaded: 'งาน colorlight',    category: 'progress', kind: 'vector', phase: 4, source: 'data/json/sw_colorlight.json',  isDefault: false, hasOpacityControl: false, isControlVisible: true, feature: 'swLight' }
 ];
 
 BPNP.layers.byId = id => BPNP.layers.CONFIG.find(c => c.id === id) || null;
